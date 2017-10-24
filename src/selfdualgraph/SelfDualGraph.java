@@ -21,12 +21,12 @@ public class SelfDualGraph {
         this(10,30,10);
     }
 
+
     public void buildGraph(String fileName) throws FileNotFoundException {
         Scanner graphInput = new Scanner(new File(fileName));
         int V = graphInput.nextInt();
         int E = graphInput.nextInt();
         int F = graphInput.nextInt();
-        assert V + F - E == 2;
 
         Vertex[] verticesArr = new Vertex[V];
         Dart[] dartsArr = new Dart[E];
@@ -85,23 +85,23 @@ public class SelfDualGraph {
 
         // set successors, predecessors and left
         for (Vertex v : verticesArr) {
-            System.out.println(v);
             assert v.getDegree() == 1;
             Dart cur = v.getFirstDart();
-            Dart succ = cur.getPrev().getReverse();
+            Dart succ = cur.getReverse().getNext();
             while (succ != v.getFirstDart()) {
                 cur.setSuccessor(succ);
                 cur.setLeft(succ.getRight());
                 succ.setPredecessor(cur);
                 v.addDart(succ);
                 cur = succ;
-                succ = succ.getPrev().getReverse();
+                succ = succ.getReverse().getNext();
             }
             cur.setSuccessor(succ);
             cur.setLeft(succ.getRight());
             succ.setPredecessor(cur);
         }
     }
+
 
     public int getVerticeNum() {
         return vertices.size();
@@ -119,9 +119,9 @@ public class SelfDualGraph {
         return new HashSet<>(faces);
     }
 
-
+    /*
+    // for debug only
     public static void main(String[] args) throws FileNotFoundException {
-        // for debug only
         SelfDualGraph g = new SelfDualGraph();
         g.buildGraph("./input_data/test_graph_0.txt");
         Set<Vertex> vertices = g.getVertices();
@@ -129,5 +129,7 @@ public class SelfDualGraph {
 
         Set<Vertex> faces = g.getFaces();
         for (Vertex f :faces) System.out.println(f);
+
     }
+    */
 }

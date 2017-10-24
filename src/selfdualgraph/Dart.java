@@ -4,7 +4,7 @@ package selfdualgraph;
  * Created by qixinzhu on 10/23/17.
  */
 public class Dart {
-    private final int ID;
+    public final int ID;
     private double weight, capacity;
     private Vertex tail, head, left, right;
     private Dart reverse, successor, predecessor, next, prev;
@@ -13,10 +13,6 @@ public class Dart {
         this.ID = ID;
         tail = t;
         head = h;
-    }
-
-    public Dart(int ID) {
-        this(ID, null, null);
     }
 
     public double getWeight() {
@@ -57,14 +53,6 @@ public class Dart {
 
     public Dart getNext() {
         return next;
-    }
-
-    public void setTail(Vertex tail) {
-        this.tail = tail;
-    }
-
-    public void setHead(Vertex head) {
-        this.head = head;
     }
 
     public void setLeft(Vertex left) {

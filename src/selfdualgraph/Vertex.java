@@ -11,9 +11,9 @@ public class Vertex {
     public static String VERTEX = "V";
     public static String FACE = "F";
 
-    private final String type;
-    private final int ID;
-    private final float coordX, coordY;
+    public final String type;
+    public final int ID;
+    private float coordX, coordY;
     private double weight, cost;
     private List<Dart> incidenceList;
 
