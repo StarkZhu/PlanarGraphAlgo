@@ -14,25 +14,22 @@ public class Vertex {
     public final String type;
     public final int ID;
     private float coordX, coordY;
-    private double weight, cost;
+    private double weight;
     private List<Dart> incidenceList;
+    private boolean visited;
 
-    public Vertex(int ID, String type, float coordX, float coordY, double weight, double cost) {
+    public Vertex(int ID, String type, float coordX, float coordY, double weight) {
         this.ID = ID;
         this.type = type;
         this.coordX = coordX;
         this.coordY = coordY;
         this.weight = weight;
-        this.cost = cost;
         incidenceList = new LinkedList<>();
+        visited = false;
     }
 
     public Vertex(int ID, String type) {
-        this(ID, type, -1, -1, 0, 0);
-    }
-
-    public Vertex(int ID, String type, float coordX, float coordY) {
-        this(ID, type, coordX, coordY, 0, 0);
+        this(ID, type, -1, -1, 1.0);
     }
 
     public float getCoordX() {
@@ -43,12 +40,20 @@ public class Vertex {
         return coordY;
     }
 
-    public double getWeight() {
-        return weight;
+    public void setCoordX(float coordX) {
+        this.coordX = coordX;
     }
 
-    public double getCost() {
-        return cost;
+    public void setCoordY(float coordY) {
+        this.coordY = coordY;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
+
+    public double getWeight() {
+        return weight;
     }
 
     public void addDart(Dart d) {
@@ -65,6 +70,12 @@ public class Vertex {
 
     public Dart getFirstDart() {
         return incidenceList.get(0);
+    }
+
+    public boolean isVisited() {return visited;}
+
+    public void setVisited(boolean visitedState) {
+        visited = visitedState;
     }
 
     @Override

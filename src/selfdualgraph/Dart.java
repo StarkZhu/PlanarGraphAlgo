@@ -8,11 +8,15 @@ public class Dart {
     private double weight, capacity;
     private Vertex tail, head, left, right;
     private Dart reverse, successor, predecessor, next, prev;
+    private boolean visited;
 
-    public Dart(int ID, Vertex t, Vertex h) {
+    public Dart(int ID, Vertex t, Vertex h, double w, double c) {
         this.ID = ID;
         tail = t;
         head = h;
+        weight = w;
+        capacity = c;
+        visited = false;
     }
 
     public double getWeight() {
@@ -21,6 +25,12 @@ public class Dart {
 
     public double getCapacity() {
         return capacity;
+    }
+
+    public boolean isVisited() {return visited;}
+
+    public void setVisited(boolean visitedState) {
+        visited = visitedState;
     }
 
     public Vertex getTail() {

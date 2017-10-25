@@ -9,12 +9,10 @@ import java.util.*;
 public class SelfDualGraph {
     private Set<Vertex> vertices;
     private Set<Vertex> faces;
-    //private Set<Dart> edges;
 
     public SelfDualGraph(int V, int E, int F) {
         vertices = new HashSet<>(V);
         faces = new HashSet<>(F);
-        //edges = new HashSet<>(E);
     }
 
     public SelfDualGraph() {
@@ -27,6 +25,7 @@ public class SelfDualGraph {
         int V = graphInput.nextInt();
         int E = graphInput.nextInt();
         int F = graphInput.nextInt();
+        graphInput.nextLine();
 
         Vertex[] verticesArr = new Vertex[V];
         Dart[] dartsArr = new Dart[E];
@@ -34,20 +33,25 @@ public class SelfDualGraph {
 
         // read and create all vertices
         for (int i=0; i<V; i++) {
-            int id = graphInput.nextInt();
-            float coordX = graphInput.nextFloat();
-            float coordY = graphInput.nextFloat();
-            verticesArr[i] = new Vertex(id, Vertex.VERTEX, coordX, coordY);
+            String[] content = graphInput.nextLine().split("\\s+");
+            int id = Integer.parseInt(content[0]);
+            float coordX = Float.parseFloat(content[1]);
+            float coordY = Float.parseFloat(content[2]);
+            double weight = content.length > 3 ? Double.parseDouble(content[3]) : 1.0;
+            verticesArr[i] = new Vertex(id, Vertex.VERTEX, coordX, coordY, weight);
             vertices.add(verticesArr[i]);
         }
 
         // read and create all darts
         for (int i=0; i<E; i++) {
-            int id = graphInput.nextInt();
-            dartRev[i] = graphInput.nextInt();
-            int t = graphInput.nextInt();
-            int h = graphInput.nextInt();
-            dartsArr[i] = new Dart(id, verticesArr[t], verticesArr[h]);
+            String[] content = graphInput.nextLine().split("\\s+");
+            int id = Integer.parseInt(content[0]);
+            dartRev[i] = Integer.parseInt(content[1]);
+            int t = Integer.parseInt(content[2]);
+            int h = Integer.parseInt(content[3]);
+            double weight = content.length > 4 ? Double.parseDouble(content[4]) : 1.0;
+            double capacity = content.length > 5 ? Double.parseDouble(content[5]) : 1.0;
+            dartsArr[i] = new Dart(id, verticesArr[t], verticesArr[h], weight, capacity);
             if (verticesArr[t].getDegree() == 0) {
                 verticesArr[t].addDart(dartsArr[i]);
             }
@@ -60,26 +64,48 @@ public class SelfDualGraph {
                 throw new RuntimeException("The other dart has a different reverse dart.");
             dartsArr[i].setReverse(rev);
         }
-        graphInput.nextLine();
 
         // read all faces and set incident darts: next, prev, right
         for (int i=0; i<F; i++) {
             String[] content = graphInput.nextLine().split("\\s+");
-            assert content.length >= 2;
+            if (content.length < 3)
+                throw new RuntimeException("Wrong format for face information.");
             Vertex face = new Vertex(Integer.parseInt(content[0]), Vertex.FACE);
-            Dart cur = dartsArr[Integer.parseInt(content[1])];
+            float coordX = 0, coordY = 0;
+            int degree = Integer.parseInt(content[1]);
+            Dart cur = dartsArr[Integer.parseInt(content[2])];
+            coordX += cur.getTail().getCoordX();
+            coordY += cur.getTail().getCoordY();
             face.addDart(cur);
-            for (int j=2; j<content.length; j++) {
-                Dart next = dartsArr[Integer.parseInt(content[j])];
+            for (int j=1; j<degree; j++) {
+                Dart next = dartsArr[Integer.parseInt(content[j+2])];
                 face.addDart(next);
                 cur.setNext(next);
                 next.setPrev(cur);
                 cur.setRight(face);
                 cur = next;
+                coordX += cur.getTail().getCoordX();
+                coordY += cur.getTail().getCoordY();
             }
             cur.setNext(face.getFirstDart());
             face.getFirstDart().setPrev(cur);
             cur.setRight(face);
+
+            if (content.length > degree + 2) {
+                // must provide coordY if coordX is provided
+                if (content.length <= degree + 3)
+                    throw new RuntimeException("Must provide coordY if coordX is provided.");
+                coordX = Float.parseFloat(content[degree+2]);
+                coordY = Float.parseFloat(content[degree+3]);
+            } else {
+                coordX /= degree;
+                coordY /= degree;
+            }
+            face.setCoordX(coordX);
+            face.setCoordY(coordY);
+            if (content.length > degree + 4) {
+                face.setWeight(Double.parseDouble(content[degree+4]));
+            }
             faces.add(face);
         }
 
