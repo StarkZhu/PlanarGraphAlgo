@@ -1,7 +1,14 @@
 package selfdualgraph;
 
 /**
- * Created by qixinzhu on 10/23/17.
+ * Dart is a directed edge
+ * Each (tail_vertex, left_face) uniquely identify a dart
+ *
+ * tail & head: a dart leaves its tail vertex and enters its head vertex, d = tail -> head
+ * reverse: rev(rev(d)) == d
+ * left & right: face on the left/right side of a dart
+ * successor & predecessor: the next dart entering tail(d) in counter-clockwise/clockwise order after d
+ * next & prev: the next dart after d in clockwise/counter-clockwise order around the boundary of right(d)
  */
 public class Dart {
     public final int ID;

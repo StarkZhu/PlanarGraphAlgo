@@ -4,8 +4,17 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Created by qixinzhu on 10/23/17.
+ * reference: http://jeffe.cs.illinois.edu/teaching/topology17/chapters/02-planar-graphs.pdf
+ *
+ * Self-dual data structure for planar graphs
+ * is an overlay of the sorted incidence lists of primal graph G and its dual G*
+ *
+ * Each vertex V, stores an incidence list of dart d, whose tail is V, in the counter-clockwise order
+ * Each dual-vertex (face) F, stores an incidence list of dart d, whose right is F
  */
+
+// TODO: change V's list to head(d) == V, be consistent with original definition
+
 public class SelfDualGraph {
     private Set<Vertex> vertices;
     private Set<Vertex> faces;
@@ -145,7 +154,7 @@ public class SelfDualGraph {
         return new HashSet<>(faces);
     }
 
-    /*
+
     // for debug only
     public static void main(String[] args) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
@@ -157,5 +166,5 @@ public class SelfDualGraph {
         for (Vertex f :faces) System.out.println(f);
 
     }
-    */
+
 }

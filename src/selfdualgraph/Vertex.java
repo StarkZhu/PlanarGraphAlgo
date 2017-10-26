@@ -4,7 +4,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Created by qixinzhu on 10/23/17.
+ * Vertex is a vertex or a face in the primal graph, which is a face or a vertex in the dual graph
+ *
+ * degree(V): the number of darts whose head is vertex V
+ * degree(F): the number of darts whose right is face F
+ *
  */
 public class Vertex {
     //static variable

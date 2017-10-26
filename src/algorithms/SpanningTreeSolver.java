@@ -3,6 +3,7 @@ package algorithms;
 import selfdualgraph.*;
 
 import java.io.FileNotFoundException;
+import java.util.*;
 
 /**
  * Created by qixinzhu on 10/24/17.
@@ -80,11 +81,38 @@ public abstract class SpanningTreeSolver {
         }
     }
 
+    public static class BFSsolver extends SpanningTreeSolver {
+        @Override
+        public void buildTreeFromRoot(Tree.TreeNode<Vertex> root) {
+            Queue<Tree.TreeNode<Vertex>> q = new LinkedList<>();
+            q.add(root);
+            root.getData().setVisited(true);
+            while (!q.isEmpty()) {
+                Tree.TreeNode<Vertex> node = q.poll();
+                Vertex vertex = node.getData();
+                for (Dart d : vertex.getIncidenceList()) {
+                    Vertex v = d.getHead();
+                    if (!d.isVisited() && !v.isVisited()) {
+                        Tree.TreeNode<Vertex> child = new Tree.TreeNode<>(v, node);
+                        node.addChild(child);
+                        v.setVisited(true);
+                        d.setVisited(true);
+                        d.getReverse().setVisited(true);
+                        q.add(child);
+                    }
+                }
+            }
+        }
+    }
+
+    // TODO: minimum spanning tree algorithms: O(NlogN) - Prim's vs Kruskal's; O(N) - Boruvka's
+
     // for debug
     public static void main(String[] args) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
         g.buildGraph("./input_data/test_graph_0.txt");
-        Tree[] trees = buildTreeCoTree(g, new DFSsolver());
+        //Tree[] trees = buildTreeCoTree(g, new DFSsolver());
+        Tree[] trees = buildTreeCoTree(g, new BFSsolver());
         System.out.println(printTree(trees[0].getRoot(), 0));
         System.out.println(printTree(trees[1].getRoot(), 0));
     }
