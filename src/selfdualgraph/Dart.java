@@ -10,7 +10,7 @@ package selfdualgraph;
  * successor & predecessor: the next dart entering tail(d) in counter-clockwise/clockwise order after d
  * next & prev: the next dart after d in clockwise/counter-clockwise order around the boundary of right(d)
  */
-public class Dart {
+public class Dart implements Comparable<Dart> {
     public final int ID;
     private double weight, capacity;
     private Vertex tail, head, left, right;
@@ -107,5 +107,12 @@ public class Dart {
     @Override
     public String toString() {
         return String.format("D<%d> (%s, %s)", ID, head, left);
+    }
+
+    @Override
+    public int compareTo(Dart other) {
+        if (this.weight == other.weight) return this.ID - other.ID;
+        else if (this.weight < other.weight) return -1;
+        else return 1;
     }
 }

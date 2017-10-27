@@ -84,6 +84,6 @@ public class Vertex {
 
     @Override
     public String toString() {
-        return String.format("%s<%d> ", type, ID);
+        return String.format("%s<%d>", type, ID);
     }
 }

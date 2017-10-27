@@ -1,6 +1,5 @@
 import org.junit.*;
 import selfdualgraph.*;
-
 import java.io.FileNotFoundException;
 
 /**
@@ -20,9 +19,10 @@ public class test_SelfDualGraph {
 
     @Test
     public void testElementNum() {
-        Assert.assertEquals(6, g.getVerticeNum());
-        Assert.assertEquals(7, g.getFaseNum());
+        Assert.assertEquals(6, g.getVertexNum());
+        Assert.assertEquals(7, g.getFaceNum());
     }
+
     @Test
     public void testDegree() {
         int[] vertexDegree = new int[] {4, 2, 4, 3, 3, 6};

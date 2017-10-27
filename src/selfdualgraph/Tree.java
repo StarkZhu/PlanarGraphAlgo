@@ -3,7 +3,7 @@ package selfdualgraph;
 import java.util.*;
 
 /**
- * Created by qixinzhu on 10/24/17.
+ * Simple tree structure used for spanning trees
  */
 public class Tree<T> {
     private final TreeNode<T> root;

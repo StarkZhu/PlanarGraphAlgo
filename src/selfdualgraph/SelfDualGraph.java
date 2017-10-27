@@ -29,6 +29,12 @@ public class SelfDualGraph {
     }
 
 
+    /**
+     * Build self-dual planar graph from given file
+     * file format see input_format.txt
+     * @param fileName
+     * @throws FileNotFoundException
+     */
     public void buildGraph(String fileName) throws FileNotFoundException {
         Scanner graphInput = new Scanner(new File(fileName));
         int V = graphInput.nextInt();
@@ -86,6 +92,7 @@ public class SelfDualGraph {
             coordX += cur.getTail().getCoordX();
             coordY += cur.getTail().getCoordY();
             face.addDart(cur);
+            // read all incidental darts of given face
             for (int j=1; j<degree; j++) {
                 Dart next = dartsArr[Integer.parseInt(content[j+2])];
                 face.addDart(next);
@@ -138,11 +145,11 @@ public class SelfDualGraph {
     }
 
 
-    public int getVerticeNum() {
+    public int getVertexNum() {
         return vertices.size();
     }
 
-    public int getFaseNum() {
+    public int getFaceNum() {
         return faces.size();
     }
 
