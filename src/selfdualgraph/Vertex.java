@@ -5,10 +5,9 @@ import java.util.List;
 
 /**
  * Vertex is a vertex or a face in the primal graph, which is a face or a vertex in the dual graph
- *
+ * <p>
  * degree(V): the number of darts whose head is vertex V
  * degree(F): the number of darts whose right is face F
- *
  */
 public class Vertex {
     //static variable
@@ -19,8 +18,10 @@ public class Vertex {
     public final int ID;
     private float coordX, coordY;
     private double weight;
-    private List<Dart> incidenceList;
+    //List<Dart> incidenceList;   // package protected
     private boolean visited;
+    private int degree;
+    private Dart dart;  // points to an arbitrary dart with tail(d) = current vertex
 
     public Vertex(int ID, String type, float coordX, float coordY, double weight) {
         this.ID = ID;
@@ -28,8 +29,10 @@ public class Vertex {
         this.coordX = coordX;
         this.coordY = coordY;
         this.weight = weight;
-        incidenceList = new LinkedList<>();
+        //incidenceList = new LinkedList<>();
         visited = false;
+        degree = 0;
+        dart = null;
     }
 
     public Vertex(int ID, String type) {
@@ -60,23 +63,42 @@ public class Vertex {
         return weight;
     }
 
-    public void addDart(Dart d) {
-        incidenceList.add(d);
+    public void setDart(Dart d) {
+        this.dart = d;
+        degree++;
     }
 
+    /**
+     * O(degree) time
+     *
+     * @return
+     */
     public List<Dart> getIncidenceList() {
-        return new LinkedList<>(incidenceList);
+        List<Dart> list = new LinkedList<>();
+        Dart d = dart;
+
+        for (int i = 0; i < degree; i++) {
+            list.add(d);
+            d = (type == VERTEX) ? d.getSuccessor() : d.getNext();
+        }
+        return list;
     }
 
     public int getDegree() {
-        return incidenceList.size();
+        return degree;
+    }
+
+    public void addDegree() {
+        degree++;
     }
 
     public Dart getFirstDart() {
-        return incidenceList.get(0);
+        return dart;
     }
 
-    public boolean isVisited() {return visited;}
+    public boolean isVisited() {
+        return visited;
+    }
 
     public void setVisited(boolean visitedState) {
         visited = visitedState;

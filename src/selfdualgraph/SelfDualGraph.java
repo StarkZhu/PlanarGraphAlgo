@@ -68,7 +68,7 @@ public class SelfDualGraph {
             double capacity = content.length > 5 ? Double.parseDouble(content[5]) : 1.0;
             dartsArr[i] = new Dart(id, verticesArr[t], verticesArr[h], weight, capacity);
             if (verticesArr[t].getDegree() == 0) {
-                verticesArr[t].addDart(dartsArr[i]);
+                verticesArr[t].setDart(dartsArr[i]);
             }
         }
 
@@ -91,11 +91,11 @@ public class SelfDualGraph {
             Dart cur = dartsArr[Integer.parseInt(content[2])];
             coordX += cur.getTail().getCoordX();
             coordY += cur.getTail().getCoordY();
-            face.addDart(cur);
+            face.setDart(cur);
             // read all incidental darts of given face
             for (int j=1; j<degree; j++) {
                 Dart next = dartsArr[Integer.parseInt(content[j+2])];
-                face.addDart(next);
+                face.addDegree();
                 cur.setNext(next);
                 next.setPrev(cur);
                 cur.setRight(face);
@@ -134,7 +134,7 @@ public class SelfDualGraph {
                 cur.setSuccessor(succ);
                 cur.setLeft(succ.getRight());
                 succ.setPredecessor(cur);
-                v.addDart(succ);
+                v.addDegree();
                 cur = succ;
                 succ = succ.getReverse().getNext();
             }
@@ -159,6 +159,42 @@ public class SelfDualGraph {
 
     public Set<Vertex> getFaces() {
         return new HashSet<>(faces);
+    }
+
+    /**
+     * delete an undirected edge, which performs the following actions:
+     * (1) delete the given dart and its reverse
+     * (2) merge the faces of left(d) and right(d)
+     * (3) fix the pointers on neighboring darts: next, prev, successor, predecessor
+     * @param d
+     */
+    public void deleteEdge(Dart d) {
+        if (d.getHead() == d.getTail()) {
+            deleteLoop(d);
+            return;
+        }
+        Vertex faceToKeep, faceToDelete;
+        if (d.getLeft().ID < d.getRight().ID) {
+            faceToKeep = d.getLeft();
+            faceToDelete = d.getRight();
+        } else {
+            faceToKeep = d.getRight();
+            faceToDelete = d.getLeft();
+        }
+        /*
+        for (Dart dart : faceToDelete.incidenceList) {
+            dart.setRight(faceToKeep);
+            dart.getReverse().setLeft(faceToKeep);
+        }
+        d.getPrev().setNext(d.getReverse().getNext());
+        d.getReverse().getPrev().setNext(d.getNext());
+        d.getTail().incidenceList.remove(d);
+        d.getHead().incidenceList.remove(d.getReverse());
+        */
+    }
+
+    private void deleteLoop(Dart d) {
+
     }
 
 
