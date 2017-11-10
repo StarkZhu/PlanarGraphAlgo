@@ -68,7 +68,7 @@ public class SelfDualGraph {
             double capacity = content.length > 5 ? Double.parseDouble(content[5]) : 1.0;
             dartsArr[i] = new Dart(id, verticesArr[t], verticesArr[h], weight, capacity);
             if (verticesArr[t].getDegree() == 0) {
-                verticesArr[t].setDart(dartsArr[i]);
+                verticesArr[t].initDart(dartsArr[i]);
             }
         }
 
@@ -91,11 +91,11 @@ public class SelfDualGraph {
             Dart cur = dartsArr[Integer.parseInt(content[2])];
             coordX += cur.getTail().getCoordX();
             coordY += cur.getTail().getCoordY();
-            face.setDart(cur);
+            face.initDart(cur);
             // read all incidental darts of given face
             for (int j=1; j<degree; j++) {
                 Dart next = dartsArr[Integer.parseInt(content[j+2])];
-                face.addDegree();
+                face.incrementDegree();
                 cur.setNext(next);
                 next.setPrev(cur);
                 cur.setRight(face);
@@ -134,7 +134,7 @@ public class SelfDualGraph {
                 cur.setSuccessor(succ);
                 cur.setLeft(succ.getRight());
                 succ.setPredecessor(cur);
-                v.addDegree();
+                v.incrementDegree();
                 cur = succ;
                 succ = succ.getReverse().getNext();
             }
@@ -163,10 +163,10 @@ public class SelfDualGraph {
 
     /**
      * delete an undirected edge, which performs the following actions:
-     * (1) delete the given dart and its reverse
-     * (2) merge the faces of left(d) and right(d)
-     * (3) fix the pointers on neighboring darts: next, prev, successor, predecessor
-     * @param d
+     * (1) delete the given dart d and rev(d)
+     * (2) merge the faces of left(d) and right(d), set all incidental darts' left() and right(), time O(degree)
+     * (3) fix the pointers on neighboring darts of d and rev(d): next, prev, successor, predecessor
+     * @param d: user should make sure d is NOT be a bridge, otherwise G will be disconnected
      */
     public void deleteEdge(Dart d) {
         if (d.getHead() == d.getTail()) {
@@ -174,27 +174,74 @@ public class SelfDualGraph {
             return;
         }
         Vertex faceToKeep, faceToDelete;
-        if (d.getLeft().ID < d.getRight().ID) {
+        if (d.getLeft().getDegree() > d.getRight().getDegree()) {
             faceToKeep = d.getLeft();
             faceToDelete = d.getRight();
         } else {
             faceToKeep = d.getRight();
             faceToDelete = d.getLeft();
         }
-        /*
-        for (Dart dart : faceToDelete.incidenceList) {
+
+        for (Dart dart : faceToDelete.getIncidenceList()) {
             dart.setRight(faceToKeep);
             dart.getReverse().setLeft(faceToKeep);
         }
+        faces.remove(faceToDelete);
+        faceToKeep.incrementDegree(faceToDelete.getDegree() - 2);
+        d.getTail().incrementDegree(-1);
+        d.getHead().incrementDegree(-1);
+        if (faceToKeep.getFirstDart() == d || faceToKeep.getFirstDart() == d.getReverse()) {
+            faceToKeep.setDart(d.getNext());
+        }
+        Vertex v = d.getTail();
+        if (v.getFirstDart() == d) {
+            v.setDart(d.getSuccessor());
+        }
+        v = d.getHead();
+        if (v.getFirstDart() == d.getReverse()) {
+            v.setDart(d.getNext());
+        }
+
         d.getPrev().setNext(d.getReverse().getNext());
+        d.getNext().setPrev(d.getReverse().getPrev());
+        d.getPredecessor().setSuccessor(d.getSuccessor());
+        d.getSuccessor().setPredecessor(d.getPredecessor());
+
         d.getReverse().getPrev().setNext(d.getNext());
-        d.getTail().incidenceList.remove(d);
-        d.getHead().incidenceList.remove(d.getReverse());
-        */
+        d.getReverse().getNext().setPrev(d.getPrev());
+        d.getReverse().getPredecessor().setSuccessor(d.getReverse().getSuccessor());
+        d.getReverse().getSuccessor().setPredecessor(d.getReverse().getPredecessor());
     }
 
+    /**
+     * delete a self-loop, aka d.tail == d.head
+     * @param d
+     */
     private void deleteLoop(Dart d) {
+        Vertex faceToKeep, faceToDelete;
+        if (d.getLeft().getDegree() == 1) {
+            faceToDelete = d.getLeft();
+            faceToKeep = d.getRight();
+        } else {
+            faceToDelete = d.getRight();
+            faceToKeep = d.getLeft();
+        }
+        faces.remove(faceToDelete);
+        Dart dart = d.getLeft() == faceToDelete ? d : d.getReverse();
+        dart.getPrev().setNext(dart.getNext());
+        dart.getNext().setPrev(dart.getPrev());
+        dart.getPredecessor().setSuccessor(dart.getReverse().getSuccessor());
+        dart.getReverse().getSuccessor().setPredecessor(dart.getPredecessor());
 
+        faceToKeep.incrementDegree(-1);
+        dart.getTail().incrementDegree(-2);
+        if (faceToKeep.getFirstDart() == dart) {
+            faceToKeep.setDart(dart.getNext());
+        }
+        Vertex v = dart.getTail();
+        if (v.getFirstDart() == d || v.getFirstDart() == d.getReverse()) {
+            v.setDart(dart.getSuccessor());
+        }
     }
 
 

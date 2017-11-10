@@ -1,14 +1,20 @@
 import org.junit.*;
 import selfdualgraph.*;
+
 import java.io.FileNotFoundException;
 
 /**
  * Created by qixinzhu on 10/23/17.
  */
-public class test_SelfDualGraph {
-    private SelfDualGraph g;
-    @Before
-    public void readGraph() {
+public class test_SelfDualGraph_basic {
+    private static SelfDualGraph g;
+
+    @BeforeClass
+    /**
+     * runs once before the entire test
+     * multiple tests need to share the same computationally expensive setup code
+     */
+    public static void readGraph() {
         g = new SelfDualGraph();
         try {
             g.buildGraph("./input_data/test_graph_0.txt");
@@ -25,8 +31,8 @@ public class test_SelfDualGraph {
 
     @Test
     public void testDegree() {
-        int[] vertexDegree = new int[] {4, 2, 4, 3, 3, 6};
-        int[] faceDegree = new int[] {4, 5, 2, 1, 3, 3, 4};
+        int[] vertexDegree = new int[]{4, 2, 4, 3, 3, 6};
+        int[] faceDegree = new int[]{4, 5, 2, 1, 3, 3, 4};
         for (Vertex v : g.getVertices()) {
             Assert.assertEquals(vertexDegree[v.ID], v.getDegree());
         }
@@ -57,11 +63,11 @@ public class test_SelfDualGraph {
         };
         for (Vertex face : g.getFaces()) {
             Dart d = face.getFirstDart();
-            Assert.assertEquals(boundaryVertexIDs[face.ID].length-1, face.getDegree());
+            Assert.assertEquals(boundaryVertexIDs[face.ID].length - 1, face.getDegree());
             Assert.assertEquals(boundaryVertexIDs[face.ID][0], d.getTail().ID);
             Assert.assertEquals(boundaryVertexIDs[face.ID][0], d.getPrev().getHead().ID);
-            for (int i=0; i<face.getDegree(); i++) {
-                Assert.assertEquals(boundaryVertexIDs[face.ID][i+1], d.getHead().ID);
+            for (int i = 0; i < face.getDegree(); i++) {
+                Assert.assertEquals(boundaryVertexIDs[face.ID][i + 1], d.getHead().ID);
                 d = d.getNext();
                 Assert.assertEquals(boundaryVertexIDs[face.ID][i], d.getPrev().getTail().ID);
             }
@@ -70,7 +76,7 @@ public class test_SelfDualGraph {
 
     @Test
     public void testDartLeftRight() {
-        int[][] leftFaceIDs = new int[][] {
+        int[][] leftFaceIDs = new int[][]{
                 {4, 1, 6, 6},
                 {0, 2, 3, 5, 6},
                 {1, 4},

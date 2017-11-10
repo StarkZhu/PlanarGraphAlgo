@@ -63,9 +63,13 @@ public class Vertex {
         return weight;
     }
 
+    public void initDart(Dart d) {
+        setDart(d);
+        degree++;
+    }
+
     public void setDart(Dart d) {
         this.dart = d;
-        degree++;
     }
 
     /**
@@ -88,8 +92,12 @@ public class Vertex {
         return degree;
     }
 
-    public void addDegree() {
-        degree++;
+    public void incrementDegree() {
+        incrementDegree(1);
+    }
+
+    public void incrementDegree(int n) {
+        degree += n;
     }
 
     public Dart getFirstDart() {
