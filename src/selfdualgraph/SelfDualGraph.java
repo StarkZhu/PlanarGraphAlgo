@@ -173,6 +173,7 @@ public class SelfDualGraph {
             deleteLoop(d);
             return;
         }
+        // delete the face with less degree
         Vertex faceToKeep, faceToDelete;
         if (d.getLeft().getDegree() > d.getRight().getDegree()) {
             faceToKeep = d.getLeft();
@@ -181,7 +182,7 @@ public class SelfDualGraph {
             faceToKeep = d.getRight();
             faceToDelete = d.getLeft();
         }
-
+        // merge 2 faces
         for (Dart dart : faceToDelete.getIncidenceList()) {
             dart.setRight(faceToKeep);
             dart.getReverse().setLeft(faceToKeep);
@@ -190,6 +191,7 @@ public class SelfDualGraph {
         faceToKeep.incrementDegree(faceToDelete.getDegree() - 2);
         d.getTail().incrementDegree(-1);
         d.getHead().incrementDegree(-1);
+        // may need to update the first dart pointed by a vertex/face
         if (faceToKeep.getFirstDart() == d || faceToKeep.getFirstDart() == d.getReverse()) {
             faceToKeep.setDart(d.getNext());
         }
@@ -201,7 +203,7 @@ public class SelfDualGraph {
         if (v.getFirstDart() == d.getReverse()) {
             v.setDart(d.getNext());
         }
-
+        // re-direct all pointers
         d.getPrev().setNext(d.getReverse().getNext());
         d.getNext().setPrev(d.getReverse().getPrev());
         d.getPredecessor().setSuccessor(d.getSuccessor());
@@ -242,6 +244,60 @@ public class SelfDualGraph {
         if (v.getFirstDart() == d || v.getFirstDart() == d.getReverse()) {
             v.setDart(dart.getSuccessor());
         }
+    }
+
+    /**
+     * contract an undirected edge, which performs the following actions:
+     * (1) delete the given dart d and rev(d)
+     * (2) merge the vertices of head(d) and tail(d), set all incidental darts' head() and tail(), time O(degree)
+     * (3) fix the pointers on neighboring darts of d and rev(d): next, prev, successor, predecessor
+     * @param d: user should make sure d is NOT be a self-loop, otherwise the contract operation is not well defined
+     */
+    public void contractEdge(Dart d) {
+        if (d.getHead() == d.getTail()) {
+            throw new RuntimeException("Contraction is not well defined on a self-loop dart!");
+        }
+        // delete the vertex with less degree
+        Vertex vertexToKeep, vertexToDelete;
+        if (d.getTail().getDegree() > d.getHead().getDegree()) {
+            vertexToKeep = d.getTail();
+            vertexToDelete = d.getHead();
+        } else {
+            vertexToKeep = d.getHead();
+            vertexToDelete = d.getTail();
+        }
+        // merge 2 vertices
+        for (Dart dart : vertexToDelete.getIncidenceList()) {
+            //if (dart == d || dart == d.getReverse()) continue;
+            dart.setTail(vertexToKeep);
+            dart.getReverse().setHead(vertexToKeep);
+        }
+        vertices.remove(vertexToDelete);
+        vertexToKeep.incrementDegree(vertexToDelete.getDegree() - 2);
+        d.getLeft().incrementDegree(-1);
+        d.getRight().incrementDegree(-1);
+        // may need to update the first dart pointed by a vertex/face
+        if (vertexToKeep.getFirstDart() == d || vertexToKeep.getFirstDart() == d.getReverse()) {
+            vertexToKeep.setDart(d.getSuccessor());
+        }
+        Vertex f = d.getLeft();
+        if (f.getFirstDart() == d.getReverse()) {
+            f.setDart(d.getSuccessor());
+        }
+        f = d.getHead();
+        if (f.getFirstDart() == d) {
+            f.setDart(d.getNext());
+        }
+        // re-direct all pointers
+        d.getPrev().setNext(d.getNext());
+        d.getNext().setPrev(d.getPrev());
+        d.getPredecessor().setSuccessor(d.getReverse().getSuccessor());
+        d.getSuccessor().setPredecessor(d.getReverse().getPredecessor());
+
+        d.getReverse().getPrev().setNext(d.getReverse().getNext());
+        d.getReverse().getNext().setPrev(d.getReverse().getPrev());
+        d.getReverse().getPredecessor().setSuccessor(d.getSuccessor());
+        d.getReverse().getSuccessor().setPredecessor(d.getPredecessor());
     }
 
 

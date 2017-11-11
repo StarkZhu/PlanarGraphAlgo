@@ -33,6 +33,28 @@ public class test_SelfDualGraph_modification {
         return null;
     }
 
+    private void checkIncidentListOfFace(Vertex F, int[] boundaryVertexID) {
+        Assert.assertEquals(boundaryVertexID.length, F.getDegree());
+        Dart d = F.getFirstDart();
+        for (int i = 0; i < F.getDegree(); i++) {
+            Assert.assertEquals(F.ID, d.getRight().ID);
+            Assert.assertEquals(F.ID, d.getReverse().getLeft().ID);
+            Assert.assertEquals(boundaryVertexID[i], d.getTail().ID);
+            d = d.getNext();
+        }
+        Assert.assertEquals(boundaryVertexID[0], d.getTail().ID);
+    }
+
+    private void checkIncidentListOfVertex(Vertex V, int[] incidentVertexID) {
+        Assert.assertEquals(incidentVertexID.length, V.getDegree());
+        Dart d = V.getFirstDart();
+        for (int i = 0; i < V.getDegree(); i++) {
+            Assert.assertEquals(incidentVertexID[i], d.getHead().ID);
+            d = d.getSuccessor();
+        }
+        Assert.assertEquals(incidentVertexID[0], d.getHead().ID);
+    }
+
     @Test
     public void testDeleteLoop() {
         Dart dart = findDartByID(g, 20);
@@ -156,25 +178,48 @@ public class test_SelfDualGraph_modification {
         checkIncidentListOfVertex(dart.getTail(), tailIncidentVertexID);
     }
 
-    private void checkIncidentListOfFace(Vertex F, int[] boundaryVertexID) {
-        Assert.assertEquals(boundaryVertexID.length, F.getDegree());
-        Dart d = F.getFirstDart();
-        for (int i = 0; i < F.getDegree(); i++) {
-            Assert.assertEquals(F.ID, d.getRight().ID);
-            Assert.assertEquals(F.ID, d.getReverse().getLeft().ID);
-            Assert.assertEquals(boundaryVertexID[i], d.getTail().ID);
-            d = d.getNext();
-        }
-        Assert.assertEquals(boundaryVertexID[0], d.getTail().ID);
+    @Test
+    public void testContractFirstEdgeOfVertex() {
+        Dart dart = findDartByID(g, 8);
+        g.contractEdge(dart);
+        Assert.assertEquals(null, findDartByID(g, 9));
+        Assert.assertEquals(null, findDartByID(g, 8));
+        Vertex F = dart.getRight();
+        Vertex V = dart.getTail();
+
+        // check degree
+        Assert.assertEquals(5, F.ID);
+        Assert.assertEquals(2, F.getDegree());
+        Assert.assertEquals(0, V.ID);
+        Assert.assertEquals(5, V.getDegree());
+
+        // check local pointers
+        Dart prev = dart.getPrev();
+        Dart next = dart.getNext();
+        Dart succ = dart.getSuccessor();
+        Assert.assertEquals(14, prev.ID);
+        Assert.assertEquals(12, next.ID);
+        Assert.assertEquals(0, succ.ID);
+        Assert.assertEquals(12, prev.getNext().ID);
+        Assert.assertEquals(14, next.getPrev().ID);
+        Assert.assertEquals(11, succ.getPrev().ID);
+        Assert.assertEquals(0, succ.getPrev().getNext().ID);
+
+        Assert.assertEquals(10, succ.getPredecessor().ID);
+        Assert.assertEquals(0, succ.getPredecessor().getSuccessor().ID);
+        Assert.assertEquals(15, next.getPredecessor().ID);
+        Assert.assertEquals(12, next.getPredecessor().getSuccessor().ID);
+
+        // check incident list of V
+        int[] boundaryVertexID = new int[]{1, 2, 5, 5, 3};
+        checkIncidentListOfVertex(V, boundaryVertexID);
+
+
+        // check incident list of F
+        int[] rightIncidentVertexID = new int[]{0, 5};
+        checkIncidentListOfFace(dart.getRight(), rightIncidentVertexID);
+        int[] leftIncidentVertexID = new int[]{0, 1, 3};
+        checkIncidentListOfFace(dart.getLeft(), leftIncidentVertexID);
     }
 
-    private void checkIncidentListOfVertex(Vertex V, int[] incidentVertexID) {
-        Assert.assertEquals(incidentVertexID.length, V.getDegree());
-        Dart d = V.getFirstDart();
-        for (int i = 0; i < V.getDegree(); i++) {
-            Assert.assertEquals(incidentVertexID[i], d.getHead().ID);
-            d = d.getSuccessor();
-        }
-        Assert.assertEquals(incidentVertexID[0], d.getHead().ID);
-    }
 }

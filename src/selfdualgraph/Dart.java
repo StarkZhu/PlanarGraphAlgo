@@ -104,6 +104,14 @@ public class Dart implements Comparable<Dart> {
         this.prev = prev;
     }
 
+    public void setTail(Vertex tail) {
+        this.tail = tail;
+    }
+
+    public void setHead(Vertex head) {
+        this.head = head;
+    }
+
     @Override
     public String toString() {
         return String.format("D<%d> (%s, %s)", ID, head, left);
