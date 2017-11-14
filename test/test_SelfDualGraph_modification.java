@@ -406,7 +406,7 @@ public class test_SelfDualGraph_modification {
         Assert.assertEquals(null, F.getFirstDart());
     }
 
-    /*
+
     @Test
     public void testFlatten() {
         Dart[] darts = new Dart[22];
@@ -441,5 +441,5 @@ public class test_SelfDualGraph_modification {
         int[] boundaryVertexID = new int[]{5, 2};
         checkIncidentListOfFace(F, boundaryVertexID);
     }
-    */
+
 }

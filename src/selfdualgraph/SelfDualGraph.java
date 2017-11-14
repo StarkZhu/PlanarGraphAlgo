@@ -356,10 +356,14 @@ public class SelfDualGraph {
     public void flatten() {
         // delete all self-loop first
         for (Vertex v : vertices) {
+            Set<Dart> toDelete = new HashSet<>();
             for (Dart d : v.getIncidenceList()) {
-                if (d.getTail() == d.getHead()) {
-                    deleteLoop(d);
+                if (d.getTail() == d.getHead() && !toDelete.contains(d.getReverse())) {
+                    toDelete.add(d);
                 }
+            }
+            for (Dart d : toDelete) {
+                deleteLoop(d);
             }
         }
         // delete all parallel darts
