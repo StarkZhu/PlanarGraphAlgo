@@ -237,12 +237,20 @@ public class SelfDualGraph {
 
         faceToKeep.incrementDegree(-1);
         dart.getTail().incrementDegree(-2);
-        if (faceToKeep.getFirstDart() == dart) {
+        // edge case: both left(d) and right(d) has degree 1 before deletion
+        if (faceToKeep.getDegree() == 0) {
+            // 0-degree face doesn't point to any incidental dart
+            faceToKeep.setDart(null);
+        }
+        else if (faceToKeep.getFirstDart() == dart) {
             faceToKeep.setDart(dart.getNext());
         }
         Vertex v = dart.getTail();
-        if (v.getFirstDart() == d || v.getFirstDart() == d.getReverse()) {
-            v.setDart(dart.getSuccessor());
+        if (v.getDegree() == 0) {
+            v.setDart(null);
+        }
+        else if (v.getFirstDart() == d || v.getFirstDart() == d.getReverse()) {
+            v.setDart(dart.getPredecessor());
         }
     }
 
@@ -256,6 +264,10 @@ public class SelfDualGraph {
     public void contractEdge(Dart d) {
         if (d.getHead() == d.getTail()) {
             throw new RuntimeException("Contraction is not well defined on a self-loop dart!");
+        }
+        if (d.getLeft() == d.getRight()) {
+            contractBridge(d);
+            return;
         }
         // delete the vertex with less degree
         Vertex vertexToKeep, vertexToDelete;
@@ -284,7 +296,7 @@ public class SelfDualGraph {
         if (f.getFirstDart() == d.getReverse()) {
             f.setDart(d.getSuccessor());
         }
-        f = d.getHead();
+        f = d.getRight();
         if (f.getFirstDart() == d) {
             f.setDart(d.getNext());
         }
@@ -298,6 +310,88 @@ public class SelfDualGraph {
         d.getReverse().getNext().setPrev(d.getReverse().getPrev());
         d.getReverse().getPredecessor().setSuccessor(d.getSuccessor());
         d.getReverse().getSuccessor().setPredecessor(d.getPredecessor());
+    }
+
+    /**
+     * contract a bridge, aka d.left == d.right
+     * @param d
+     */
+    private void contractBridge(Dart d) {
+        Vertex vertexToKeep, vertexToDelete;
+        if (d.getTail().getDegree() == 1) {
+            vertexToDelete = d.getTail();
+            vertexToKeep = d.getHead();
+        } else {
+            vertexToDelete = d.getHead();
+            vertexToKeep = d.getTail();
+        }
+        vertices.remove(vertexToDelete);
+        Dart dart = d.getHead() == vertexToDelete ? d : d.getReverse();
+        //
+        dart.getPredecessor().setSuccessor(dart.getSuccessor());
+        dart.getSuccessor().setPredecessor(dart.getPredecessor());
+        dart.getPrev().setNext(dart.getReverse().getNext());
+        dart.getReverse().getNext().setPrev(dart.getPrev());
+        //
+
+        vertexToKeep.incrementDegree(-1);
+        dart.getLeft().incrementDegree(-2);
+        // edge case: both tail(d) and head(d) has degree 1 before deletion
+        if (vertexToKeep.getDegree() == 0) {
+            // 0-degree vertex doesn't point to any incidental dart
+            vertexToKeep.setDart(null);
+        }
+        else if (vertexToKeep.getFirstDart() == dart) {
+            vertexToKeep.setDart(dart.getSuccessor());
+        }
+        Vertex f = dart.getLeft();
+        if (f.getDegree() == 0) {
+            f.setDart(null);
+        }
+        else if (f.getFirstDart() == d || f.getFirstDart() == d.getReverse()) {
+            f.setDart(dart.getPrev());  //??
+        }
+    }
+
+    public void flatten() {
+        // delete all self-loop first
+        for (Vertex v : vertices) {
+            for (Dart d : v.getIncidenceList()) {
+                if (d.getTail() == d.getHead()) {
+                    deleteLoop(d);
+                }
+            }
+        }
+        // delete all parallel darts
+        for (Vertex v : vertices) {
+            if (v.getDegree() < 2) continue;
+            Set<Dart> toDelete = new HashSet<>();
+            Dart d = v.getFirstDart();
+            Dart start = d;
+            while (true) {
+                Dart succ = d.getSuccessor();
+                if (succ == start) break;
+                if (succ.getHead() != d.getHead()) {
+                    d = succ;
+                    continue;
+                }
+                while (succ.getHead() == d.getHead() && succ != start) {
+                    if (succ.getWeight() >= d.getWeight()) {
+                        toDelete.add(succ);
+                        succ = succ.getSuccessor();
+                    } else {
+                        toDelete.add(d);
+                        d = succ;
+                        succ = succ.getSuccessor();
+                    }
+                }
+                if (succ == start) break;
+                d = succ;
+            }
+            for (Dart d_delete : toDelete) {
+                deleteEdge(d_delete);
+            }
+        }
     }
 
 

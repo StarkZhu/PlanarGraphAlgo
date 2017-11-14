@@ -310,4 +310,136 @@ public class test_SelfDualGraph_modification {
         checkIncidentListOfFace(dart.getLeft(), leftIncidentVertexID);
     }
 
+    @Test
+    public void testContractBridge() {
+        g.deleteEdge(findDartByID(g, 0));
+        // now V<1> is a vertex of degree 1, D<4> is a bridge
+        Dart dart = findDartByID(g, 4);
+        g.contractEdge(dart);
+
+        Assert.assertEquals(null, findDartByID(g, 4));
+        Assert.assertEquals(null, findDartByID(g, 5));
+        Vertex F = dart.getRight();
+        Vertex V = dart.getHead();
+
+        // check degree
+        Assert.assertEquals(6, F.ID);
+        Assert.assertEquals(4, F.getDegree());
+        Assert.assertEquals(3, V.ID);
+        Assert.assertEquals(2, V.getDegree());
+
+        // check local pointers
+        Dart prev = dart.getReverse().getPrev();
+        Dart next = dart.getNext();
+        Assert.assertEquals(7, prev.ID);
+        Assert.assertEquals(11, next.ID);
+        Assert.assertEquals(11, prev.getNext().ID);
+        Assert.assertEquals(7, next.getPrev().ID);
+        Assert.assertEquals(6, next.getPredecessor().ID);
+        Assert.assertEquals(11, prev.getReverse().getSuccessor().ID);
+
+        // check incident list of F
+        int[] boundaryVertexID = new int[]{4, 0, 2, 3};
+        checkIncidentListOfFace(F, boundaryVertexID);
+
+        // check incident list of V
+        int[] incidentVertexID = new int[]{4, 2};
+        checkIncidentListOfVertex(V, incidentVertexID);
+    }
+
+    @Test
+    /**
+     * test contracting a bridge on a vertex of degree 1
+     * test deleting a self-loop on a vertex of degree 1
+     */
+    public void testMultipleDeleteContract() {
+        Dart[] darts = new Dart[22];
+        for (Vertex v : g.getVertices()) {
+            for (Dart d : v.getIncidenceList()) {
+                darts[d.ID] = d;
+            }
+        }
+        g.deleteEdge(darts[16]);
+        g.deleteEdge(darts[2]);
+        g.deleteEdge(darts[0]);
+        g.contractEdge(darts[4]);
+        g.contractEdge(darts[15]);
+        g.contractEdge(darts[11]);
+        g.contractEdge(darts[13]);
+
+        Assert.assertEquals(2, g.getVertexNum());
+        Assert.assertEquals(4, g.getFaceNum());
+        Dart d8 = findDartByID(g, 8);
+        Vertex V = d8.getTail();
+        Assert.assertEquals(5, V.ID);
+        int[] incidentVertexID = new int[]{5, 2, 5, 5, 2, 5};
+        checkIncidentListOfVertex(V, incidentVertexID);
+        Vertex F = d8.getLeft();
+        Assert.assertEquals(0, F.ID);
+        int[] boundaryVertexID = new int[]{2, 5, 5};
+        checkIncidentListOfFace(F, boundaryVertexID);
+
+        g.deleteEdge(darts[9]);
+        g.deleteEdge(darts[19]);
+        Assert.assertEquals(2, g.getVertexNum());
+        Assert.assertEquals(2, g.getFaceNum());
+        incidentVertexID = new int[]{2, 5, 5};
+        checkIncidentListOfVertex(V, incidentVertexID);
+        Dart d21 = findDartByID(g, 21);
+        F = d21.getLeft();
+        Assert.assertEquals(1, F.ID);
+        boundaryVertexID = new int[]{5, 2, 5};
+        checkIncidentListOfFace(F, boundaryVertexID);
+
+        g.contractEdge(darts[7]);
+        Assert.assertEquals(1, g.getVertexNum());
+        Assert.assertEquals(2, V.getDegree());
+        Assert.assertEquals(2, g.getFaceNum());
+        Assert.assertEquals(1, F.getDegree());
+
+        g.deleteEdge(darts[20]);
+        Assert.assertEquals(1, g.getVertexNum());
+        Assert.assertEquals(0, V.getDegree());
+        Assert.assertEquals(null, V.getFirstDart());
+        Assert.assertEquals(1, g.getFaceNum());
+        Assert.assertEquals(0, F.getDegree());
+        Assert.assertEquals(null, F.getFirstDart());
+    }
+
+    /*
+    @Test
+    public void testFlatten() {
+        Dart[] darts = new Dart[22];
+        for (Vertex v : g.getVertices()) {
+            for (Dart d : v.getIncidenceList()) {
+                darts[d.ID] = d;
+            }
+        }
+        g.deleteEdge(darts[16]);
+        g.deleteEdge(darts[2]);
+        g.deleteEdge(darts[0]);
+        g.contractEdge(darts[4]);
+        g.contractEdge(darts[15]);
+        g.contractEdge(darts[11]);
+        g.contractEdge(darts[13]);
+
+        g.flatten();
+        Assert.assertEquals(null, findDartByID(g, 18));
+        Assert.assertEquals(null, findDartByID(g, 8));
+        Assert.assertEquals(null, findDartByID(g, 20));
+        Dart d6 = findDartByID(g, 6);
+        Assert.assertEquals(darts[6], d6);
+        Vertex V = d6.getTail();
+        Assert.assertEquals(2, g.getVertexNum());
+        Assert.assertEquals(1, V.getDegree());
+        int[] incidentVertexID = new int[]{2};
+        checkIncidentListOfVertex(V, incidentVertexID);
+
+        Vertex F = d6.getLeft();
+        Assert.assertEquals(1, g.getFaceNum());
+        Assert.assertEquals(2, F.getDegree());
+        int[] boundaryVertexID = new int[]{5, 2};
+        checkIncidentListOfFace(F, boundaryVertexID);
+    }
+    */
 }
