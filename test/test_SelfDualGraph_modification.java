@@ -406,6 +406,25 @@ public class test_SelfDualGraph_modification {
         Assert.assertEquals(null, F.getFirstDart());
     }
 
+    @Test
+    public void testFlattenOrigin() {
+        g.flatten();
+        Assert.assertEquals(null, findDartByID(g, 19));
+        Assert.assertEquals(null, findDartByID(g, 21));
+
+        Dart d13 = findDartByID(g, 13);
+        Vertex V = d13.getTail();
+        Assert.assertEquals(5, V.ID);
+        Assert.assertEquals(3, V.getDegree());
+        int[] incidentVertexID = new int[]{4, 0, 2};
+        checkIncidentListOfVertex(V, incidentVertexID);
+
+        Vertex F = d13.getRight();
+        Assert.assertEquals(1, F.ID);
+        Assert.assertEquals(4, F.getDegree());
+        int[] boundaryVertexID = new int[]{3, 2, 5, 4};
+        checkIncidentListOfFace(F, boundaryVertexID);
+    }
 
     @Test
     public void testFlatten() {
