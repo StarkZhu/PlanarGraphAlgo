@@ -353,6 +353,10 @@ public class SelfDualGraph {
         }
     }
 
+    /**
+     * delete all redundant edges from the graph without changing its minimum spanning tree
+     * redundant: a loop or non-lightest (parallel) edge between its endpoints
+     */
     public void flatten() {
         // delete all self-loop first
         for (Vertex v : vertices) {
@@ -396,6 +400,68 @@ public class SelfDualGraph {
                 deleteEdge(d_delete);
             }
         }
+    }
+
+    /**
+     * given 2 darts, add a pair of darts between their tail vertices
+     * divide the face to the right of the given 2 darts into 2 faces
+     * worst case time complexity O(deg(new-face)), best performance when new-face is a triangle
+     * @param tail
+     * @param head
+     */
+    public void addEdge(Dart tail, Dart head) {
+        // verify given darts are on the same face
+        if (tail.getRight() != head.getRight()) {
+            throw new RuntimeException("Given darts must be incidental to the same face");
+        }
+        // create a new face and set its degree
+        head.getRight().setDart(head);
+        Vertex newFace = new Vertex(Vertex.FACE);
+        this.faces.add(newFace);
+        newFace.initDart(tail);
+        tail.setRight(newFace);
+        tail.getReverse().setLeft(newFace);
+        int degreeInc = 0;
+        Dart cur = tail;
+        while (cur != head) {
+            cur.setRight(newFace);
+            cur.getReverse().setLeft(newFace);
+            degreeInc++;
+            cur = cur.getNext();
+        }
+        newFace.incrementDegree(degreeInc);
+        head.getRight().incrementDegree(1 - degreeInc);
+        // create a pair of new darts
+        Dart d = new Dart(tail.getTail(), head.getTail());
+        Dart rev = new Dart(head.getTail(), tail.getTail());
+        d.setRight(head.getRight());
+        d.setLeft(newFace);
+        d.setReverse(rev);
+        d.setPrev(tail.getPrev());
+        d.setNext(head);
+        d.setSuccessor(tail);
+        d.setPredecessor(tail.getPredecessor());
+
+        rev.setRight(newFace);
+        rev.setLeft(head.getRight());
+        rev.setReverse(d);
+        rev.setPrev(head.getPrev());
+        rev.setNext(tail);
+        rev.setSuccessor(head);
+        rev.setPredecessor(head.getPredecessor());
+
+        tail.getPrev().setNext(d);
+        tail.getPredecessor().setSuccessor(d);
+        tail.setPredecessor(d);
+        tail.setPrev(rev);
+
+        head.getPrev().setNext(rev);
+        head.getPredecessor().setSuccessor(rev);
+        head.setPredecessor(rev);
+        head.setPrev(d);
+
+        tail.getTail().incrementDegree();
+        head.getTail().incrementDegree();
     }
 
 

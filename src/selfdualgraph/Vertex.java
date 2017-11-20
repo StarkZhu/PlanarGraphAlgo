@@ -10,9 +10,10 @@ import java.util.List;
  * degree(F): the number of darts whose right is face F
  */
 public class Vertex {
-    //static variable
+    //static variables
     public static String VERTEX = "V";
     public static String FACE = "F";
+    public static int uniqueID = 0;
 
     public final String type;
     public final int ID;
@@ -37,6 +38,10 @@ public class Vertex {
 
     public Vertex(int ID, String type) {
         this(ID, type, -1, -1, 1.0);
+    }
+
+    public Vertex(String type) {
+        this(--uniqueID, type);
     }
 
     public float getCoordX() {

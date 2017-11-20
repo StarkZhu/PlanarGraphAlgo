@@ -11,6 +11,9 @@ package selfdualgraph;
  * next & prev: the next dart after d in clockwise/counter-clockwise order around the boundary of right(d)
  */
 public class Dart implements Comparable<Dart> {
+    // static variables
+    public static int uniqueID = 0;
+
     public final int ID;
     private double weight, capacity;
     private Vertex tail, head, left, right;
@@ -24,6 +27,10 @@ public class Dart implements Comparable<Dart> {
         weight = w;
         capacity = c;
         visited = false;
+    }
+
+    public Dart(Vertex t, Vertex h) {
+        this(--uniqueID, t, h, 0.0, 0.0);
     }
 
     public double getWeight() {
