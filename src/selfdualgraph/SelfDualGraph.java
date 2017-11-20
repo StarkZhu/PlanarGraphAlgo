@@ -406,13 +406,14 @@ public class SelfDualGraph {
      * given 2 darts, add a pair of darts between their tail vertices
      * divide the face to the right of the given 2 darts into 2 faces
      * worst case time complexity O(deg(new-face)), best performance when new-face is a triangle
+     * [WARNING] this function does NOT support adding loops, as this is not needed in graph triangulation
      * @param tail
      * @param head
      */
     public void addEdge(Dart tail, Dart head) {
         // verify given darts are on the same face
         if (tail.getRight() != head.getRight()) {
-            throw new RuntimeException("Given darts must be incidental to the same face");
+            throw new RuntimeException("Given darts must have the same face on their right, adding self-loop is NOT supported");
         }
         // create a new face and set its degree
         head.getRight().setDart(head);

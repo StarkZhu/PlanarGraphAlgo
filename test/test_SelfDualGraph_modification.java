@@ -504,4 +504,47 @@ public class test_SelfDualGraph_modification {
         checkIncidentListOfVertex(d.getHead(), new int[]{0, 5, 3, 1});
     }
 
+    @Test
+    public void testAddParallelEdge() {
+        Dart tail = findDartByID(g, 16);
+        Dart head = findDartByID(g, 3);
+        g.addEdge(tail, head);
+        Dart d = findDartByID(g, -1);
+        Assert.assertEquals(5, d.getTail().ID);
+        Assert.assertEquals(2, d.getHead().ID);
+        Assert.assertEquals(4, d.getRight().ID);
+        Assert.assertEquals(-1, d.getLeft().ID);
+        Assert.assertEquals(3, d.getNext().ID);
+        Assert.assertEquals(-1, d.getNext().getPrev().ID);
+        Assert.assertEquals(15, d.getPrev().ID);
+        Assert.assertEquals(-1, d.getPrev().getNext().ID);
+        Assert.assertEquals(16, d.getSuccessor().ID);
+        Assert.assertEquals(-1, d.getSuccessor().getPredecessor().ID);
+        Assert.assertEquals(14, d.getPredecessor().ID);
+        Assert.assertEquals(-1, d.getPredecessor().getSuccessor().ID);
+
+        Assert.assertEquals(-2, d.getReverse().ID);
+        Assert.assertEquals(2, d.getReverse().getTail().ID);
+        Assert.assertEquals(5, d.getReverse().getHead().ID);
+        Assert.assertEquals(-1, d.getReverse().getRight().ID);
+        Assert.assertEquals(4, d.getReverse().getLeft().ID);
+        Assert.assertEquals(16, d.getReverse().getNext().ID);
+        Assert.assertEquals(-2, d.getReverse().getNext().getPrev().ID);
+        Assert.assertEquals(16, d.getReverse().getPrev().ID);
+        Assert.assertEquals(-2, d.getReverse().getPrev().getNext().ID);
+        Assert.assertEquals(3, d.getReverse().getSuccessor().ID);
+        Assert.assertEquals(-2, d.getReverse().getSuccessor().getPredecessor().ID);
+        Assert.assertEquals(17, d.getReverse().getPredecessor().ID);
+        Assert.assertEquals(-2, d.getReverse().getPredecessor().getSuccessor().ID);
+
+        Assert.assertEquals(8, g.getFaceNum());
+        Assert.assertEquals(4, head.getRight().ID);
+        checkIncidentListOfFace(head.getRight(), new int[]{2, 0, 5});
+        Assert.assertEquals(-1, tail.getRight().ID);
+        checkIncidentListOfFace(tail.getRight(), new int[]{5, 2});
+
+        checkIncidentListOfVertex(d.getTail(), new int[]{4, 0, 2, 2, 2, 5, 5});
+        checkIncidentListOfVertex(d.getHead(), new int[]{0, 3, 5, 5, 5});
+    }
+
 }
