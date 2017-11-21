@@ -547,4 +547,51 @@ public class test_SelfDualGraph_modification {
         checkIncidentListOfVertex(d.getHead(), new int[]{0, 3, 5, 5, 5});
     }
 
+    @Test
+    public void testAddMultipleEdges() {
+        Dart tail1 = findDartByID(g, 13);
+        Dart tail2 = findDartByID(g, 20);
+        Dart tail3 = findDartByID(g, 19);
+        Dart head = findDartByID(g, 6);
+        g.addEdge(tail1, head);
+        g.addEdge(tail2, head);
+        g.addEdge(tail3, head);
+        Dart d = findDartByID(g, -1);
+        g.addEdge(d, findDartByID(g, -4));
+
+        Assert.assertEquals(11, g.getFaceNum());
+
+        Assert.assertEquals(1, head.getRight().ID);
+        checkIncidentListOfFace(head.getRight(), new int[]{3, 2});
+        Assert.assertEquals(-1, tail1.getRight().ID);
+        checkIncidentListOfFace(tail1.getRight(), new int[]{5, 4, 3});
+        Assert.assertEquals(-2, tail2.getRight().ID);
+        checkIncidentListOfFace(tail2.getRight(), new int[]{3, 5, 5});
+        Assert.assertEquals(-3, tail3.getRight().ID);
+        checkIncidentListOfFace(tail3.getRight(), new int[]{2, 5, 3});
+        Assert.assertEquals(-4, d.getRight().ID);
+        checkIncidentListOfFace(d.getRight(), new int[]{5, 3});
+
+        checkIncidentListOfVertex(d.getTail(), new int[]{4, 0, 2, 2, 3, 5, 5, 3, 3});
+        checkIncidentListOfVertex(d.getHead(), new int[]{1, 4, 5, 5, 5, 2, 2});
+    }
+
+    @Test
+    public void testTriangulate(){
+        g.flatten();
+        g.triangulate();
+        Assert.assertEquals(8, g.getFaceNum());
+        checkIncidentListOfFace(findDartByID(g, 2).getRight(), new int[]{0, 2, 3});
+        checkIncidentListOfFace(findDartByID(g, 1).getRight(), new int[]{3, 1, 0});
+        checkIncidentListOfFace(findDartByID(g, 6).getRight(), new int[]{3, 2, 5});
+        checkIncidentListOfFace(findDartByID(g, 13).getRight(), new int[]{5, 4, 3});
+        checkIncidentListOfFace(findDartByID(g, 9).getRight(), new int[]{4, 0, 1});
+        checkIncidentListOfFace(findDartByID(g, 11).getRight(), new int[]{1, 3, 4});
+
+        checkIncidentListOfVertex(findDartByID(g, 2).getTail(), new int[]{1, 3, 2, 5, 4});
+        checkIncidentListOfVertex(findDartByID(g, 9).getTail(), new int[]{0, 5, 3, 1});
+        checkIncidentListOfVertex(findDartByID(g, 14).getTail(), new int[]{4, 0, 2, 3});
+        checkIncidentListOfVertex(findDartByID(g, 6).getTail(), new int[]{1, 4, 5, 2, 0});
+        checkIncidentListOfVertex(findDartByID(g, 1).getTail(), new int[]{0, 4, 3});
+    }
 }

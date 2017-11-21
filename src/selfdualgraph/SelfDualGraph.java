@@ -465,6 +465,20 @@ public class SelfDualGraph {
         head.getTail().incrementDegree();
     }
 
+    public void triangulate() {
+        Set<Vertex> oldFaces = new HashSet<>(faces);
+        for (Vertex face : oldFaces) {
+            if (face.getDegree() <= 3) continue;
+            Dart tail = face.getFirstDart();
+            Dart head = tail.getNext().getNext();
+            while (head.getHead() != tail.getTail()) {
+                addEdge(tail, head);
+                tail = tail.getPredecessor();
+                head = head.getNext();
+            }
+        }
+    }
+
 
     // for debug only
     public static void main(String[] args) throws FileNotFoundException {
