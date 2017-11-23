@@ -1,4 +1,42 @@
-package PACKAGE_NAME;
+import algorithms.RootFinder;
+import org.junit.*;
+import selfdualgraph.*;
+import java.io.FileNotFoundException;
 
 public class test_RootFinder {
+    private SelfDualGraph g;
+
+    @Before
+    public void readGraph() {
+        g = new SelfDualGraph();
+        try {
+            g.buildGraph("./input_data/test_graph_0.txt");
+        } catch (FileNotFoundException e) {
+            Assert.assertTrue(false);
+        }
+    }
+
+    @Test
+    public void testZeroIdRoot() {
+        Vertex root = RootFinder.selectRootVertex(g, new RootFinder.ZeroIdRoot());
+        Assert.assertEquals(0, root.ID);
+        root = RootFinder.selectRootFace(g, new RootFinder.ZeroIdRoot());
+        Assert.assertEquals(0, root.ID);
+    }
+
+    @Test
+    public void testMaxDegreeRoot() {
+        Vertex root = RootFinder.selectRootVertex(g, new RootFinder.MaxDegreeRoot());
+        Assert.assertEquals(5, root.ID);
+        root = RootFinder.selectRootFace(g, new RootFinder.MaxDegreeRoot());
+        Assert.assertEquals(1, root.ID);
+    }
+
+    @Test
+    public void testMinDegreeRoot() {
+        Vertex root = RootFinder.selectRootVertex(g, new RootFinder.MinDegreeRoot());
+        Assert.assertEquals(1, root.ID);
+        root = RootFinder.selectRootFace(g, new RootFinder.MinDegreeRoot());
+        Assert.assertEquals(3, root.ID);
+    }
 }

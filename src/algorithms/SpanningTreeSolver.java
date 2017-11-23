@@ -14,22 +14,6 @@ public abstract class SpanningTreeSolver {
     public abstract void buildTreeFromRoot(Tree.TreeNode<Vertex> root);
 
     /**
-     * print the tree from the given root, with increased indentation
-     * @param root
-     * @param spaceNum
-     * @return
-     */
-    public static String printTree(Tree.TreeNode<Vertex> root, int spaceNum) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(new String(new char[spaceNum]).replace("\0", " "));
-        sb.append(String.format("%s\n", root.getData()));
-        for (Tree.TreeNode<Vertex> child : root.getChildren()) {
-            sb.append(printTree(child, spaceNum+2));
-        }
-        return sb.toString();
-    }
-
-    /**
      * build spanning tree/cotree of graph G rooted at any vertex/face
      * @param g
      * @param solver
@@ -80,7 +64,7 @@ public abstract class SpanningTreeSolver {
         for (Dart d : vertex.getIncidenceList()) {
             Vertex f = d.getLeft();
             if (!d.isVisited() && !f.isVisited()) {
-                Tree.TreeNode<Vertex> child = new Tree.TreeNode<>(f, root);
+                Tree.TreeNode<Vertex> child = new Tree.TreeNode<>(f, root, d);
                 root.addChild(child);
                 d.setVisited(true);
                 d.getReverse().setVisited(true);
@@ -88,6 +72,11 @@ public abstract class SpanningTreeSolver {
             }
         }
     }
+
+
+    /**
+     * Subclasses, implement different tree-building strategy
+     */
 
     /**
      * build spanning tree using DFS method
@@ -100,7 +89,7 @@ public abstract class SpanningTreeSolver {
             for (Dart d : vertex.getIncidenceList()) {
                 Vertex v = d.getHead();
                 if (!d.isVisited() && !v.isVisited()) {
-                    Tree.TreeNode<Vertex> child = new Tree.TreeNode<>(v, root);
+                    Tree.TreeNode<Vertex> child = new Tree.TreeNode<>(v, root, d);
                     root.addChild(child);
                     d.setVisited(true);
                     d.getReverse().setVisited(true);
@@ -125,7 +114,7 @@ public abstract class SpanningTreeSolver {
                 for (Dart d : vertex.getIncidenceList()) {
                     Vertex v = d.getHead();
                     if (!d.isVisited() && !v.isVisited()) {
-                        Tree.TreeNode<Vertex> child = new Tree.TreeNode<>(v, node);
+                        Tree.TreeNode<Vertex> child = new Tree.TreeNode<>(v, node, d);
                         node.addChild(child);
                         v.setVisited(true);
                         d.setVisited(true);
@@ -167,7 +156,7 @@ public abstract class SpanningTreeSolver {
                 toAdd.getReverse().setVisited(true);
                 Vertex v = toAdd.getHead();
                 Tree.TreeNode<Vertex> node = map.get(toAdd.getTail());
-                Tree.TreeNode<Vertex> child = new Tree.TreeNode<>(v, node);
+                Tree.TreeNode<Vertex> child = new Tree.TreeNode<>(v, node, toAdd);
                 node.addChild(child);
                 map.put(v, child);
                 vertex = v;
@@ -184,7 +173,7 @@ public abstract class SpanningTreeSolver {
         Tree[] trees = buildTreeCoTree(g, new DFSsolver());
         //Tree[] trees = buildTreeCoTree(g, new BFSsolver());
         //Tree[] trees = buildTreeCoTree(g, new Primsolver());
-        System.out.printf("%s-\n", printTree(trees[0].getRoot(), 0));
-        System.out.println(printTree(trees[1].getRoot(), 0));
+        System.out.printf("%s-\n", trees[0]);
+        System.out.println(trees[1]);
     }
 }
