@@ -9,7 +9,7 @@ public class Tree<T> {
     private final TreeNode<T> root;
 
     public Tree(T rootData) {
-        root = new TreeNode<>(rootData, null);
+        root = new TreeNode<>(rootData, null, null);
     }
 
     public TreeNode<T> getRoot() {
@@ -41,13 +41,15 @@ public class Tree<T> {
         private T data;
         private double weightSum;
         private TreeNode<T> parent;
+        private Dart parentDart;
         private List<TreeNode<T>> children;
 
-        public TreeNode(T nodeData, TreeNode<T> parent) {
+        public TreeNode(T nodeData, TreeNode<T> parent, Dart d) {
             data = nodeData;
             this.parent = parent;
             children = new ArrayList<>();
             weightSum = 0.0;
+            parentDart = d;
         }
 
         public T getData() {
@@ -56,6 +58,10 @@ public class Tree<T> {
 
         public TreeNode<T> getParent() {
             return parent;
+        }
+
+        public Dart getParentDart() {
+            return parentDart;
         }
 
         public List<TreeNode<T>> getChildren() {
