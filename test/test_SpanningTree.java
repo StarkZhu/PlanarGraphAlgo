@@ -30,12 +30,8 @@ public class test_SpanningTree {
         String coTreeBenchmark = "F<0>\n  F<4>\n    F<5>\n      F<6>\n  F<1>\n    F<2>\n    F<3>\n";
         SpanningTreeSolver dfs = new SpanningTreeSolver.DFSsolver();
         Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, dfs, treeRootVertex, coTreeRootVertex);
-        String tree = SpanningTreeSolver.printTree(trees[0].getRoot(), 0);
-        //System.out.println(tree);
-        Assert.assertEquals(tree, treeBenchmark);
-        String coTree = SpanningTreeSolver.printTree(trees[1].getRoot(), 0);
-        //System.out.println(coTree);
-        Assert.assertEquals(coTree, coTreeBenchmark);
+        Assert.assertEquals(trees[0].toString(), treeBenchmark);
+        Assert.assertEquals(trees[1].toString(), coTreeBenchmark);
     }
 
     @Test
@@ -63,12 +59,8 @@ public class test_SpanningTree {
         String coTreeBenchmark = "F<0>\n  F<1>\n    F<2>\n      F<4>\n    F<3>\n    F<5>\n    F<6>\n";
         SpanningTreeSolver bfs = new SpanningTreeSolver.BFSsolver();
         Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, bfs, treeRootVertex, coTreeRootVertex);
-        String tree = SpanningTreeSolver.printTree(trees[0].getRoot(), 0);
-        //System.out.println(tree);
-        Assert.assertEquals(tree, treeBenchmark);
-        String coTree = SpanningTreeSolver.printTree(trees[1].getRoot(), 0);
-        //System.out.println(coTree);
-        Assert.assertEquals(coTree, coTreeBenchmark);
+        Assert.assertEquals(trees[0].toString(), treeBenchmark);
+        Assert.assertEquals(trees[1].toString(), coTreeBenchmark);
     }
 
     @Test
@@ -77,11 +69,7 @@ public class test_SpanningTree {
         String coTreeBenchmark = "F<0>\n  F<4>\n  F<6>\n    F<5>\n    F<1>\n      F<2>\n      F<3>\n";
         SpanningTreeSolver prim = new SpanningTreeSolver.Primsolver();
         Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, prim, treeRootVertex, coTreeRootVertex);
-        String tree = SpanningTreeSolver.printTree(trees[0].getRoot(), 0);
-        //System.out.println(tree);
-        Assert.assertEquals(tree, treeBenchmark);
-        String coTree = SpanningTreeSolver.printTree(trees[1].getRoot(), 0);
-        //System.out.println(coTree);
-        Assert.assertEquals(coTree, coTreeBenchmark);
+        Assert.assertEquals(trees[0].toString(), treeBenchmark);
+        Assert.assertEquals(trees[1].toString(), coTreeBenchmark);
     }
 }
