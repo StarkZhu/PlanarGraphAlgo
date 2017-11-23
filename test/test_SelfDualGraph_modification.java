@@ -18,6 +18,8 @@ public class test_SelfDualGraph_modification {
         } catch (FileNotFoundException e) {
             Assert.assertTrue(false);
         }
+        Dart.uniqueID = 0;
+        Vertex.uniqueID = 0;
     }
 
     private Dart findDartByID(SelfDualGraph g, int dartID) {
