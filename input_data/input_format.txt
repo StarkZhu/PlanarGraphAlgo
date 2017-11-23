@@ -1,10 +1,10 @@
 Number_of_Vertice_V Number_of_Darts_D Number_of_Faces_F
 ...V lines of vertices info:
-ID coordX coordY [weight]
+ID coordX coordY [weight=1.0]
 ...
 ...D lines of darts info:
-ID reverse_ID tail_V_ID head_V_ID [weight capacity]
+ID reverse_ID tail_V_ID head_V_ID [weight=1.0 capacity=1.0]
 ...
 ...F lines of faces info:
-ID degree_N ...N dart_ID in clockwise... [coordX coordY weight]
+ID degree_N ...N dart_ID in clockwise... [coordX coordY weight=1.0]
 ...

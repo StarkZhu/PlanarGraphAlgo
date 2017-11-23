@@ -55,6 +55,7 @@ public abstract class SpanningTreeSolver {
 
     /**
      * build coTree based on the existing spanning tree, called only after a primal spanning tree is built
+     * coTree is unique given primal tree, so is independent of what algrothim used
      * @param root  root of the existing primal spanning tree
      */
     private static void buildCoTree(Tree.TreeNode<Vertex> root) {
