@@ -38,6 +38,7 @@ public abstract class TreeWeightAssigner {
     public static class EdgeWeight extends TreeWeightAssigner {
         @Override
         public double getWeight(Tree.TreeNode<Vertex> root) {
+            if (root.getParentDart() == null) return 0;
             return root.getParentDart().getWeight();
         }
     }
@@ -45,7 +46,7 @@ public abstract class TreeWeightAssigner {
     public static class VertexAndEdgeWeight extends TreeWeightAssigner {
         @Override
         public double getWeight(Tree.TreeNode<Vertex> root) {
-            return root.getData().getWeight() + root.getParentDart().getWeight();
+            return root.getData().getWeight() + (root.getParentDart() == null ? 0 : root.getParentDart().getWeight());
         }
     }
 
