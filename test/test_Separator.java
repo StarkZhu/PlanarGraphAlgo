@@ -27,6 +27,15 @@ public class test_Separator {
         TreeWeightAssigner.calcWeightSum(trees[1].getRoot(), new TreeWeightAssigner.VertexAndEdgeWeight());
     }
 
+    public void verifySeparator(int[] expectedVerticies, Set<Vertex> separator) {
+        Assert.assertEquals(expectedVerticies.length, separator.size());
+        Set<Integer> expectedID = new HashSet<>();
+        for (int i : expectedVerticies) expectedID.add(i);
+        for (Vertex v : separator) {
+            Assert.assertTrue(expectedID.contains(v.ID));
+        }
+    }
+
     @Test
     public void testLeafmostHeavyVertex() {
         Tree.TreeNode<Vertex> root = trees[0].getRoot();
@@ -38,5 +47,26 @@ public class test_Separator {
         Assert.assertEquals(18.05, root.getWeightSum(), 0.0001);
         vertexSeparator = Separator.leafmostHeavyVertex(root, 0.5, root.getWeightSum());
         Assert.assertEquals(6, vertexSeparator.getData().ID);
+    }
+
+    @Test
+    public void testVertexSeparator() {
+        Vertex v = Separator.findVertexSeparator(trees[1]);
+        Assert.assertEquals(6, v.ID);
+    }
+
+    @Test
+    public void testLevelSeparator() {
+        Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g,
+                new SpanningTreeSolver.BFSsolver(),
+                RootFinder.selectRootVertex(g, new RootFinder.SpecificIdRoot(5)),
+                RootFinder.selectRootFace(g, new RootFinder.SpecificIdRoot(0)));
+        Set<Vertex> separator = Separator.findLevelSeparator(trees[0]);
+        int[] expectedVertices = new int[]{2, 0, 4};
+        verifySeparator(expectedVertices, separator);
+
+        separator = Separator.findLevelSeparator(trees[1]);
+        expectedVertices = new int[]{1, 4, 6};
+        verifySeparator(expectedVertices, separator);
     }
 }

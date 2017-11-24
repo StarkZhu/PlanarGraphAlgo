@@ -36,8 +36,8 @@ public class test_TreeWeigthAssigner {
     public void testVertexCountAsWeightSum_BFS() {
         Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g,
                 new SpanningTreeSolver.BFSsolver(),
-                RootFinder.selectRootVertex(g, new RootFinder.ZeroIdRoot()),
-                RootFinder.selectRootFace(g, new RootFinder.ZeroIdRoot()));
+                RootFinder.selectRootVertex(g, new RootFinder.SpecificIdRoot()),
+                RootFinder.selectRootFace(g, new RootFinder.SpecificIdRoot()));
 
         TreeWeightAssigner.calcWeightSum(trees[0].getRoot(), new TreeWeightAssigner.VertexCount());
         double[] treeVertexWeightSum = new double[]{6, 2, 1, 1, 1, 1};
@@ -52,8 +52,8 @@ public class test_TreeWeigthAssigner {
     public void testVertexCountAsWeightSum_DFS() {
         Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g,
                 new SpanningTreeSolver.DFSsolver(),
-                RootFinder.selectRootVertex(g, new RootFinder.ZeroIdRoot()),
-                RootFinder.selectRootFace(g, new RootFinder.ZeroIdRoot()));
+                RootFinder.selectRootVertex(g, new RootFinder.SpecificIdRoot()),
+                RootFinder.selectRootFace(g, new RootFinder.SpecificIdRoot()));
 
         TreeWeightAssigner.calcWeightSum(trees[0].getRoot(), new TreeWeightAssigner.VertexCount());
         double[] treeVertexWeightSum = new double[]{6, 5, 1, 4, 3, 2};

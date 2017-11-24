@@ -37,13 +37,23 @@ public abstract class RootFinder {
         }
     }
 
-    public static class ZeroIdRoot extends RootFinder {
+    public static class SpecificIdRoot extends RootFinder {
+        private int rootID;
+
+        public SpecificIdRoot(int id) {
+            rootID = id;
+        }
+
+        public SpecificIdRoot() {
+            this(0);
+        }
+
         @Override
         public Vertex selectRoot(Set<Vertex> vertices) {
             for (Vertex v : vertices) {
-                if (v.ID == 0) return v;
+                if (v.ID == rootID) return v;
             }
-            throw new RuntimeException("No vertex has ID 0");
+            throw new RuntimeException(String.format("No vertex has ID %d", rootID));
         }
 
     }

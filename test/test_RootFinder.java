@@ -17,10 +17,10 @@ public class test_RootFinder {
     }
 
     @Test
-    public void testZeroIdRoot() {
-        Vertex root = RootFinder.selectRootVertex(g, new RootFinder.ZeroIdRoot());
+    public void testGivenIdRoot() {
+        Vertex root = RootFinder.selectRootVertex(g, new RootFinder.SpecificIdRoot());
         Assert.assertEquals(0, root.ID);
-        root = RootFinder.selectRootFace(g, new RootFinder.ZeroIdRoot());
+        root = RootFinder.selectRootFace(g, new RootFinder.SpecificIdRoot());
         Assert.assertEquals(0, root.ID);
     }
 
