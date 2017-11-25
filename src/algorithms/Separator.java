@@ -1,14 +1,16 @@
 package algorithms;
 
 import selfdualgraph.*;
+
 import java.util.*;
 
 public abstract class Separator {
 
     /**
      * linear-time to find a vertex such that w(v0) > alpha * totalW, and every child v of v0 has w(v) <= alpha * totalW
+     *
      * @param root
-     * @param alpha in range (0, 1)
+     * @param alpha  in range (0, 1)
      * @param totalW the weight of the root
      * @return
      */
@@ -26,6 +28,7 @@ public abstract class Separator {
 
     /**
      * find a vertex v such that every component in Tree - {v} has totalt weight at most W/2
+     *
      * @param tree
      * @return
      */
@@ -52,12 +55,14 @@ public abstract class Separator {
 
     /**
      * build a list of vertices in each level
+     *
      * @param root
      * @return
      */
-    private static List<Set<Vertex>> buildVertexLevels(Tree.TreeNode<Vertex> root, List<Set<Vertex>> list, int level) {
+    private static List<Set<Tree.TreeNode<Vertex>>> buildVertexLevels(Tree.TreeNode<Vertex> root,
+                                                                      List<Set<Tree.TreeNode<Vertex>>> list, int level) {
         if (level >= list.size()) list.add(new HashSet<>());
-        list.get(level).add(root.getData());
+        list.get(level).add(root);
         for (Tree.TreeNode<Vertex> child : root.getChildren()) {
             buildVertexLevels(child, list, level + 1);
         }
@@ -66,18 +71,27 @@ public abstract class Separator {
 
     /**
      * find the median level vertices as a balanced separator
+     *
      * @param tree
      * @return
      */
     public static Set<Vertex> findLevelSeparator(Tree<Vertex> tree) {
-        TreeWeightAssigner.calcWeightSum(tree.getRoot(), new TreeWeightAssigner.VertexCount());
-        List<Set<Vertex>> list = buildVertexLevels(tree.getRoot(), new ArrayList<>(), 0);
-        int totalCount = 0;
-        for (int i=0; i<list.size(); i++) {
-            if (totalCount + list.get(i).size() >= tree.getRoot().getWeightSum() / 2) {
-                return list.get(i);
+        double totalSum = tree.getRoot().getWeightSum();
+        if (totalSum <= 0) {
+            throw new RuntimeException("Weight has not been assigned to this tree");
+        }
+        List<Set<Tree.TreeNode<Vertex>>> list = buildVertexLevels(tree.getRoot(), new ArrayList<>(), 0);
+
+        for (int i = list.size() - 1; i >= 0; i--) {
+            double leafwardSum = 0;
+            Set<Vertex> separator = new HashSet<>();
+            for (Tree.TreeNode<Vertex> node : list.get(i)) {
+                leafwardSum += node.getWeightSum();
+                separator.add(node.getData());
             }
-            totalCount += list.get(i).size();
+            if (leafwardSum >= totalSum / 2) {
+                return separator;
+            }
         }
         throw new RuntimeException("Cannot find median level");
     }

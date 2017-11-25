@@ -4,6 +4,7 @@ import algorithms.SpanningTreeSolver;
 import algorithms.TreeWeightAssigner;
 import org.junit.*;
 import selfdualgraph.*;
+
 import java.io.FileNotFoundException;
 import java.util.*;
 
@@ -61,12 +62,27 @@ public class test_Separator {
                 new SpanningTreeSolver.BFSsolver(),
                 RootFinder.selectRootVertex(g, new RootFinder.SpecificIdRoot(5)),
                 RootFinder.selectRootFace(g, new RootFinder.SpecificIdRoot(0)));
+        TreeWeightAssigner.calcWeightSum(trees[0].getRoot(), new TreeWeightAssigner.VertexCount());
         Set<Vertex> separator = Separator.findLevelSeparator(trees[0]);
         int[] expectedVertices = new int[]{2, 0, 4};
         verifySeparator(expectedVertices, separator);
 
+        TreeWeightAssigner.calcWeightSum(trees[0].getRoot(), new TreeWeightAssigner.VertexAndEdgeWeight());
+        separator = Separator.findLevelSeparator(trees[0]);
+        expectedVertices = new int[]{2, 0, 4};
+        verifySeparator(expectedVertices, separator);
+
+        TreeWeightAssigner.calcWeightSum(trees[1].getRoot(), new TreeWeightAssigner.VertexCount());
         separator = Separator.findLevelSeparator(trees[1]);
         expectedVertices = new int[]{1, 4, 6};
         verifySeparator(expectedVertices, separator);
+
+        TreeWeightAssigner.calcWeightSum(trees[1].getRoot(), new TreeWeightAssigner.VertexAndEdgeWeight());
+        Assert.assertEquals(16.55, trees[1].getRoot().getWeightSum(), 0.0001);
+        separator = Separator.findLevelSeparator(trees[1]);
+        expectedVertices = new int[]{2, 3, 5};
+        verifySeparator(expectedVertices, separator);
     }
+
+    // TODO: add more test based on grid graph
 }
