@@ -1,7 +1,6 @@
 package algorithms;
 
 import selfdualgraph.*;
-import java.util.*;
 
 public abstract class TreeWeightAssigner {
 
@@ -17,7 +16,7 @@ public abstract class TreeWeightAssigner {
         for (Tree.TreeNode<Vertex> child : root.getChildren()) {
             weightSum += calcWeightSum(child, twa);
         }
-        root.setWeightSum(weightSum);
+        root.setDescendantWeightSum(weightSum);
         return weightSum;
     }
 

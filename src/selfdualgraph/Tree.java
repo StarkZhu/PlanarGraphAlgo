@@ -39,7 +39,7 @@ public class Tree<T> {
 
     public static class TreeNode<T> {
         private T data;
-        private double weightSum;
+        private double descendantWeightSum;
         private TreeNode<T> parent;
         private Dart parentDart;
         private List<TreeNode<T>> children;
@@ -48,7 +48,7 @@ public class Tree<T> {
             data = nodeData;
             this.parent = parent;
             children = new ArrayList<>();
-            weightSum = 0.0;
+            descendantWeightSum = 0.0;
             parentDart = d;
         }
 
@@ -72,16 +72,17 @@ public class Tree<T> {
             children.add(child);
         }
 
-        public void setWeightSum(double v) {
+        public void setDescendantWeightSum(double v) {
             if (v < 0) {
                 throw new RuntimeException("Sum of children's weigth must be greater than 0");
             }
-            weightSum = v;
+            descendantWeightSum = v;
         }
 
-        public double getWeightSum() {
-            return weightSum;
+        public double getDescendantWeightSum() {
+            return descendantWeightSum;
         }
+
         /*
         public boolean isRoot() {
             return (this.parent == null);

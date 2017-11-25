@@ -40,13 +40,13 @@ public class test_Separator {
     @Test
     public void testLeafmostHeavyVertex() {
         Tree.TreeNode<Vertex> root = trees[0].getRoot();
-        Assert.assertEquals(10, root.getWeightSum(), 0.0001);
-        Tree.TreeNode<Vertex> vertexSeparator = Separator.leafmostHeavyVertex(root, 0.4, root.getWeightSum());
+        Assert.assertEquals(10, root.getDescendantWeightSum(), 0.0001);
+        Tree.TreeNode<Vertex> vertexSeparator = Separator.leafmostHeavyVertex(root, 0.4, root.getDescendantWeightSum());
         Assert.assertEquals(2, vertexSeparator.getData().ID);
 
         root = trees[1].getRoot();
-        Assert.assertEquals(18.05, root.getWeightSum(), 0.0001);
-        vertexSeparator = Separator.leafmostHeavyVertex(root, 0.5, root.getWeightSum());
+        Assert.assertEquals(18.05, root.getDescendantWeightSum(), 0.0001);
+        vertexSeparator = Separator.leafmostHeavyVertex(root, 0.5, root.getDescendantWeightSum());
         Assert.assertEquals(6, vertexSeparator.getData().ID);
     }
 
@@ -57,7 +57,7 @@ public class test_Separator {
     }
 
     @Test
-    public void testLevelSeparator() {
+    public void testLevelSeparatorGivenTree() {
         Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g,
                 new SpanningTreeSolver.BFSsolver(),
                 RootFinder.selectRootVertex(g, new RootFinder.SpecificIdRoot(5)),
@@ -78,10 +78,16 @@ public class test_Separator {
         verifySeparator(expectedVertices, separator);
 
         TreeWeightAssigner.calcWeightSum(trees[1].getRoot(), new TreeWeightAssigner.VertexAndEdgeWeight());
-        Assert.assertEquals(16.55, trees[1].getRoot().getWeightSum(), 0.0001);
+        Assert.assertEquals(16.55, trees[1].getRoot().getDescendantWeightSum(), 0.0001);
         separator = Separator.findLevelSeparator(trees[1]);
         expectedVertices = new int[]{2, 3, 5};
         verifySeparator(expectedVertices, separator);
+    }
+
+    @Test
+    public void testLevelSeparatorGivenGraph() {
+        Set<Vertex> separator = Separator.findLevelSeparator(g, null, null, null);
+        verifySeparator(new int[]{4, 0, 2}, separator);
     }
 
     // TODO: add more test based on grid graph

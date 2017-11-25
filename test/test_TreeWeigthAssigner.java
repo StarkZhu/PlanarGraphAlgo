@@ -25,7 +25,7 @@ public class test_TreeWeigthAssigner {
         q.add(tree.getRoot());
         while (!q.isEmpty()) {
             Tree.TreeNode<Vertex> node = q.poll();
-            Assert.assertEquals(vertexWeightSum[node.getData().ID], node.getWeightSum(), 0.00001);
+            Assert.assertEquals(vertexWeightSum[node.getData().ID], node.getDescendantWeightSum(), 0.00001);
             for (Tree.TreeNode<Vertex> child : node.getChildren()) {
                 q.add(child);
             }

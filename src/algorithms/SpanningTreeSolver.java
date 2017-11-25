@@ -28,7 +28,7 @@ public abstract class SpanningTreeSolver {
      * @param g
      * @param solver
      * @param vertex
-     * @param face
+     * @param face if null, select a face with at least 1 incidental edge included in primal tree
      * @return array of 2 trees, [0] is the primal spanning Tree, [1] is the corresponding coTree
      */
     public static Tree<Vertex>[] buildTreeCoTree(SelfDualGraph g, SpanningTreeSolver solver, Vertex vertex, Vertex face) {
@@ -47,6 +47,15 @@ public abstract class SpanningTreeSolver {
         treeAndcoTree[0] = new Tree<>(vertex);
         solver.buildTreeFromRoot(treeAndcoTree[0].getRoot());
 
+        if (face == null) {
+            Tree.TreeNode<Vertex> primalRoot = treeAndcoTree[0].getRoot();
+            if (primalRoot.getChildren().size() < 1) {
+                throw new RuntimeException("Primal tree has only 1 node");
+            }
+            Tree.TreeNode<Vertex> child = primalRoot.getChildren().iterator().next();
+            face  = child.getParentDart().getRight();
+            System.out.printf("Default root for dual tree is selected to be face ID = %d\n", face.ID);
+        }
         treeAndcoTree[1] = new Tree<>(face);
         buildCoTree(treeAndcoTree[1].getRoot());
 
