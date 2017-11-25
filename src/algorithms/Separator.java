@@ -80,6 +80,14 @@ public abstract class Separator {
         return separatorNode.getParentDart();
     }
 
+    /**
+     *
+     * @param g must be flattened and triangulated
+     * @param sts if null, use default BFSsolver
+     * @param rf if null, use default MaxDegreeRoot
+     * @param twa if null, use default EdgeWeight
+     * @return
+     */
     public static Set<Vertex> findFundamentalCycleSeparator(SelfDualGraph g, SpanningTreeSolver sts, RootFinder rf, TreeWeightAssigner twa) {
         if (sts == null) {
             sts = new SpanningTreeSolver.BFSsolver();
@@ -90,7 +98,7 @@ public abstract class Separator {
         }
 
         if (twa == null) {
-            twa = new TreeWeightAssigner.VertexCount();
+            twa = new TreeWeightAssigner.EdgeWeight();
         }
 
         Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, sts, RootFinder.selectRootVertex(g, rf),null);

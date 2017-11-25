@@ -90,5 +90,24 @@ public class test_Separator {
         verifySeparator(new int[]{4, 0, 2}, separator);
     }
 
+    @Test
+    public void testEdgeSeparator() {
+        Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g,
+                new SpanningTreeSolver.Primsolver(),
+                RootFinder.selectRootVertex(g, new RootFinder.SpecificIdRoot(5)),
+                RootFinder.selectRootFace(g, new RootFinder.SpecificIdRoot(0)));
+        for (Vertex v : g.getFaces()) {
+            if (v.ID == 1 || v.ID == 6) v.setWeight(0);
+        }
+        Dart separator = Separator.findEdgeSeparator(trees[1]);
+        Assert.assertEquals(16.8, trees[1].getRoot().getDescendantWeightSum(), 0.001);
+        Assert.assertTrue(separator.ID == 10 || separator.ID == 11);
+
+        TreeWeightAssigner.calcWeightSum(trees[1].getRoot(), new TreeWeightAssigner.VertexWeight());
+        separator = Separator.findEdgeSeparator(trees[1]);
+        Assert.assertEquals(5.3, trees[1].getRoot().getDescendantWeightSum(), 0.001);
+        Assert.assertTrue(separator.ID == 4 || separator.ID == 5);
+    }
+
     // TODO: add more test based on grid graph
 }
