@@ -39,4 +39,12 @@ public class test_RootFinder {
         root = RootFinder.selectRootFace(g, new RootFinder.MinDegreeRoot());
         Assert.assertEquals(3, root.ID);
     }
+
+    @Test
+    public void testRandomRoot() {
+        Vertex root = RootFinder.selectRootVertex(g, new RootFinder.RandomRoot());
+        Assert.assertTrue(root.ID >= 0 && root.ID <= 5);
+        root = RootFinder.selectRootFace(g, new RootFinder.RandomRoot());
+        Assert.assertTrue(root.ID >= 0 && root.ID <= 6);
+    }
 }

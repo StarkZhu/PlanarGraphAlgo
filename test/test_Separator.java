@@ -48,7 +48,7 @@ public class test_Separator {
             if (ids.contains(node.getData().ID)) {
                 node.setSelfWeight(0);
             }
-            for (Tree.TreeNode child : node.getChildren()) q.add(child);
+            q.addAll(node.getChildren());
         }
     }
 

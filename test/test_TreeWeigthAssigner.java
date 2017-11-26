@@ -20,7 +20,6 @@ public class test_TreeWeigthAssigner {
     }
 
     public void verifyWeightSumOfTree(Tree tree, double[] vertexWeightSum) {
-
         Queue<Tree.TreeNode> q = new LinkedList<>();
         q.add(tree.getRoot());
         while (!q.isEmpty()) {
@@ -30,6 +29,14 @@ public class test_TreeWeigthAssigner {
                 q.add(child);
             }
         }
+    }
+
+    @Test
+    public void testRootWeight() {
+        Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, new SpanningTreeSolver.DFSsolver());
+        TreeWeightAssigner.calcWeightSum(trees[0].getRoot(), new TreeWeightAssigner.VertexCount());
+        Assert.assertEquals(6, trees[0].getRoot().getDescendantWeightSum(), 0.0001);
+        Assert.assertEquals(trees[0].getRoot().getData().getWeight(), trees[0].getRoot().getSelfWeight(), 0.0001);
     }
 
     @Test

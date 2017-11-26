@@ -81,6 +81,34 @@ public abstract class Separator {
         return separatorNode.getParentDart();
     }
 
+    private static void reassignTreeNodeWeight(Tree[] trees) {
+        // reset all TreeNodes' selfWeight to 0 in the coTree, build mapping Vertex --> TreeNode
+        Map<Vertex, Tree.TreeNode> map = new HashMap<>();
+        Tree.TreeNode node = trees[1].getRoot();
+        Queue<Tree.TreeNode> q = new LinkedList<>();
+        q.add(node);
+        while (!q.isEmpty()) {
+            node = q.poll();
+            map.put(node.getData(), node);
+            node.setSelfWeight(0);
+            q.addAll(node.getChildren());
+        }
+
+        //traverse primal Tree, split edge weight evenly to faces on both sides
+        q.addAll(trees[0].getRoot().getChildren());
+        while (!q.isEmpty()) {
+            node = q.poll();
+            Dart d = node.getParentDart();
+            Vertex f = d.getRight();
+            Tree.TreeNode n = map.get(f);
+            n.setSelfWeight(n.getSelfWeight() + d.getWeight() / 2.0);
+            f = d.getLeft();
+            n = map.get(f);
+            n.setSelfWeight(n.getSelfWeight() + d.getWeight() / 2.0);
+            q.addAll(node.getChildren());
+        }
+    }
+
     /**
      * Vertex/Face weight will be overwrote in this method
      *
@@ -99,19 +127,61 @@ public abstract class Separator {
             rf = new RootFinder.MaxDegreeRoot();
         }
 
-        if (twa == null) {
+        if (twa == null ) {
             twa = new TreeWeightAssigner.EdgeWeight();
-        } else if (twa.getClass() == TreeWeightAssigner.VertexWeight.class
+        }
+        else if (twa.getClass() == TreeWeightAssigner.VertexWeight.class
                 || twa.getClass() == TreeWeightAssigner.VertexAndEdgeWeight.class) {
-            System.err.printf("Warning! be aware:\n");
-            System.err.printf("User specified TreeWeightAssigner uses Vertex/Face weight, may be overwrote and yield unexpected outcome\n");
-            System.err.printf("Edge separator forces all degree-3 vertices having 0 weight\n");
+            System.err.printf("Current Fundamental Cycle Separator does NOT support this TreeWeightAssigner\n");
+            System.err.printf("Default Vertex/Face Count TreeWeightAssigner is used\n");
+            twa = new TreeWeightAssigner.EdgeWeight();
         }
 
         Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, sts, RootFinder.selectRootVertex(g, rf), null);
+
+        if (twa.getClass() == TreeWeightAssigner.EdgeWeight.class) {
+            reassignTreeNodeWeight(trees);
+            // each faceVertex contains weight from edges in primal Tree
+            twa = new TreeWeightAssigner.VertexAndEdgeWeight();
+        }
         TreeWeightAssigner.calcWeightSum(trees[1].getRoot(), twa);
-        Set<Vertex> separator = findLevelSeparator(trees[0]);
-        return separator;
+        Dart separatorDart = findEdgeSeparator(trees[1]);
+
+        // build Vertex --> TreeNode mapping for the primal Tree
+        Map<Vertex, Tree.TreeNode> map = new HashMap<>();
+        Tree.TreeNode node = trees[0].getRoot();
+        Queue<Tree.TreeNode> queue = new LinkedList<>();
+        queue.add(node);
+        while (!queue.isEmpty()) {
+            node = queue.poll();
+            map.put(node.getData(), node);
+            queue.addAll(node.getChildren());
+        }
+
+        // find the least common ancestor of the 2 ends of separatorDart
+        Tree.TreeNode p = map.get(separatorDart.getTail());
+        Tree.TreeNode q = map.get(separatorDart.getHead());
+        Set<Tree.TreeNode> parents = new HashSet<>();
+        parents.add(p);
+        // store p's parents all the way to root
+        while (p.getParent() != null) {
+            parents.add(p.getParent());
+            p = p.getParent();
+        }
+        // find first TreeNode contained in p's parents, it is the least common ancestor (LCA)
+        while (!parents.contains(q)) {
+            parents.add(q);
+            q = q.getParent();
+        }
+        // remove all LCA's parent, as they are not in the cycle separator
+        while (q.getParent() != null) {
+            parents.remove(q.getParent());
+            q = q.getParent();
+        }
+
+        Set<Vertex> cycleSeparator = new HashSet<>();
+        for (Tree.TreeNode n : parents) cycleSeparator.add(n.getData());
+        return cycleSeparator;
     }
 
     // ----------------------------
