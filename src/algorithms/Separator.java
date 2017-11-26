@@ -81,21 +81,34 @@ public abstract class Separator {
         return separatorNode.getParentDart();
     }
 
-    private static void reassignTreeNodeWeight(Tree[] trees) {
-        // reset all TreeNodes' selfWeight to 0 in the coTree, build mapping Vertex --> TreeNode
+    /**
+     * map all vertices stored in a tree to the corresponding TreeNode that stores it
+     * @param tree
+     * @param resetVertexSelfweight
+     * @return
+     */
+    private static Map<Vertex, Tree.TreeNode> mapVertexToTreeNode(Tree tree, boolean resetVertexSelfweight) {
+        Tree.TreeNode node = tree.getRoot();
         Map<Vertex, Tree.TreeNode> map = new HashMap<>();
-        Tree.TreeNode node = trees[1].getRoot();
         Queue<Tree.TreeNode> q = new LinkedList<>();
         q.add(node);
         while (!q.isEmpty()) {
             node = q.poll();
             map.put(node.getData(), node);
-            node.setSelfWeight(0);
+            if (resetVertexSelfweight) node.setSelfWeight(0);
             q.addAll(node.getChildren());
         }
+        return map;
+    }
+
+    private static void reassignTreeNodeWeight(Tree[] trees) {
+        // reset all TreeNodes' selfWeight to 0 in the coTree, build mapping Vertex --> TreeNode
+        Map<Vertex, Tree.TreeNode> map = mapVertexToTreeNode(trees[1], true);
 
         //traverse primal Tree, split edge weight evenly to faces on both sides
-        q.addAll(trees[0].getRoot().getChildren());
+        Queue<Tree.TreeNode> q = new LinkedList<>();
+        Tree.TreeNode node  = trees[0].getRoot();
+        q.addAll(node.getChildren());
         while (!q.isEmpty()) {
             node = q.poll();
             Dart d = node.getParentDart();
@@ -109,8 +122,9 @@ public abstract class Separator {
         }
     }
 
+
     /**
-     * Vertex/Face weight will be overwrote in this method
+     * Vertex/Face nodes' selfWeight will be overwrote in this method
      *
      * @param g   must be flattened and triangulated
      * @param sts if null, use default BFSsolver
@@ -128,35 +142,22 @@ public abstract class Separator {
         }
 
         if (twa == null ) {
-            twa = new TreeWeightAssigner.EdgeWeight();
+            twa = new TreeWeightAssigner.VertexCount();
         }
         else if (twa.getClass() == TreeWeightAssigner.VertexWeight.class
                 || twa.getClass() == TreeWeightAssigner.VertexAndEdgeWeight.class) {
-            System.err.printf("Current Fundamental Cycle Separator does NOT support this TreeWeightAssigner\n");
+            System.err.printf("Current Fundamental Cycle Separator does NOT support this user specified TreeWeightAssigner\n");
             System.err.printf("Default Vertex/Face Count TreeWeightAssigner is used\n");
-            twa = new TreeWeightAssigner.EdgeWeight();
+            twa = new TreeWeightAssigner.VertexCount();
         }
 
         Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, sts, RootFinder.selectRootVertex(g, rf), null);
+        assignCotreeWeight(twa, trees);
 
-        if (twa.getClass() == TreeWeightAssigner.EdgeWeight.class) {
-            reassignTreeNodeWeight(trees);
-            // each faceVertex contains weight from edges in primal Tree
-            twa = new TreeWeightAssigner.VertexAndEdgeWeight();
-        }
-        TreeWeightAssigner.calcWeightSum(trees[1].getRoot(), twa);
         Dart separatorDart = findEdgeSeparator(trees[1]);
 
         // build Vertex --> TreeNode mapping for the primal Tree
-        Map<Vertex, Tree.TreeNode> map = new HashMap<>();
-        Tree.TreeNode node = trees[0].getRoot();
-        Queue<Tree.TreeNode> queue = new LinkedList<>();
-        queue.add(node);
-        while (!queue.isEmpty()) {
-            node = queue.poll();
-            map.put(node.getData(), node);
-            queue.addAll(node.getChildren());
-        }
+        Map<Vertex, Tree.TreeNode> map = mapVertexToTreeNode(trees[0], false);
 
         // find the least common ancestor of the 2 ends of separatorDart
         Tree.TreeNode p = map.get(separatorDart.getTail());
@@ -182,6 +183,22 @@ public abstract class Separator {
         Set<Vertex> cycleSeparator = new HashSet<>();
         for (Tree.TreeNode n : parents) cycleSeparator.add(n.getData());
         return cycleSeparator;
+    }
+
+    /**
+     * used by Fundamental Cycle Separator
+     * @param twa
+     * @param trees
+     */
+    public static void assignCotreeWeight(TreeWeightAssigner twa, Tree[] trees) {
+        // reset all vertices selfweigth to 0 in coTree
+        mapVertexToTreeNode(trees[1], true);
+        if (twa.getClass() == TreeWeightAssigner.EdgeWeight.class) {
+            reassignTreeNodeWeight(trees);
+            // each faceVertex contains weight from edges in primal Tree
+            twa = new TreeWeightAssigner.VertexAndEdgeWeight();
+        }
+        TreeWeightAssigner.calcWeightSum(trees[1].getRoot(), twa);
     }
 
     // ----------------------------

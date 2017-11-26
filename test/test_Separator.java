@@ -52,6 +52,29 @@ public class test_Separator {
         }
     }
 
+    public void verifyWeightSumOfTree(Tree tree, double[][] vertexWeightSum, double[][] vertexSelfWeight) {
+        Map<Integer, Double> weightSum = new HashMap<>();
+        for (double[] pair : vertexWeightSum) {
+            weightSum.put((int) pair[0], pair[1]);
+        }
+        Map<Integer, Double> selfWeight = new HashMap<>();
+        for (double[] pair : vertexSelfWeight) {
+            selfWeight.put((int) pair[0], pair[1]);
+        }
+        Queue<Tree.TreeNode> q = new LinkedList<>();
+        q.add(tree.getRoot());
+        while (!q.isEmpty()) {
+            Tree.TreeNode node = q.poll();
+            if (selfWeight.containsKey(node.getData().ID)) {
+                Assert.assertEquals(selfWeight.get(node.getData().ID), node.getSelfWeight(), 0.00001);
+            }
+            if (weightSum.containsKey(node.getData().ID)) {
+                Assert.assertEquals(weightSum.get(node.getData().ID), node.getDescendantWeightSum(), 0.00001);
+            }
+            q.addAll(node.getChildren());
+        }
+    }
+
     @Test
     public void testLeafmostHeavyVertex() {
         Tree.TreeNode root = trees[0].getRoot();
@@ -121,6 +144,50 @@ public class test_Separator {
         separator = Separator.findEdgeSeparator(trees[1]);
         Assert.assertEquals(5.3, trees[1].getRoot().getDescendantWeightSum(), 0.001);
         Assert.assertTrue(separator.ID == 4 || separator.ID == 5);
+    }
+
+    @Test
+    public void testFCS_FaceCount() {
+        g.flatten();
+        g.triangulate();
+
+        SpanningTreeSolver sts = new SpanningTreeSolver.BFSsolver();
+        RootFinder rf = new RootFinder.MaxDegreeRoot();
+        TreeWeightAssigner twa = new TreeWeightAssigner.VertexCount();
+        Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, sts, RootFinder.selectRootVertex(g, rf), null);
+        Assert.assertEquals(3, trees[0].getRoot().getData().ID);
+        Assert.assertEquals(0, trees[1].getRoot().getData().ID);
+        Separator.assignCotreeWeight(twa, trees);
+        double[][] coTreeWeightSum = new double[][] {{0, 8}, {1, 1}, {4, 3}, {5, 5}, {6, 1}};
+        double[][] coTreeSelfWeight = new double[][] {{0, 0}, {1, 0}, {4, 0}, {5, 0}, {6, 0}, {-1, 0}, {-2, 0}, {-3, 0}};
+        verifyWeightSumOfTree(trees[1], coTreeWeightSum, coTreeSelfWeight);
+
+        Set<Vertex> separator = Separator.findFundamentalCycleSeparator(g, null, null, null);
+        verifySeparator(new int[]{5, 0, 3}, separator);
+
+        separator = Separator.findFundamentalCycleSeparator(g, null, null, new TreeWeightAssigner.VertexWeight());
+        verifySeparator(new int[]{5, 0, 3}, separator);
+    }
+
+    @Test
+    public void testFCS_EdgeWeight() {
+        g.flatten();
+        g.triangulate();
+
+        SpanningTreeSolver sts = new SpanningTreeSolver.BFSsolver();
+        RootFinder rf = new RootFinder.MinDegreeRoot();
+        TreeWeightAssigner twa = new TreeWeightAssigner.EdgeWeight();
+        Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, sts, RootFinder.selectRootVertex(g, rf), null);
+        Assert.assertEquals(2, trees[0].getRoot().getData().ID);
+        Assert.assertEquals(4, trees[1].getRoot().getData().ID);
+        Separator.assignCotreeWeight(twa, trees);
+        double[][] coTreeWeightSum = new double[][] {{0, 3.5}, {1, 8.25}, {4, 11.5}, {5, 10.25}, {6, 7}};
+        double[][] coTreeSelfWeight = new double[][] {{0, 0.5}, {1, 0}, {4, 1.25}, {5, 1}, {6, 0}};
+        verifyWeightSumOfTree(trees[1], coTreeWeightSum, coTreeSelfWeight);
+
+        Set<Vertex> separator = Separator.findFundamentalCycleSeparator(g, new SpanningTreeSolver.BFSsolver(),
+                new RootFinder.MinDegreeRoot(), new TreeWeightAssigner.EdgeWeight());
+        verifySeparator(new int[]{4, 0, 3, 2}, separator);
     }
 
     // TODO: add more test based on grid graph

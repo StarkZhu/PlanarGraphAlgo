@@ -65,6 +65,8 @@ public abstract class RootFinder {
             for (Vertex v : vertices) {
                 if (root == null || v.getDegree() > root.getDegree()) {
                     root = v;
+                } else if (v.getDegree() == root.getDegree() && v.ID > root.ID) {
+                    root = v;
                 }
             }
             return root;
@@ -77,6 +79,8 @@ public abstract class RootFinder {
             Vertex root = null;
             for (Vertex v : vertices) {
                 if (root == null || v.getDegree() < root.getDegree()) {
+                    root = v;
+                } else if (v.getDegree() == root.getDegree() && v.ID > root.ID) {
                     root = v;
                 }
             }
