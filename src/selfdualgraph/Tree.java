@@ -5,14 +5,14 @@ import java.util.*;
 /**
  * Simple tree structure used for spanning trees
  */
-public class Tree<T> {
-    private final TreeNode<T> root;
+public class Tree {
+    private final TreeNode root;
 
-    public Tree(T rootData) {
-        root = new TreeNode<>(rootData, null, null);
+    public Tree(Vertex rootData) {
+        root = new TreeNode(rootData, null, null);
     }
 
-    public TreeNode<T> getRoot() {
+    public TreeNode getRoot() {
         return root;
     }
 
@@ -27,36 +27,38 @@ public class Tree<T> {
      * @param spaceNum
      * @return
      */
-    public String printTree(TreeNode<T> root, int spaceNum) {
+    public String printTree(TreeNode root, int spaceNum) {
         StringBuilder sb = new StringBuilder();
         sb.append(new String(new char[spaceNum]).replace("\0", " "));
         sb.append(String.format("%s\n", root.getData()));
-        for (Tree.TreeNode<T> child : root.getChildren()) {
+        for (TreeNode child : root.getChildren()) {
             sb.append(printTree(child, spaceNum+2));
         }
         return sb.toString();
     }
 
-    public static class TreeNode<T> {
-        private T data;
+    public static class TreeNode {
+        private Vertex data;
         private double descendantWeightSum;
-        private TreeNode<T> parent;
+        private double selfWeight;
+        private TreeNode parent;
         private Dart parentDart;
-        private List<TreeNode<T>> children;
+        private List<TreeNode> children;
 
-        public TreeNode(T nodeData, TreeNode<T> parent, Dart d) {
+        public TreeNode(Vertex nodeData, TreeNode parent, Dart d) {
             data = nodeData;
             this.parent = parent;
             children = new ArrayList<>();
             descendantWeightSum = 0.0;
             parentDart = d;
+            selfWeight = nodeData.getWeight();
         }
 
-        public T getData() {
+        public Vertex getData() {
             return data;
         }
 
-        public TreeNode<T> getParent() {
+        public TreeNode getParent() {
             return parent;
         }
 
@@ -64,11 +66,11 @@ public class Tree<T> {
             return parentDart;
         }
 
-        public List<TreeNode<T>> getChildren() {
+        public List<TreeNode> getChildren() {
             return new ArrayList<>(children);
         }
 
-        public void addChild(TreeNode<T> child) {
+        public void addChild(TreeNode child) {
             children.add(child);
         }
 
@@ -83,7 +85,14 @@ public class Tree<T> {
             return descendantWeightSum;
         }
 
-        /*
+        public double getSelfWeight() {
+            return selfWeight;
+        }
+
+        public void setSelfWeight(double selfWeight) {
+            this.selfWeight = selfWeight;
+        }
+/*
         public boolean isRoot() {
             return (this.parent == null);
         }

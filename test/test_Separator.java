@@ -37,11 +37,26 @@ public class test_Separator {
         }
     }
 
+    public void resetTreenodeSelfweight(Tree tree, int[] nodeIDs) {
+        Set<Integer> ids = new HashSet<>();
+        for (int i : nodeIDs) ids.add(i);
+        Tree.TreeNode node = tree.getRoot();
+        Queue<Tree.TreeNode> q = new LinkedList<>();
+        q.add(node);
+        while (!q.isEmpty()) {
+            node = q.poll();
+            if (ids.contains(node.getData().ID)) {
+                node.setSelfWeight(0);
+            }
+            for (Tree.TreeNode child : node.getChildren()) q.add(child);
+        }
+    }
+
     @Test
     public void testLeafmostHeavyVertex() {
-        Tree.TreeNode<Vertex> root = trees[0].getRoot();
+        Tree.TreeNode root = trees[0].getRoot();
         Assert.assertEquals(10, root.getDescendantWeightSum(), 0.0001);
-        Tree.TreeNode<Vertex> vertexSeparator = Separator.leafmostHeavyVertex(root, 0.4, root.getDescendantWeightSum());
+        Tree.TreeNode vertexSeparator = Separator.leafmostHeavyVertex(root, 0.4, root.getDescendantWeightSum());
         Assert.assertEquals(2, vertexSeparator.getData().ID);
 
         root = trees[1].getRoot();
@@ -96,9 +111,8 @@ public class test_Separator {
                 new SpanningTreeSolver.Primsolver(),
                 RootFinder.selectRootVertex(g, new RootFinder.SpecificIdRoot(5)),
                 RootFinder.selectRootFace(g, new RootFinder.SpecificIdRoot(0)));
-        for (Vertex v : g.getFaces()) {
-            if (v.ID == 1 || v.ID == 6) v.setWeight(0);
-        }
+
+        resetTreenodeSelfweight(trees[1], new int[]{1, 6});
         Dart separator = Separator.findEdgeSeparator(trees[1]);
         Assert.assertEquals(16.8, trees[1].getRoot().getDescendantWeightSum(), 0.001);
         Assert.assertTrue(separator.ID == 10 || separator.ID == 11);

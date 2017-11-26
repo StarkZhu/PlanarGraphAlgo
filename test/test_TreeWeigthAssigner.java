@@ -21,12 +21,12 @@ public class test_TreeWeigthAssigner {
 
     public void verifyWeightSumOfTree(Tree tree, double[] vertexWeightSum) {
 
-        Queue<Tree.TreeNode<Vertex>> q = new LinkedList<>();
+        Queue<Tree.TreeNode> q = new LinkedList<>();
         q.add(tree.getRoot());
         while (!q.isEmpty()) {
-            Tree.TreeNode<Vertex> node = q.poll();
+            Tree.TreeNode node = q.poll();
             Assert.assertEquals(vertexWeightSum[node.getData().ID], node.getDescendantWeightSum(), 0.00001);
-            for (Tree.TreeNode<Vertex> child : node.getChildren()) {
+            for (Tree.TreeNode child : node.getChildren()) {
                 q.add(child);
             }
         }

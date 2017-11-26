@@ -11,7 +11,7 @@ import java.util.*;
  */
 public abstract class SpanningTreeSolver {
 
-    public abstract void buildTreeFromRoot(Tree.TreeNode<Vertex> root);
+    public abstract void buildTreeFromRoot(Tree.TreeNode root);
 
     /**
      * build spanning tree/cotree of graph G rooted at any vertex/face
@@ -19,7 +19,7 @@ public abstract class SpanningTreeSolver {
      * @param solver
      * @return
      */
-    public static Tree<Vertex>[] buildTreeCoTree(SelfDualGraph g, SpanningTreeSolver solver) {
+    public static Tree[] buildTreeCoTree(SelfDualGraph g, SpanningTreeSolver solver) {
         return buildTreeCoTree(g, solver, g.getVertices().iterator().next(), g.getFaces().iterator().next());
     }
 
@@ -31,7 +31,7 @@ public abstract class SpanningTreeSolver {
      * @param face if null, select a face with at least 1 incidental edge included in primal tree
      * @return array of 2 trees, [0] is the primal spanning Tree, [1] is the corresponding coTree
      */
-    public static Tree<Vertex>[] buildTreeCoTree(SelfDualGraph g, SpanningTreeSolver solver, Vertex vertex, Vertex face) {
+    public static Tree[] buildTreeCoTree(SelfDualGraph g, SpanningTreeSolver solver, Vertex vertex, Vertex face) {
         // set every vertex, face, dart to be unvisited
         for (Vertex v : g.getVertices()) {
             v.setVisited(false);
@@ -43,20 +43,20 @@ public abstract class SpanningTreeSolver {
             f.setVisited(false);
         }
 
-        Tree<Vertex>[] treeAndcoTree = new Tree[2];
-        treeAndcoTree[0] = new Tree<>(vertex);
+        Tree[] treeAndcoTree = new Tree[2];
+        treeAndcoTree[0] = new Tree(vertex);
         solver.buildTreeFromRoot(treeAndcoTree[0].getRoot());
 
         if (face == null) {
-            Tree.TreeNode<Vertex> primalRoot = treeAndcoTree[0].getRoot();
+            Tree.TreeNode primalRoot = treeAndcoTree[0].getRoot();
             if (primalRoot.getChildren().size() < 1) {
                 throw new RuntimeException("Primal tree has only 1 node");
             }
-            Tree.TreeNode<Vertex> child = primalRoot.getChildren().iterator().next();
+            Tree.TreeNode child = primalRoot.getChildren().iterator().next();
             face  = child.getParentDart().getRight();
             System.out.printf("Default root for dual tree is selected to be face ID = %d\n", face.ID);
         }
-        treeAndcoTree[1] = new Tree<>(face);
+        treeAndcoTree[1] = new Tree(face);
         buildCoTree(treeAndcoTree[1].getRoot());
 
         return treeAndcoTree;
@@ -67,14 +67,14 @@ public abstract class SpanningTreeSolver {
      * coTree is unique given primal tree, so is independent of what algrothim used
      * @param root  root of the existing primal spanning tree
      */
-    private static void buildCoTree(Tree.TreeNode<Vertex> root) {
+    private static void buildCoTree(Tree.TreeNode root) {
         // build coTree with DFS, but child should be the face from dart.getLeft()
         Vertex vertex = root.getData();
         vertex.setVisited(true);
         for (Dart d : vertex.getIncidenceList()) {
             Vertex f = d.getLeft();
             if (!d.isVisited() && !f.isVisited()) {
-                Tree.TreeNode<Vertex> child = new Tree.TreeNode<>(f, root, d);
+                Tree.TreeNode child = new Tree.TreeNode(f, root, d);
                 root.addChild(child);
                 d.setVisited(true);
                 d.getReverse().setVisited(true);
@@ -93,13 +93,13 @@ public abstract class SpanningTreeSolver {
      */
     public static class DFSsolver extends SpanningTreeSolver{
         @Override
-        public void buildTreeFromRoot(Tree.TreeNode<Vertex> root) {
+        public void buildTreeFromRoot(Tree.TreeNode root) {
             Vertex vertex = root.getData();
             vertex.setVisited(true);
             for (Dart d : vertex.getIncidenceList()) {
                 Vertex v = d.getHead();
                 if (!d.isVisited() && !v.isVisited()) {
-                    Tree.TreeNode<Vertex> child = new Tree.TreeNode<>(v, root, d);
+                    Tree.TreeNode child = new Tree.TreeNode(v, root, d);
                     root.addChild(child);
                     d.setVisited(true);
                     d.getReverse().setVisited(true);
@@ -114,17 +114,17 @@ public abstract class SpanningTreeSolver {
      */
     public static class BFSsolver extends SpanningTreeSolver {
         @Override
-        public void buildTreeFromRoot(Tree.TreeNode<Vertex> root) {
-            Queue<Tree.TreeNode<Vertex>> q = new LinkedList<>();
+        public void buildTreeFromRoot(Tree.TreeNode root) {
+            Queue<Tree.TreeNode> q = new LinkedList<>();
             q.add(root);
             root.getData().setVisited(true);
             while (!q.isEmpty()) {
-                Tree.TreeNode<Vertex> node = q.poll();
+                Tree.TreeNode node = q.poll();
                 Vertex vertex = node.getData();
                 for (Dart d : vertex.getIncidenceList()) {
                     Vertex v = d.getHead();
                     if (!d.isVisited() && !v.isVisited()) {
-                        Tree.TreeNode<Vertex> child = new Tree.TreeNode<>(v, node, d);
+                        Tree.TreeNode child = new Tree.TreeNode(v, node, d);
                         node.addChild(child);
                         v.setVisited(true);
                         d.setVisited(true);
@@ -142,8 +142,8 @@ public abstract class SpanningTreeSolver {
      */
     public static class Primsolver extends SpanningTreeSolver {
         @Override
-        public void buildTreeFromRoot(Tree.TreeNode<Vertex> root) {
-            Map<Vertex, Tree.TreeNode<Vertex>> map = new HashMap<>();
+        public void buildTreeFromRoot(Tree.TreeNode root) {
+            Map<Vertex, Tree.TreeNode> map = new HashMap<>();
             PriorityQueue<Dart> frontier = new PriorityQueue<>();
             Vertex vertex = root.getData();
             map.put(vertex, root);
@@ -165,8 +165,8 @@ public abstract class SpanningTreeSolver {
                 toAdd.setVisited(true);
                 toAdd.getReverse().setVisited(true);
                 Vertex v = toAdd.getHead();
-                Tree.TreeNode<Vertex> node = map.get(toAdd.getTail());
-                Tree.TreeNode<Vertex> child = new Tree.TreeNode<>(v, node, toAdd);
+                Tree.TreeNode node = map.get(toAdd.getTail());
+                Tree.TreeNode child = new Tree.TreeNode(v, node, toAdd);
                 node.addChild(child);
                 map.put(v, child);
                 vertex = v;

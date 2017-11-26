@@ -40,12 +40,12 @@ public class test_SpanningTree {
         Vertex randomCotTreeRootVertex = (g.getFaces().toArray(new Vertex[0]))[new Random().nextInt(g.getFaceNum())];
         SpanningTreeSolver dfs = new SpanningTreeSolver.DFSsolver();
         Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, dfs, randomTreeRootVertex, randomCotTreeRootVertex);
-        Queue<Tree.TreeNode<Vertex>> q = new LinkedList<>();
+        Queue<Tree.TreeNode> q = new LinkedList<>();
         for (int i=0; i<2; i++) {
             q.add(trees[i].getRoot());
             while (!q.isEmpty()) {
-                Tree.TreeNode<Vertex> node = q.poll();
-                for (Tree.TreeNode<Vertex> child : node.getChildren()) {
+                Tree.TreeNode node = q.poll();
+                for (Tree.TreeNode child : node.getChildren()) {
                     Assert.assertEquals(node, child.getParent());
                     q.add(child);
                 }
