@@ -1,4 +1,4 @@
-import algorithms.RootFinder;
+import algorithms.RootFinder.*;
 import algorithms.SpanningTreeSolver;
 import algorithms.TreeWeightAssigner;
 import org.junit.*;
@@ -39,10 +39,11 @@ public class test_TreeWeigthAssigner {
 
     @Test
     public void testVertexCountAsWeightSum_BFS() {
+        RootFinder rf = new SpecificIdRootFinder();
         Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g,
                 new SpanningTreeSolver.BFSsolver(),
-                RootFinder.selectRootVertex(g, new RootFinder.SpecificIdRoot()),
-                RootFinder.selectRootFace(g, new RootFinder.SpecificIdRoot()));
+                rf.selectRootVertex(g),
+                rf.selectRootFace(g));
 
         TreeWeightAssigner.calcWeightSum(trees[0].getRoot(), new TreeWeightAssigner.VertexCount());
         double[] treeVertexWeightSum = new double[]{6, 2, 1, 1, 1, 1};
@@ -55,10 +56,11 @@ public class test_TreeWeigthAssigner {
 
     @Test
     public void testVertexCountAsWeightSum_DFS() {
+        RootFinder rf = new SpecificIdRootFinder();
         Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g,
                 new SpanningTreeSolver.DFSsolver(),
-                RootFinder.selectRootVertex(g, new RootFinder.SpecificIdRoot()),
-                RootFinder.selectRootFace(g, new RootFinder.SpecificIdRoot()));
+                rf.selectRootVertex(g),
+                rf.selectRootFace(g));
 
         TreeWeightAssigner.calcWeightSum(trees[0].getRoot(), new TreeWeightAssigner.VertexCount());
         double[] treeVertexWeightSum = new double[]{6, 5, 1, 4, 3, 2};
@@ -71,10 +73,11 @@ public class test_TreeWeigthAssigner {
 
     @Test
     public void testVertexWeigthAsWeightSum_BFS() {
+        RootFinder rf = new MaxDegreeRootFinder();
         Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g,
                 new SpanningTreeSolver.BFSsolver(),
-                RootFinder.selectRootVertex(g, new RootFinder.MaxDegreeRoot()),
-                RootFinder.selectRootFace(g, new RootFinder.MaxDegreeRoot()));
+                rf.selectRootVertex(g),
+                rf.selectRootFace(g));
 
         String treeBenchmark = "V<5>\n  V<4>\n    V<3>\n  V<0>\n    V<1>\n  V<2>\n";
         String coTreeBenchmark = "F<1>\n  F<0>\n    F<4>\n    F<6>\n      F<5>\n  F<2>\n  F<3>\n";
@@ -92,10 +95,11 @@ public class test_TreeWeigthAssigner {
 
     @Test
     public void testVertexWeigthAsWeightSum_DFS() {
+        RootFinder rf = new MaxDegreeRootFinder();
         Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g,
                 new SpanningTreeSolver.DFSsolver(),
-                RootFinder.selectRootVertex(g, new RootFinder.MaxDegreeRoot()),
-                RootFinder.selectRootFace(g, new RootFinder.MaxDegreeRoot()));
+                rf.selectRootVertex(g),
+                rf.selectRootFace(g));
 
         String treeBenchmark = "V<5>\n  V<4>\n    V<0>\n      V<1>\n        V<3>\n          V<2>\n";
         String coTreeBenchmark = "F<1>\n  F<2>\n    F<4>\n      F<0>\n      F<5>\n  F<3>\n  F<6>\n";
@@ -113,10 +117,11 @@ public class test_TreeWeigthAssigner {
 
     @Test
     public void testEdgeWeigthAsWeightSum_Prim() {
+        RootFinder rf = new MinDegreeRootFinder();
         Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g,
                 new SpanningTreeSolver.Primsolver(),
-                RootFinder.selectRootVertex(g, new RootFinder.MinDegreeRoot()),
-                RootFinder.selectRootFace(g, new RootFinder.MinDegreeRoot()));
+                rf.selectRootVertex(g),
+                rf.selectRootFace(g));
 
         String treeBenchmark = "V<1>\n  V<0>\n    V<5>\n      V<4>\n      V<2>\n        V<3>\n";
         String coTreeBenchmark = "F<3>\n  F<1>\n    F<2>\n    F<6>\n      F<5>\n      F<0>\n        F<4>\n";
@@ -134,10 +139,11 @@ public class test_TreeWeigthAssigner {
 
     @Test
     public void testVertexAndEdgeWeightAsWeightSum_Prim() {
+        RootFinder rf = new MaxDegreeRootFinder();
         Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g,
                 new SpanningTreeSolver.Primsolver(),
-                RootFinder.selectRootVertex(g, new RootFinder.MaxDegreeRoot()),
-                RootFinder.selectRootFace(g, new RootFinder.MaxDegreeRoot()));
+                rf.selectRootVertex(g),
+                rf.selectRootFace(g));
 
         String treeBenchmark = "V<5>\n  V<4>\n  V<0>\n    V<1>\n  V<2>\n    V<3>\n";
         String coTreeBenchmark = "F<1>\n  F<2>\n  F<3>\n  F<6>\n    F<5>\n    F<0>\n      F<4>\n";

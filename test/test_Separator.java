@@ -1,4 +1,7 @@
-import algorithms.RootFinder;
+import algorithms.RootFinder.MaxDegreeRootFinder;
+import algorithms.RootFinder.MinDegreeRootFinder;
+import algorithms.RootFinder.RootFinder;
+import algorithms.RootFinder.SpecificIdRootFinder;
 import algorithms.Separator;
 import algorithms.SpanningTreeSolver;
 import algorithms.TreeWeightAssigner;
@@ -20,10 +23,11 @@ public class test_Separator {
         } catch (FileNotFoundException e) {
             Assert.assertTrue(false);
         }
+        RootFinder rf = new MaxDegreeRootFinder();
         trees = SpanningTreeSolver.buildTreeCoTree(g,
                 new SpanningTreeSolver.Primsolver(),
-                RootFinder.selectRootVertex(g, new RootFinder.MaxDegreeRoot()),
-                RootFinder.selectRootFace(g, new RootFinder.MaxDegreeRoot()));
+                rf.selectRootVertex(g),
+                rf.selectRootFace(g));
         TreeWeightAssigner.calcWeightSum(trees[0].getRoot(), new TreeWeightAssigner.VertexAndEdgeWeight());
         TreeWeightAssigner.calcWeightSum(trees[1].getRoot(), new TreeWeightAssigner.VertexAndEdgeWeight());
     }
@@ -98,8 +102,8 @@ public class test_Separator {
     public void testLevelSeparatorGivenTree() {
         Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g,
                 new SpanningTreeSolver.BFSsolver(),
-                RootFinder.selectRootVertex(g, new RootFinder.SpecificIdRoot(5)),
-                RootFinder.selectRootFace(g, new RootFinder.SpecificIdRoot(0)));
+                new SpecificIdRootFinder(5).selectRootVertex(g),
+                new SpecificIdRootFinder(0).selectRootFace(g));
         TreeWeightAssigner.calcWeightSum(trees[0].getRoot(), new TreeWeightAssigner.VertexCount());
         Set<Vertex> separator = Separator.findLevelSeparator(trees[0]);
         int[] expectedVertices = new int[]{2, 0, 4};
@@ -132,8 +136,8 @@ public class test_Separator {
     public void testEdgeSeparator() {
         Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g,
                 new SpanningTreeSolver.Primsolver(),
-                RootFinder.selectRootVertex(g, new RootFinder.SpecificIdRoot(5)),
-                RootFinder.selectRootFace(g, new RootFinder.SpecificIdRoot(0)));
+                new SpecificIdRootFinder(5).selectRootVertex(g),
+                new SpecificIdRootFinder(0).selectRootFace(g));
 
         resetTreenodeSelfweight(trees[1], new int[]{1, 6});
         Dart separator = Separator.findEdgeSeparator(trees[1]);
@@ -152,9 +156,9 @@ public class test_Separator {
         g.triangulate();
 
         SpanningTreeSolver sts = new SpanningTreeSolver.BFSsolver();
-        RootFinder rf = new RootFinder.MaxDegreeRoot();
+        RootFinder rf = new MaxDegreeRootFinder();
         TreeWeightAssigner twa = new TreeWeightAssigner.VertexCount();
-        Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, sts, RootFinder.selectRootVertex(g, rf), null);
+        Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, sts, rf.selectRootVertex(g), null);
         Assert.assertEquals(3, trees[0].getRoot().getData().ID);
         Assert.assertEquals(0, trees[1].getRoot().getData().ID);
         Separator.assignCotreeWeight(twa, trees);
@@ -175,9 +179,9 @@ public class test_Separator {
         g.triangulate();
 
         SpanningTreeSolver sts = new SpanningTreeSolver.BFSsolver();
-        RootFinder rf = new RootFinder.MinDegreeRoot();
+        RootFinder rf = new MinDegreeRootFinder();
         TreeWeightAssigner twa = new TreeWeightAssigner.EdgeWeight();
-        Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, sts, RootFinder.selectRootVertex(g, rf), null);
+        Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, sts, rf.selectRootVertex(g), null);
         Assert.assertEquals(2, trees[0].getRoot().getData().ID);
         Assert.assertEquals(4, trees[1].getRoot().getData().ID);
         Separator.assignCotreeWeight(twa, trees);
@@ -186,7 +190,7 @@ public class test_Separator {
         verifyWeightSumOfTree(trees[1], coTreeWeightSum, coTreeSelfWeight);
 
         Set<Vertex> separator = Separator.findFundamentalCycleSeparator(g, new SpanningTreeSolver.BFSsolver(),
-                new RootFinder.MinDegreeRoot(), new TreeWeightAssigner.EdgeWeight());
+                new MinDegreeRootFinder(), new TreeWeightAssigner.EdgeWeight());
         verifySeparator(new int[]{4, 0, 3, 2}, separator);
     }
 

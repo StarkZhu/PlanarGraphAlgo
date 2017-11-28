@@ -1,5 +1,7 @@
 package algorithms;
 
+import algorithms.RootFinder.MaxDegreeRootFinder;
+import algorithms.RootFinder.RootFinder;
 import selfdualgraph.*;
 
 import java.util.*;
@@ -138,7 +140,7 @@ public abstract class Separator {
         }
 
         if (rf == null) {
-            rf = new RootFinder.MaxDegreeRoot();
+            rf = new MaxDegreeRootFinder();
         }
 
         if (twa == null ) {
@@ -151,7 +153,7 @@ public abstract class Separator {
             twa = new TreeWeightAssigner.VertexCount();
         }
 
-        Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, sts, RootFinder.selectRootVertex(g, rf), null);
+        Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, sts, rf.selectRootVertex(g), null);
         assignCotreeWeight(twa, trees);
 
         Dart separatorDart = findEdgeSeparator(trees[1]);
@@ -261,14 +263,14 @@ public abstract class Separator {
         }
 
         if (rf == null) {
-            rf = new RootFinder.MaxDegreeRoot();
+            rf = new MaxDegreeRootFinder();
         }
 
         if (twa == null) {
             twa = new TreeWeightAssigner.VertexCount();
         }
 
-        Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, sts, RootFinder.selectRootVertex(g, rf), null);
+        Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, sts, rf.selectRootVertex(g), null);
         TreeWeightAssigner.calcWeightSum(trees[0].getRoot(), twa);
         Set<Vertex> separator = findLevelSeparator(trees[0]);
         return separator;
