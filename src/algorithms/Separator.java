@@ -2,6 +2,7 @@ package algorithms;
 
 import algorithms.RootFinder.*;
 import algorithms.SpanningTreeSolver.*;
+import algorithms.TreeWeightAssigner.*;
 import selfdualgraph.*;
 
 import java.util.*;
@@ -40,7 +41,7 @@ public abstract class Separator {
         Tree.TreeNode root = tree.getRoot();
         if (root.getDescendantWeightSum() <= 0) {
             // no weight assigned, use default vertex count as weight
-            TreeWeightAssigner.calcWeightSum(root, new TreeWeightAssigner.VertexCount());
+            new VertexCount().calcWeightSum(root);
         }
         Tree.TreeNode separatorNode = leafmostHeavyVertex(root, 0.5, root.getDescendantWeightSum());
         return separatorNode.getData();
@@ -77,7 +78,7 @@ public abstract class Separator {
         checkZeroWeightVerticesBinaryTree(root);
         if (root.getDescendantWeightSum() <= 0) {
             // no weight assigned, use default
-            TreeWeightAssigner.calcWeightSum(root, new TreeWeightAssigner.VertexAndEdgeWeight());
+            new VertexAndEdgeWeight().calcWeightSum(root);
         }
         Tree.TreeNode separatorNode = leafmostHeavyVertex(root, 1.0 / 3, root.getDescendantWeightSum());
         return separatorNode.getParentDart();
@@ -144,13 +145,13 @@ public abstract class Separator {
         }
 
         if (twa == null ) {
-            twa = new TreeWeightAssigner.VertexCount();
+            twa = new VertexCount();
         }
-        else if (twa.getClass() == TreeWeightAssigner.VertexWeight.class
-                || twa.getClass() == TreeWeightAssigner.VertexAndEdgeWeight.class) {
+        else if (twa.getClass() == VertexWeight.class
+                || twa.getClass() == VertexAndEdgeWeight.class) {
             System.err.printf("Current Fundamental Cycle Separator does NOT support this user specified TreeWeightAssigner\n");
             System.err.printf("Default Vertex/Face Count TreeWeightAssigner is used\n");
-            twa = new TreeWeightAssigner.VertexCount();
+            twa = new VertexCount();
         }
 
         Tree[] trees = sts.buildTreeCoTree(g, rf.selectRootVertex(g), null);
@@ -195,12 +196,12 @@ public abstract class Separator {
     public static void assignCotreeWeight(TreeWeightAssigner twa, Tree[] trees) {
         // reset all vertices selfweigth to 0 in coTree
         mapVertexToTreeNode(trees[1], true);
-        if (twa.getClass() == TreeWeightAssigner.EdgeWeight.class) {
+        if (twa.getClass() == EdgeWeight.class) {
             reassignTreeNodeWeight(trees);
             // each faceVertex contains weight from edges in primal Tree
-            twa = new TreeWeightAssigner.VertexAndEdgeWeight();
+            twa = new VertexAndEdgeWeight();
         }
-        TreeWeightAssigner.calcWeightSum(trees[1].getRoot(), twa);
+        twa.calcWeightSum(trees[1].getRoot());
     }
 
     // ----------------------------
@@ -267,18 +268,18 @@ public abstract class Separator {
         }
 
         if (twa == null) {
-            twa = new TreeWeightAssigner.VertexCount();
+            twa = new VertexCount();
         }
 
         Tree[] trees = sts.buildTreeCoTree(g, rf.selectRootVertex(g), null);
-        TreeWeightAssigner.calcWeightSum(trees[0].getRoot(), twa);
+        twa.calcWeightSum(trees[0].getRoot());
         Set<Vertex> separator = findLevelSeparator(trees[0]);
         return separator;
     }
 
     public static void main(String[] args) {
-        TreeWeightAssigner.VertexWeight tmp = new TreeWeightAssigner.VertexWeight();
-        System.out.println(tmp.getClass() == TreeWeightAssigner.VertexWeight.class);
+        TreeWeightAssigner tmp = new VertexWeight();
+        System.out.println(tmp.getClass() == VertexWeight.class);
     }
 
 }

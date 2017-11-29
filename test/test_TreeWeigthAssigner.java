@@ -1,6 +1,6 @@
 import algorithms.RootFinder.*;
 import algorithms.SpanningTreeSolver.*;
-import algorithms.TreeWeightAssigner;
+import algorithms.TreeWeightAssigner.*;
 import org.junit.*;
 import selfdualgraph.*;
 import java.io.FileNotFoundException;
@@ -33,7 +33,8 @@ public class test_TreeWeigthAssigner {
     public void testRootWeight() {
         SpanningTreeSolver sts = new DFSsolver();
         Tree[] trees = sts.buildTreeCoTree(g);
-        TreeWeightAssigner.calcWeightSum(trees[0].getRoot(), new TreeWeightAssigner.VertexCount());
+        TreeWeightAssigner twa = new VertexCount();
+        twa.calcWeightSum(trees[0].getRoot());
         Assert.assertEquals(6, trees[0].getRoot().getDescendantWeightSum(), 0.0001);
         Assert.assertEquals(trees[0].getRoot().getData().getWeight(), trees[0].getRoot().getSelfWeight(), 0.0001);
     }
@@ -44,11 +45,12 @@ public class test_TreeWeigthAssigner {
         SpanningTreeSolver sts = new BFSsolver();
         Tree[] trees = sts.buildTreeCoTree(g, rf.selectRootVertex(g), rf.selectRootFace(g));
 
-        TreeWeightAssigner.calcWeightSum(trees[0].getRoot(), new TreeWeightAssigner.VertexCount());
+        TreeWeightAssigner twa = new VertexCount();
+        twa.calcWeightSum(trees[0].getRoot());
         double[] treeVertexWeightSum = new double[]{6, 2, 1, 1, 1, 1};
         verifyWeightSumOfTree(trees[0], treeVertexWeightSum);
 
-        TreeWeightAssigner.calcWeightSum(trees[1].getRoot(), new TreeWeightAssigner.VertexCount());
+        twa.calcWeightSum(trees[1].getRoot());
         double[] coTreeVertexWeightSum = new double[]{7, 6, 2, 1, 1, 1, 1};
         verifyWeightSumOfTree(trees[1], coTreeVertexWeightSum);
     }
@@ -59,11 +61,12 @@ public class test_TreeWeigthAssigner {
         SpanningTreeSolver sts = new DFSsolver();
         Tree[] trees = sts.buildTreeCoTree(g, rf.selectRootVertex(g), rf.selectRootFace(g));
 
-        TreeWeightAssigner.calcWeightSum(trees[0].getRoot(), new TreeWeightAssigner.VertexCount());
+        TreeWeightAssigner twa = new VertexCount();
+        twa.calcWeightSum(trees[0].getRoot());
         double[] treeVertexWeightSum = new double[]{6, 5, 1, 4, 3, 2};
         verifyWeightSumOfTree(trees[0], treeVertexWeightSum);
 
-        TreeWeightAssigner.calcWeightSum(trees[1].getRoot(), new TreeWeightAssigner.VertexCount());
+        twa.calcWeightSum(trees[1].getRoot());
         double[] coTreeVertexWeightSum = new double[]{7, 3, 1, 1, 3, 2, 1};
         verifyWeightSumOfTree(trees[1], coTreeVertexWeightSum);
     }
@@ -79,11 +82,12 @@ public class test_TreeWeigthAssigner {
         Assert.assertEquals(trees[0].toString(), treeBenchmark);
         Assert.assertEquals(trees[1].toString(), coTreeBenchmark);
 
-        TreeWeightAssigner.calcWeightSum(trees[0].getRoot(), new TreeWeightAssigner.VertexWeight());
+        TreeWeightAssigner twa = new VertexWeight();
+        twa.calcWeightSum(trees[0].getRoot());
         double[] treeVertexWeightSum = new double[]{1.0, 0.5, 1.5, 1.5, 2.5, 6.0};
         verifyWeightSumOfTree(trees[0], treeVertexWeightSum);
 
-        TreeWeightAssigner.calcWeightSum(trees[1].getRoot(), new TreeWeightAssigner.VertexWeight());
+        twa.calcWeightSum(trees[1].getRoot());
         double[] coTreeVertexWeightSum = new double[]{3.95, 6.55, 1.0, 0.6, 1.0, 0.7, 0.95};
         verifyWeightSumOfTree(trees[1], coTreeVertexWeightSum);
     }
@@ -99,11 +103,12 @@ public class test_TreeWeigthAssigner {
         Assert.assertEquals(trees[0].toString(), treeBenchmark);
         Assert.assertEquals(trees[1].toString(), coTreeBenchmark);
 
-        TreeWeightAssigner.calcWeightSum(trees[0].getRoot(), new TreeWeightAssigner.VertexWeight());
+        TreeWeightAssigner twa = new VertexWeight();
+        twa.calcWeightSum(trees[0].getRoot());
         double[] treeVertexWeightSum = new double[]{4.0, 3.5, 1.5, 3.0, 5, 6};
         verifyWeightSumOfTree(trees[0], treeVertexWeightSum);
 
-        TreeWeightAssigner.calcWeightSum(trees[1].getRoot(), new TreeWeightAssigner.VertexWeight());
+        twa.calcWeightSum(trees[1].getRoot());
         double[] coTreeVertexWeightSum = new double[]{2, 6.55, 4.7, 0.6, 3.7, 0.7, 0.25};
         verifyWeightSumOfTree(trees[1], coTreeVertexWeightSum);
     }
@@ -119,11 +124,12 @@ public class test_TreeWeigthAssigner {
         Assert.assertEquals(trees[0].toString(), treeBenchmark);
         Assert.assertEquals(trees[1].toString(), coTreeBenchmark);
 
-        TreeWeightAssigner.calcWeightSum(trees[0].getRoot(), new TreeWeightAssigner.EdgeWeight());
+        TreeWeightAssigner twa = new EdgeWeight();
+        twa.calcWeightSum(trees[0].getRoot());
         double[] treeVertexWeightSum = new double[]{4.0, 4, 1.5, 0.5, 0.5, 3.0};
         verifyWeightSumOfTree(trees[0], treeVertexWeightSum);
 
-        TreeWeightAssigner.calcWeightSum(trees[1].getRoot(), new TreeWeightAssigner.EdgeWeight());
+        twa.calcWeightSum(trees[1].getRoot());
         double[] coTreeVertexWeightSum = new double[]{3.5, 11.5, 2.0, 11.5, 1.5, 2, 7.5};
         verifyWeightSumOfTree(trees[1], coTreeVertexWeightSum);
     }
@@ -139,11 +145,12 @@ public class test_TreeWeigthAssigner {
         Assert.assertEquals(trees[0].toString(), treeBenchmark);
         Assert.assertEquals(trees[1].toString(), coTreeBenchmark);
 
-        TreeWeightAssigner.calcWeightSum(trees[0].getRoot(), new TreeWeightAssigner.VertexAndEdgeWeight());
+        TreeWeightAssigner twa = new VertexAndEdgeWeight();
+        twa.calcWeightSum(trees[0].getRoot());
         double[] treeVertexWeightSum = new double[]{3, 1.5, 4.5, 2, 1.5, 10};
         verifyWeightSumOfTree(trees[0], treeVertexWeightSum);
 
-        TreeWeightAssigner.calcWeightSum(trees[1].getRoot(), new TreeWeightAssigner.VertexAndEdgeWeight());
+        twa.calcWeightSum(trees[1].getRoot());
         double[] coTreeVertexWeightSum = new double[]{6.5, 18.05, 3.0, 2.6, 2.5, 2.7, 11.45};
         verifyWeightSumOfTree(trees[1], coTreeVertexWeightSum);
     }
