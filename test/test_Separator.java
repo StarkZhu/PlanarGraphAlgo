@@ -1,9 +1,6 @@
-import algorithms.RootFinder.MaxDegreeRootFinder;
-import algorithms.RootFinder.MinDegreeRootFinder;
-import algorithms.RootFinder.RootFinder;
-import algorithms.RootFinder.SpecificIdRootFinder;
+import algorithms.RootFinder.*;
 import algorithms.Separator;
-import algorithms.SpanningTreeSolver;
+import algorithms.SpanningTreeSolver.*;
 import algorithms.TreeWeightAssigner;
 import org.junit.*;
 import selfdualgraph.*;
@@ -24,10 +21,8 @@ public class test_Separator {
             Assert.assertTrue(false);
         }
         RootFinder rf = new MaxDegreeRootFinder();
-        trees = SpanningTreeSolver.buildTreeCoTree(g,
-                new SpanningTreeSolver.Primsolver(),
-                rf.selectRootVertex(g),
-                rf.selectRootFace(g));
+        SpanningTreeSolver sts = new Primsolver();
+        trees = sts.buildTreeCoTree(g, rf.selectRootVertex(g), rf.selectRootFace(g));
         TreeWeightAssigner.calcWeightSum(trees[0].getRoot(), new TreeWeightAssigner.VertexAndEdgeWeight());
         TreeWeightAssigner.calcWeightSum(trees[1].getRoot(), new TreeWeightAssigner.VertexAndEdgeWeight());
     }
@@ -100,8 +95,8 @@ public class test_Separator {
 
     @Test
     public void testLevelSeparatorGivenTree() {
-        Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g,
-                new SpanningTreeSolver.BFSsolver(),
+        SpanningTreeSolver sts = new BFSsolver();
+        Tree[] trees = sts.buildTreeCoTree(g,
                 new SpecificIdRootFinder(5).selectRootVertex(g),
                 new SpecificIdRootFinder(0).selectRootFace(g));
         TreeWeightAssigner.calcWeightSum(trees[0].getRoot(), new TreeWeightAssigner.VertexCount());
@@ -134,8 +129,8 @@ public class test_Separator {
 
     @Test
     public void testEdgeSeparator() {
-        Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g,
-                new SpanningTreeSolver.Primsolver(),
+        SpanningTreeSolver sts = new Primsolver();
+        Tree[] trees = sts.buildTreeCoTree(g,
                 new SpecificIdRootFinder(5).selectRootVertex(g),
                 new SpecificIdRootFinder(0).selectRootFace(g));
 
@@ -155,10 +150,10 @@ public class test_Separator {
         g.flatten();
         g.triangulate();
 
-        SpanningTreeSolver sts = new SpanningTreeSolver.BFSsolver();
+        SpanningTreeSolver sts = new BFSsolver();
         RootFinder rf = new MaxDegreeRootFinder();
         TreeWeightAssigner twa = new TreeWeightAssigner.VertexCount();
-        Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, sts, rf.selectRootVertex(g), null);
+        Tree[] trees = sts.buildTreeCoTree(g, rf.selectRootVertex(g), null);
         Assert.assertEquals(3, trees[0].getRoot().getData().ID);
         Assert.assertEquals(0, trees[1].getRoot().getData().ID);
         Separator.assignCotreeWeight(twa, trees);
@@ -178,10 +173,10 @@ public class test_Separator {
         g.flatten();
         g.triangulate();
 
-        SpanningTreeSolver sts = new SpanningTreeSolver.BFSsolver();
+        SpanningTreeSolver sts = new BFSsolver();
         RootFinder rf = new MinDegreeRootFinder();
         TreeWeightAssigner twa = new TreeWeightAssigner.EdgeWeight();
-        Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, sts, rf.selectRootVertex(g), null);
+        Tree[] trees = sts.buildTreeCoTree(g, rf.selectRootVertex(g), null);
         Assert.assertEquals(2, trees[0].getRoot().getData().ID);
         Assert.assertEquals(4, trees[1].getRoot().getData().ID);
         Separator.assignCotreeWeight(twa, trees);
@@ -189,7 +184,7 @@ public class test_Separator {
         double[][] coTreeSelfWeight = new double[][] {{0, 0.5}, {1, 0}, {4, 1.25}, {5, 1}, {6, 0}};
         verifyWeightSumOfTree(trees[1], coTreeWeightSum, coTreeSelfWeight);
 
-        Set<Vertex> separator = Separator.findFundamentalCycleSeparator(g, new SpanningTreeSolver.BFSsolver(),
+        Set<Vertex> separator = Separator.findFundamentalCycleSeparator(g, new BFSsolver(),
                 new MinDegreeRootFinder(), new TreeWeightAssigner.EdgeWeight());
         verifySeparator(new int[]{4, 0, 3, 2}, separator);
     }

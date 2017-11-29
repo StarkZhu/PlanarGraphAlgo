@@ -1,4 +1,4 @@
-import algorithms.SpanningTreeSolver;
+import algorithms.SpanningTreeSolver.*;
 import org.junit.*;
 import selfdualgraph.*;
 import java.io.FileNotFoundException;
@@ -28,8 +28,8 @@ public class test_SpanningTree {
     public void testDFS() {
         String treeBenchmark = "V<0>\n  V<1>\n    V<3>\n      V<4>\n        V<5>\n          V<2>\n";
         String coTreeBenchmark = "F<0>\n  F<4>\n    F<5>\n      F<6>\n  F<1>\n    F<2>\n    F<3>\n";
-        SpanningTreeSolver dfs = new SpanningTreeSolver.DFSsolver();
-        Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, dfs, treeRootVertex, coTreeRootVertex);
+        SpanningTreeSolver dfs = new DFSsolver();
+        Tree[] trees = dfs.buildTreeCoTree(g, treeRootVertex, coTreeRootVertex);
         Assert.assertEquals(trees[0].toString(), treeBenchmark);
         Assert.assertEquals(trees[1].toString(), coTreeBenchmark);
     }
@@ -38,8 +38,8 @@ public class test_SpanningTree {
     public void testParent() {
         Vertex randomTreeRootVertex = (g.getVertices().toArray(new Vertex[0]))[new Random().nextInt(g.getVertexNum())];
         Vertex randomCotTreeRootVertex = (g.getFaces().toArray(new Vertex[0]))[new Random().nextInt(g.getFaceNum())];
-        SpanningTreeSolver dfs = new SpanningTreeSolver.DFSsolver();
-        Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, dfs, randomTreeRootVertex, randomCotTreeRootVertex);
+        SpanningTreeSolver dfs = new DFSsolver();
+        Tree[] trees = dfs.buildTreeCoTree(g, randomTreeRootVertex, randomCotTreeRootVertex);
         Queue<Tree.TreeNode> q = new LinkedList<>();
         for (int i=0; i<2; i++) {
             q.add(trees[i].getRoot());
@@ -57,8 +57,8 @@ public class test_SpanningTree {
     public void testBFS() {
         String treeBenchmark = "V<0>\n  V<1>\n    V<3>\n  V<2>\n  V<5>\n  V<4>\n";
         String coTreeBenchmark = "F<0>\n  F<1>\n    F<2>\n      F<4>\n    F<3>\n    F<5>\n    F<6>\n";
-        SpanningTreeSolver bfs = new SpanningTreeSolver.BFSsolver();
-        Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, bfs, treeRootVertex, coTreeRootVertex);
+        SpanningTreeSolver bfs = new BFSsolver();
+        Tree[] trees = bfs.buildTreeCoTree(g, treeRootVertex, coTreeRootVertex);
         Assert.assertEquals(trees[0].toString(), treeBenchmark);
         Assert.assertEquals(trees[1].toString(), coTreeBenchmark);
     }
@@ -67,8 +67,8 @@ public class test_SpanningTree {
     public void testPrim() {
         String treeBenchmark = "V<0>\n  V<1>\n  V<5>\n    V<4>\n    V<2>\n      V<3>\n";
         String coTreeBenchmark = "F<0>\n  F<4>\n  F<6>\n    F<5>\n    F<1>\n      F<2>\n      F<3>\n";
-        SpanningTreeSolver prim = new SpanningTreeSolver.Primsolver();
-        Tree[] trees = SpanningTreeSolver.buildTreeCoTree(g, prim, treeRootVertex, coTreeRootVertex);
+        SpanningTreeSolver prim = new Primsolver();
+        Tree[] trees = prim.buildTreeCoTree(g, treeRootVertex, coTreeRootVertex);
         Assert.assertEquals(trees[0].toString(), treeBenchmark);
         Assert.assertEquals(trees[1].toString(), coTreeBenchmark);
     }
