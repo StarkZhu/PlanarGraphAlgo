@@ -14,7 +14,7 @@ public class JPGtoGridInput {
     public final int[][][] pixelRGB;
 
     public JPGtoGridInput(String fileName) throws IOException {
-        this.fileName = fileName.split("\\.jpeg")[0];
+        this.fileName = fileName.split("\\.jp")[0];
         jpgImage = ImageIO.read(new File(fileName));
         pixelRGB = convertTo2DWithoutUsingGetRGB(jpgImage);
     }
@@ -86,7 +86,11 @@ public class JPGtoGridInput {
      * auto-generate input txt file for the grid planar graph, follow format in 'input_format.txt'
      */
     public void generateGridInput() throws FileNotFoundException {
-        PrintWriter out = new PrintWriter(String.format("%s_grid.txt", fileName));
+        generateGridInput(String.format("%s_grid.txt", fileName));
+    }
+
+    public void generateGridInput(String outputFileName) throws FileNotFoundException {
+        PrintWriter out = new PrintWriter(outputFileName);
         int r = jpgImage.getHeight();
         int c = jpgImage.getWidth();
         int vNum = r * c;
@@ -199,7 +203,7 @@ public class JPGtoGridInput {
 
 
     public static void main(String[] args) throws IOException {
-        JPGtoGridInput testImg = new JPGtoGridInput("./input_data/test_img_4.jpeg");
+        JPGtoGridInput testImg = new JPGtoGridInput("./input_data/test_img_4x4.jpeg");
         System.out.println(testImg.jpgImage.getWidth());
         System.out.println(testImg.jpgImage.getHeight());
         System.out.println(testImg.jpgImage.getAlphaRaster() != null);
