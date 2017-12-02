@@ -1,6 +1,7 @@
 package util;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
@@ -12,53 +13,39 @@ public class JPGtoGridInput {
     public final String fileName;
     public final BufferedImage jpgImage;
     public final int[][][] pixelRGB;
+    public final int vNum, eNum, fNum;
 
     public JPGtoGridInput(String fileName) throws IOException {
         this.fileName = fileName.split("\\.jp")[0];
         jpgImage = ImageIO.read(new File(fileName));
         pixelRGB = convertTo2DWithoutUsingGetRGB(jpgImage);
+        int r = jpgImage.getHeight();
+        int c = jpgImage.getWidth();
+        vNum = r * c;
+        eNum = ((r - 1) * c + (c - 1) * r) * 2;
+        fNum = (r - 1) * (c - 1) + 1;
     }
 
     /**
-     * https://stackoverflow.com/questions/6524196/java-get-pixel-array-from-image
-     * get pixel data from a BufferedImage is much faster without using getRGB()
+     * get pixel data from a BufferedImage
      *
      * @param image
      * @return
      */
     public int[][][] convertTo2DWithoutUsingGetRGB(BufferedImage image) {
 
-        final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
-        final int width = image.getWidth();
-        final int height = image.getHeight();
-        final boolean hasAlphaChannel = image.getAlphaRaster() != null;
+        int w = image.getWidth();
+        int h = image.getHeight();
+        int[] pixels = image.getRGB(0, 0, w, h, null, 0, w);
 
-        int[][][] result = new int[height][width][4];
-        if (hasAlphaChannel) {
-            final int pixelLength = 4;
-            for (int pixel = 0, row = 0, col = 0; pixel < pixels.length; pixel += pixelLength) {
-                result[row][col][0] = (int) pixels[pixel] & 0xff; // alpha
-                result[row][col][1] = (int) pixels[pixel + 1] & 0xff; // blue
-                result[row][col][2] = (int) pixels[pixel + 2] & 0xff; // green
-                result[row][col][3] = (int) pixels[pixel + 3] & 0xff; // red
-                col++;
-                if (col == width) {
-                    col = 0;
-                    row++;
-                }
-            }
-        } else {
-            final int pixelLength = 3;
-            for (int pixel = 0, row = 0, col = 0; pixel < pixels.length; pixel += pixelLength) {
-                result[row][col][0] = 255; // 255 alpha
-                result[row][col][1] = (int) pixels[pixel] & 0xff; // blue
-                result[row][col][2] = (int) pixels[pixel + 1] & 0xff; // green
-                result[row][col][3] = (int) pixels[pixel + 2] & 0xff; // red
-                col++;
-                if (col == width) {
-                    col = 0;
-                    row++;
-                }
+        int[][][] result = new int[h][w][4];
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                Color c = new Color(pixels[i * w + j]);
+                result[i][j][0] = c.getAlpha();
+                result[i][j][1] = c.getRed();
+                result[i][j][2] = c.getGreen();
+                result[i][j][3] = c.getBlue();
             }
         }
 
@@ -91,11 +78,6 @@ public class JPGtoGridInput {
 
     public void generateGridInput(String outputFileName) throws FileNotFoundException {
         PrintWriter out = new PrintWriter(outputFileName);
-        int r = jpgImage.getHeight();
-        int c = jpgImage.getWidth();
-        int vNum = r * c;
-        int eNum = ((r - 1) * c + (c - 1) * r) * 2;
-        int fNum = (r - 1) * (c - 1) + 1;
         out.printf("%d %d %d\n", vNum, eNum, fNum);
 
         String vertices = generateVerticesString();
@@ -203,10 +185,9 @@ public class JPGtoGridInput {
 
 
     public static void main(String[] args) throws IOException {
-        JPGtoGridInput testImg = new JPGtoGridInput("./input_data/test_img_4x4.jpeg");
+        JPGtoGridInput testImg = new JPGtoGridInput("./input_data/test_img_3x4.jpeg");
         System.out.println(testImg.jpgImage.getWidth());
         System.out.println(testImg.jpgImage.getHeight());
-        System.out.println(testImg.jpgImage.getAlphaRaster() != null);
         testImg.generateGridInput();
     }
 }
