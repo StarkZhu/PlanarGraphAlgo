@@ -18,7 +18,7 @@ public class test_JPGtoGridInput {
     public void testGrid4x4() throws IOException {
         JPGtoGridInput testImg = new JPGtoGridInput("./input_data/test_img_4x4.jpeg");
         testImg.generateGridInput("./test/tmp_text.txt");
-        List<Double> expect = readTxtFile("./test/banchmark_img_4x4.txt");
+        List<Double> expect = readTxtFile("./test/benchmark_img_4x4.txt");
         List<Double> actual = readTxtFile("./test/tmp_text.txt");
         Assert.assertEquals(expect.size(), actual.size());
         Iterator<Double> expectIt = expect.iterator();
@@ -46,7 +46,7 @@ public class test_JPGtoGridInput {
     public void testGrid3x4() throws IOException {
         JPGtoGridInput testImg = new JPGtoGridInput("./input_data/test_img_3x4.jpeg");
         testImg.generateGridInput("./test/tmp_text.txt");
-        List<Double> expect = readTxtFile("./test/banchmark_img_3x4.txt");
+        List<Double> expect = readTxtFile("./test/benchmark_img_3x4.txt");
         List<Double> actual = readTxtFile("./test/tmp_text.txt");
         Assert.assertEquals(expect.size(), actual.size());
         Iterator<Double> expectIt = expect.iterator();

@@ -53,15 +53,15 @@ public abstract class Separator {
      *
      * @param root
      */
-    private void checkZeroWeightVerticesBinaryTree(Tree.TreeNode root) {
-        if (root.getChildren().size() > 2) {
-            throw new RuntimeException("This is not a valid binary tree");
+    private void checkZeroWeightVerticesOfTree(Tree.TreeNode root, int maxDegree) {
+        if (root.getChildren().size() > maxDegree -1) {
+            throw new RuntimeException(String.format("This is not a valid %d-degree tree", maxDegree));
         }
-        if (root.getParentDart() != null && root.getChildren().size() >= 2 && root.getSelfWeight() != 0) {
-            throw new RuntimeException("Degree-3 vertices mush have 0 weight");
+        if (root.getParentDart() != null && root.getChildren().size() >= maxDegree - 1 && root.getSelfWeight() != 0) {
+            throw new RuntimeException(String.format("Degree-%d vertices mush have 0 weight", maxDegree));
         }
         for (Tree.TreeNode node : root.getChildren()) {
-            checkZeroWeightVerticesBinaryTree(node);
+            checkZeroWeightVerticesOfTree(node, maxDegree);
         }
     }
 
@@ -71,15 +71,19 @@ public abstract class Separator {
      * @param tree a tree of degree at most three, and with 1/3-proper assignment of weights to edges and vertices
      * @return
      */
-    public Dart findEdgeSeparator(Tree tree) {
+    public Dart findEdgeSeparator(Tree tree, int maxDegree) {
         Tree.TreeNode root = tree.getRoot();
-        checkZeroWeightVerticesBinaryTree(root);
+        checkZeroWeightVerticesOfTree(root, maxDegree);
         if (root.getDescendantWeightSum() <= 0) {
             // no weight assigned, use default
             new VertexAndEdgeWeight().calcWeightSum(root);
         }
-        Tree.TreeNode separatorNode = leafmostHeavyVertex(root, 1.0 / 3, root.getDescendantWeightSum());
+        Tree.TreeNode separatorNode = leafmostHeavyVertex(root, 1.0 / maxDegree, root.getDescendantWeightSum());
         return separatorNode.getParentDart();
+    }
+
+    public Dart findEdgeSeparator(Tree tree) {
+        return findEdgeSeparator(tree, 3);
     }
 
 

@@ -23,7 +23,14 @@ public class FundamentalCycleSeparator extends Separator{
      * @param twa if null, use default EdgeWeight
      * @return
      */
-    public  Set<Vertex> findSeparator(SelfDualGraph g, SpanningTreeSolver sts, RootFinder rf, TreeWeightAssigner twa) {
+    public  Set<Vertex> findSeparator(SelfDualGraph g, SpanningTreeSolver sts,
+                                      RootFinder rf, TreeWeightAssigner twa) {
+        System.err.printf("Assume G has been triangulated and max-degree of coTree will be 3\n");
+        return findSeparator(g, sts, rf, twa, 3);
+    }
+
+    public  Set<Vertex> findSeparator(SelfDualGraph g, SpanningTreeSolver sts,
+                                      RootFinder rf, TreeWeightAssigner twa, int maxDegree) {
         if (sts == null) {
             sts = new BFSsolver();
         }
@@ -45,7 +52,12 @@ public class FundamentalCycleSeparator extends Separator{
         Tree[] trees = sts.buildTreeCoTree(g, rf.selectRootVertex(g), null);
         assignCotreeWeight(twa, trees);
 
-        Dart separatorDart = findEdgeSeparator(trees[1]);
+        if (maxDegree <= 0) {
+            maxDegree = findMaxDegreeOfTree(trees[1].getRoot());
+            System.err.printf(String.format("Max-degree in coTree is not specified, automatically find the degree to be %d\n", maxDegree));
+        }
+
+        Dart separatorDart = findEdgeSeparator(trees[1], maxDegree);
 
         // build Vertex --> TreeNode mapping for the primal Tree
         Map<Vertex, Tree.TreeNode> map = mapVertexToTreeNode(trees[0], false);
@@ -74,6 +86,14 @@ public class FundamentalCycleSeparator extends Separator{
         Set<Vertex> cycleSeparator = new HashSet<>();
         for (Tree.TreeNode n : parents) cycleSeparator.add(n.getData());
         return cycleSeparator;
+    }
+
+    private int findMaxDegreeOfTree(Tree.TreeNode root) {
+        int degree = root.getChildren().size() + 1;
+        for (Tree.TreeNode child : root.getChildren()) {
+            degree = Math.max(degree, findMaxDegreeOfTree(child));
+        }
+        return degree;
     }
 
     /**
