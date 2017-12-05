@@ -58,65 +58,14 @@ public class FundamentalCycleSeparator extends Separator{
         }
 
         Dart separatorDart = findEdgeSeparator(trees[1], maxDegree);
-
-        // build Vertex --> TreeNode mapping for the primal Tree
-        Map<Vertex, Tree.TreeNode> map = mapVertexToTreeNode(trees[0], false);
-
-        // find the least common ancestor of the 2 ends of separatorDart
-        Tree.TreeNode p = map.get(separatorDart.getTail());
-        Tree.TreeNode q = map.get(separatorDart.getHead());
-        Set<Tree.TreeNode> parents = new HashSet<>();
-        parents.add(p);
-        // store p's parents all the way to root
-        while (p.getParent() != null) {
-            parents.add(p.getParent());
-            p = p.getParent();
-        }
-        // find first TreeNode contained in p's parents, it is the least common ancestor (LCA)
-        while (!parents.contains(q)) {
-            parents.add(q);
-            q = q.getParent();
-        }
-        // remove all LCA's parent, as they are not in the cycle separator
-        while (q.getParent() != null) {
-            parents.remove(q.getParent());
-            q = q.getParent();
-        }
-
-        Set<Vertex> cycleSeparator = new HashSet<>();
-        for (Tree.TreeNode n : parents) cycleSeparator.add(n.getData());
+        Set<Vertex> cycleSeparator = getCycle(trees[0], separatorDart);
         return cycleSeparator;
     }
 
-    private int findMaxDegreeOfTree(Tree.TreeNode root) {
-        int degree = root.getChildren().size() + 1;
-        for (Tree.TreeNode child : root.getChildren()) {
-            degree = Math.max(degree, findMaxDegreeOfTree(child));
-        }
-        return degree;
-    }
-
     /**
-     * map all vertices stored in a tree to the corresponding TreeNode that stores it
-     * @param tree
-     * @param resetVertexSelfweight
-     * @return
+     * assign edge weights in the primal tree to the vertices in the dual tree
+     * @param trees
      */
-    private Map<Vertex, Tree.TreeNode> mapVertexToTreeNode(Tree tree, boolean resetVertexSelfweight) {
-        Tree.TreeNode node = tree.getRoot();
-        Map<Vertex, Tree.TreeNode> map = new HashMap<>();
-        Queue<Tree.TreeNode> q = new LinkedList<>();
-        q.add(node);
-        while (!q.isEmpty()) {
-            node = q.poll();
-            map.put(node.getData(), node);
-            if (resetVertexSelfweight) node.setSelfWeight(0);
-            q.addAll(node.getChildren());
-        }
-        return map;
-    }
-
-
     private void reassignTreeNodeWeight(Tree[] trees) {
         // reset all TreeNodes' selfWeight to 0 in the coTree, build mapping Vertex --> TreeNode
         Map<Vertex, Tree.TreeNode> map = mapVertexToTreeNode(trees[1], true);

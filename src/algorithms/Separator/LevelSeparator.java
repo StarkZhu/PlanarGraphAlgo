@@ -9,21 +9,6 @@ import java.util.*;
 
 public class LevelSeparator extends Separator {
 
-    /**
-     * build a list of vertices in each level
-     *
-     * @param root
-     * @return
-     */
-    private List<Set<Tree.TreeNode>> buildVertexLevels(Tree.TreeNode root,
-                                                              List<Set<Tree.TreeNode>> list, int level) {
-        if (level >= list.size()) list.add(new HashSet<>());
-        list.get(level).add(root);
-        for (Tree.TreeNode child : root.getChildren()) {
-            buildVertexLevels(child, list, level + 1);
-        }
-        return list;
-    }
 
     /**
      * find the median level vertices as a balanced separator
@@ -38,18 +23,12 @@ public class LevelSeparator extends Separator {
         }
         List<Set<Tree.TreeNode>> list = buildVertexLevels(tree.getRoot(), new ArrayList<>(), 0);
 
-        for (int i = list.size() - 1; i >= 0; i--) {
-            double leafwardSum = 0;
-            Set<Vertex> separator = new HashSet<>();
-            for (Tree.TreeNode node : list.get(i)) {
-                leafwardSum += node.getDescendantWeightSum();
-                separator.add(node.getData());
-            }
-            if (leafwardSum >= totalSum / 2) {
-                return separator;
-            }
+        int medianLevel = findMedianLevel(list, totalSum);
+        Set<Vertex> separator = new HashSet<>();
+        for (Tree.TreeNode node : list.get(medianLevel)) {
+            separator.add(node.getData());
         }
-        throw new RuntimeException("Cannot find median level");
+        return separator;
     }
 
     /**
@@ -62,7 +41,8 @@ public class LevelSeparator extends Separator {
      * @return
      */
     public Set<Vertex> findSeparator(SelfDualGraph g, SpanningTreeSolver sts, RootFinder rf, TreeWeightAssigner twa) {
-        if (sts == null) {
+        if (sts == null || sts.getClass() != BFSsolver.class) {
+            System.err.printf("Level Separator must BFS Tree\n");
             sts = new BFSsolver();
         }
 

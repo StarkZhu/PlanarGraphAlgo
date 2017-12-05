@@ -87,6 +87,114 @@ public abstract class Separator {
     }
 
 
+    /**
+     * build a list of vertices in each level
+     *
+     * @param root
+     * @return
+     */
+    protected List<Set<Tree.TreeNode>> buildVertexLevels(Tree.TreeNode root,
+                                                       List<Set<Tree.TreeNode>> list, int level) {
+        if (level >= list.size()) list.add(new HashSet<>());
+        list.get(level).add(root);
+        for (Tree.TreeNode child : root.getChildren()) {
+            buildVertexLevels(child, list, level + 1);
+        }
+        return list;
+    }
+
+    /**
+     * find the median level of a Tree
+     * @param list a list of set of TreeNodes at each level of a Tree
+     * @param totalSum the weightSum at tree root node
+     * @return
+     */
+    protected int findMedianLevel(List<Set<Tree.TreeNode>> list, double totalSum) {
+        for (int i = list.size() - 1; i >= 0; i--) {
+            double leafwardSum = 0;
+            for (Tree.TreeNode node : list.get(i)) {
+                leafwardSum += node.getDescendantWeightSum();
+            }
+            if (leafwardSum >= totalSum / 2) {
+                return  i;
+            }
+        }
+        throw new RuntimeException("Cannot find median level");
+    }
+
+    /**
+     * find the maximum degree of TreeNodes in a Tree
+     * @param root
+     * @return
+     */
+    protected int findMaxDegreeOfTree(Tree.TreeNode root) {
+        int degree = root.getChildren().size() + 1;
+        for (Tree.TreeNode child : root.getChildren()) {
+            degree = Math.max(degree, findMaxDegreeOfTree(child));
+        }
+        return degree;
+    }
+
+
+    /**
+     * given primal Tree and a non-tree edge, find the fundamental cycle
+     * @param tree
+     * @param separatorDart
+     * @return
+     */
+    protected Set<Vertex> getCycle(Tree tree, Dart separatorDart) {
+        // build Vertex --> TreeNode mapping for the primal Tree
+        Map<Vertex, Tree.TreeNode> map = mapVertexToTreeNode(tree, false);
+
+        // find the least common ancestor of the 2 ends of separatorDart
+        Tree.TreeNode p = map.get(separatorDart.getTail());
+        Tree.TreeNode q = map.get(separatorDart.getHead());
+        Set<Tree.TreeNode> parents = new HashSet<>();
+        parents.add(p);
+        // store p's parents all the way to root
+        while (p.getParent() != null) {
+            parents.add(p.getParent());
+            p = p.getParent();
+        }
+        // find first TreeNode contained in p's parents, it is the least common ancestor (LCA)
+        while (!parents.contains(q)) {
+            parents.add(q);
+            q = q.getParent();
+        }
+        // remove all LCA's parent, as they are not in the cycle separator
+        while (q.getParent() != null) {
+            parents.remove(q.getParent());
+            q = q.getParent();
+        }
+
+        Set<Vertex> cycleSeparator = new HashSet<>();
+        for (Tree.TreeNode n : parents) cycleSeparator.add(n.getData());
+        return cycleSeparator;
+    }
+
+
+
+    /**
+     * map all vertices stored in a tree to the corresponding TreeNode that stores it
+     * @param tree
+     * @param resetVertexSelfweight
+     * @return
+     */
+    protected Map<Vertex, Tree.TreeNode> mapVertexToTreeNode(Tree tree, boolean resetVertexSelfweight) {
+        Tree.TreeNode node = tree.getRoot();
+        Map<Vertex, Tree.TreeNode> map = new HashMap<>();
+        Queue<Tree.TreeNode> q = new LinkedList<>();
+        q.add(node);
+        while (!q.isEmpty()) {
+            node = q.poll();
+            map.put(node.getData(), node);
+            if (resetVertexSelfweight) node.setSelfWeight(0);
+            q.addAll(node.getChildren());
+        }
+        return map;
+    }
+
+
     public static void main(String[] args) {
         TreeWeightAssigner tmp = new VertexWeight();
         System.out.println(tmp.getClass() == VertexWeight.class);
