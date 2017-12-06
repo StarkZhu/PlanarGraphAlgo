@@ -41,8 +41,7 @@ public class LevelSeparator extends Separator {
      * @return
      */
     public Set<Vertex> findSeparator(SelfDualGraph g, SpanningTreeSolver sts, RootFinder rf, TreeWeightAssigner twa) {
-        if (sts == null || sts.getClass() != BFSsolver.class) {
-            System.err.printf("Level Separator must BFS Tree\n");
+        if (sts == null) {
             sts = new BFSsolver();
         }
 
