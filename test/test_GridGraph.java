@@ -1,6 +1,5 @@
-import algorithms.RootFinder.SpecificIdRootFinder;
-import algorithms.Separator.FundamentalCycleSeparator;
-import algorithms.Separator.LevelSeparator;
+import algorithms.RootFinder.*;
+import algorithms.Separator.*;
 import org.junit.*;
 import selfdualgraph.*;
 

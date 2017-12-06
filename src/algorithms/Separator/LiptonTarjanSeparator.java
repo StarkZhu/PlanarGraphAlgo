@@ -54,22 +54,31 @@ public class LiptonTarjanSeparator extends Separator {
         int aLevel = mLevel, zLevel = mLevel;
         while (list.get(aLevel).size() > sqrtN) aLevel--;
         while (list.get(zLevel).size() > sqrtN) zLevel++;
-        Set<Vertex> heavyMiddle = getVerticesBetweenLevels(list, aLevel, zLevel);
+        Set<Vertex> heavyMiddle = getVerticesBetweenLevels(list, aLevel + 1, zLevel - 1);
 
         // TODO: verify correctness - use vertex weight instead of modify graph or tree
         // adjust coTree node weight such that:
         // faces (dual nodes) outside La and Lz has zero weight
         // then the FCS will be balanced in terms of faces inside (La, Lz) strip
-        Map<Vertex, Tree.TreeNode> faceToNode = mapVertexToTreeNode(trees[1], true);
-        Set<Vertex> faces = getFacesBetweenLevels(list, aLevel, zLevel);
-        for (Vertex face : faces) {
-            faceToNode.get(face).setSelfWeight(1);
+        Set<Vertex> outsideMiddle = g.getVertices();
+        outsideMiddle.removeAll(heavyMiddle);
+        Map<Vertex, Tree.TreeNode> faceToNode = mapVertexToTreeNode(trees[1], false);
+        for (Vertex v : outsideMiddle) {
+            for (Dart d : v.getIncidenceList()) {
+                if (outsideMiddle.contains(d.getHead())) {
+                    faceToNode.get(d.getRight()).setSelfWeight(0);
+                    faceToNode.get(d.getLeft()).setSelfWeight(0);
+                }
+            }
         }
-        vertexWeightTWA.calcWeightSum(trees[1].getRoot());
 
         // the given graph must be triangulated
         // this cycle is a 1/3 balanced separator of the heavyMiddle vertices
-        Dart separatorDart = findEdgeSeparator(trees[1], 3);
+        // note: the degree-3 node may have non-zero weight, use leafmostHeavyVertex() instead of findEdgeSeparator()
+        Tree.TreeNode coTreeRoot = trees[1].getRoot();
+        vertexWeightTWA.calcWeightSum(coTreeRoot);
+        Tree.TreeNode separatorNode = leafmostHeavyVertex(coTreeRoot, 1.0 / 3, coTreeRoot.getDescendantWeightSum());
+        Dart separatorDart = separatorNode.getParentDart();
         Set<Vertex> separator = getCycle(trees[0], separatorDart);
 
         separator.retainAll(heavyMiddle);
