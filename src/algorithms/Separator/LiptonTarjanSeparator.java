@@ -44,7 +44,7 @@ public class LiptonTarjanSeparator extends Separator {
         double totalSum = trees[0].getRoot().getDescendantWeightSum();
         int mLevel = findMedianLevel(list, totalSum);
 
-        if (list.get(mLevel).size() <= 2 * sqrtN) {
+        if (list.get(mLevel).size() < 2 * sqrtN) {
             Set<Vertex> Lm = getVerticesBetweenLevels(list, mLevel, mLevel);
             return Lm;
         }
@@ -52,8 +52,8 @@ public class LiptonTarjanSeparator extends Separator {
         // find La < Lm, Lz > Lm such that:
         // |La| < sqrt(N), |Lz| < sqrt(N)
         int aLevel = mLevel, zLevel = mLevel;
-        while (list.get(aLevel).size() > sqrtN) aLevel--;
-        while (list.get(zLevel).size() > sqrtN) zLevel++;
+        while (aLevel > 0 && list.get(aLevel).size() > sqrtN) aLevel--;
+        while (zLevel < list.size() && list.get(zLevel).size() > sqrtN) zLevel++;
         Set<Vertex> heavyMiddle = getVerticesBetweenLevels(list, aLevel + 1, zLevel - 1);
 
         // TODO: verify correctness - use vertex weight instead of modify graph or tree
@@ -89,10 +89,11 @@ public class LiptonTarjanSeparator extends Separator {
     }
 
     private Set<Vertex> getVerticesBetweenLevels(List<Set<Tree.TreeNode>> list, int startLevel, int endLevel) {
-        if (startLevel < 0 || endLevel < startLevel || endLevel >= list.size()) {
-            throw new RuntimeException("Invalid input");
-        }
         Set<Vertex> vertices = new HashSet<>();
+        if (startLevel < 0 || endLevel < startLevel || endLevel >= list.size()) {
+            System.err.println("Invalid input, returning empty set");
+            return vertices;
+        }
         for (int i = startLevel; i <= endLevel; i++) {
             for (Tree.TreeNode node : list.get(i)) {
                 vertices.add(node.getData());
@@ -102,8 +103,10 @@ public class LiptonTarjanSeparator extends Separator {
     }
 
     private Set<Vertex> getFacesBetweenLevels(List<Set<Tree.TreeNode>> list, int startLevel, int endLevel) {
+        Set<Vertex> vertices = new HashSet<>();
         if (startLevel < 0 || endLevel < startLevel || endLevel >= list.size()) {
-            throw new RuntimeException("Invalid input");
+            System.err.println("Invalid input, returning empty set");
+            return vertices;
         }
         Set<Vertex> faces = new HashSet<>();
         for (int i = startLevel + 1; i <= endLevel; i++) {

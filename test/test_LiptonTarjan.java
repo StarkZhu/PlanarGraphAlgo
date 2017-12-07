@@ -30,6 +30,24 @@ public class test_LiptonTarjan {
     }
 
     @Test
+    public void testLiptonTarjan(){
+        SelfDualGraph g = readGraph("./input_data/test_graph_0.txt");
+        g.flatten();
+        g.triangulate();
+        for (Vertex face : g.getFaces()) face.setWeight(1.0);
+        LiptonTarjanSeparator liptonTarjan = new LiptonTarjanSeparator();
+
+        Set<Vertex> separator = liptonTarjan.findSeparator(g, new SpecificIdRootFinder(0));
+        verifySeparator(new int[]{0, 3, 5}, separator);
+
+        separator = liptonTarjan.findSeparator(g, new SpecificIdRootFinder(2));
+        verifySeparator(new int[]{0, 3, 5}, separator);
+
+        separator = liptonTarjan.findSeparator(g, new SpecificIdRootFinder(5));
+        verifySeparator(new int[]{0, 3, 5, 1}, separator);
+    }
+
+    @Test
     public void testOnGrid4x4() {
         SelfDualGraph g = readGraph("./test/benchmark_img_4x4.txt");
         g.flatten();
@@ -38,4 +56,5 @@ public class test_LiptonTarjan {
         Set<Vertex> separator = liptonTarjan.findSeparator(g, new SpecificIdRootFinder(0));
         verifySeparator(new int[]{0, 5, 9, 14, 10, 6}, separator);
     }
+
 }
