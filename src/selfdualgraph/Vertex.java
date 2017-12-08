@@ -9,7 +9,7 @@ import java.util.List;
  * degree(V): the number of darts whose head is vertex V
  * degree(F): the number of darts whose right is face F
  */
-public class Vertex {
+public class Vertex implements Comparable<Vertex>{
     //static variables
     public static String VERTEX = "V";
     public static String FACE = "F";
@@ -34,6 +34,11 @@ public class Vertex {
         visited = false;
         degree = 0;
         dart = null;
+    }
+
+    @Override
+    public int compareTo(Vertex other) {
+        return this.ID - other.ID;
     }
 
     public Vertex(int ID, String type) {

@@ -1,7 +1,8 @@
 import org.junit.*;
 import selfdualgraph.*;
 
-import java.io.FileNotFoundException;
+import java.io.*;
+import java.util.*;
 
 /**
  * Created by qixinzhu on 10/23/17.
@@ -21,6 +22,52 @@ public class test_SelfDualGraph_basic {
         } catch (FileNotFoundException e) {
             Assert.assertTrue(false);
         }
+    }
+
+    public Map<Integer, double[]>[] readTxtGraphFile(String fileName) throws FileNotFoundException {
+        Scanner in = new Scanner(new File(fileName));
+        Map<Integer, double[]>[] maps = new HashMap[3];
+        int vNum = in.nextInt();
+        int dNum = in.nextInt();
+        int fNum = in.nextInt();
+        in.nextLine();
+        maps[0] = new HashMap<>(vNum);
+        for (int i = 0; i < vNum; i++) {
+            String[] content = in.nextLine().split(" ");
+            int ID = Integer.parseInt(content[0]);
+            double[] values = new double[3];
+            for (int j = 0; j < 3; j++) {
+                if (j < content.length - 1) values[j] = Double.parseDouble(content[j + 1]);
+                else values[j] = 1.0;
+            }
+            maps[0].put(ID, values);
+        }
+
+        maps[1] = new HashMap<>(dNum);
+        for (int i = 0; i < dNum; i++) {
+            String[] content = in.nextLine().split(" ");
+            int ID = Integer.parseInt(content[0]);
+            double[] values = new double[5];
+            for (int j = 0; j < 5; j++) {
+                if (j < content.length - 1) values[j] = Double.parseDouble(content[j + 1]);
+                else values[j] = 1.0;
+            }
+            maps[1].put(ID, values);
+        }
+
+        maps[2] = new HashMap<>(fNum);
+        for (int i = 0; i < fNum; i++) {
+            String[] content = in.nextLine().split(" ");
+            int ID = Integer.parseInt(content[0]);
+            int deg = Integer.parseInt(content[1]);
+            double[] values = new double[2 + deg];
+            for (int j = 0; j < 1 + deg; j++) {
+                values[j] = Double.parseDouble(content[j + 1]);
+            }
+            values[deg + 1] = content.length >= deg + 3 ? Double.parseDouble(content[deg + 4]) : 1.0;
+            maps[2].put(ID, values);
+        }
+        return maps;
     }
 
     @Test
@@ -105,5 +152,23 @@ public class test_SelfDualGraph_basic {
             }
             Assert.assertEquals(v.getFirstDart(), cur);
         }
+    }
+
+    @Test
+    public void testSaveToFile() throws FileNotFoundException {
+        g.saveToFile("./test/tmp_text.txt");
+        Map<Integer, double[]>[] expect = readTxtGraphFile("./input_data/test_graph_0.txt");
+        Map<Integer, double[]>[] actual = readTxtGraphFile("./test/tmp_text.txt");
+        for (int i = 0; i < 3; i++) {
+            Assert.assertEquals(expect[i].size(), actual[i].size());
+            for (int key : expect[i].keySet()) {
+                for (int j = 0; j < expect[i].get(key).length; j++) {
+                    double val = expect[i].get(key)[j];
+                    Assert.assertEquals(val, actual[i].get(key)[j], 0.001);
+                }
+            }
+        }
+        File tmpFile = new File("./test/tmp_text.txt");
+        tmpFile.delete();
     }
 }

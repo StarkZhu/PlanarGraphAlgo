@@ -5,15 +5,15 @@ import java.util.*;
 
 /**
  * reference: http://jeffe.cs.illinois.edu/teaching/topology17/chapters/02-planar-graphs.pdf
- *
+ * <p>
  * Self-dual data structure for planar graphs
  * is an overlay of the sorted incidence lists of primal graph G and its dual G*
- *
+ * <p>
  * Each vertex V, stores an incidence list of dart d, whose tail is V, in the counter-clockwise order
  * Each dual-vertex (face) F, stores an incidence list of dart d, whose right is F
  */
 
-// TODO: change V's list to head(d) == V, be consistent with original definition
+// TODO : change V's list to head(d) == V, be consistent with original definition
 
 public class SelfDualGraph {
     private Set<Vertex> vertices;
@@ -25,13 +25,14 @@ public class SelfDualGraph {
     }
 
     public SelfDualGraph() {
-        this(10,30,10);
+        this(10, 30, 10);
     }
 
 
     /**
      * Build self-dual planar graph from given file
      * file format see input_format.txt
+     *
      * @param fileName
      * @throws FileNotFoundException
      */
@@ -47,7 +48,7 @@ public class SelfDualGraph {
         int[] dartRev = new int[E];
 
         // read and create all vertices
-        for (int i=0; i<V; i++) {
+        for (int i = 0; i < V; i++) {
             String[] content = graphInput.nextLine().split("\\s+");
             int id = Integer.parseInt(content[0]);
             float coordX = Float.parseFloat(content[1]);
@@ -58,7 +59,7 @@ public class SelfDualGraph {
         }
 
         // read and create all darts
-        for (int i=0; i<E; i++) {
+        for (int i = 0; i < E; i++) {
             String[] content = graphInput.nextLine().split("\\s+");
             int id = Integer.parseInt(content[0]);
             dartRev[i] = Integer.parseInt(content[1]);
@@ -73,7 +74,7 @@ public class SelfDualGraph {
         }
 
         // set all darts' reverse dart, check for inconsistency
-        for (int i=0; i<E; i++) {
+        for (int i = 0; i < E; i++) {
             Dart rev = dartsArr[dartRev[i]];
             if (rev.getReverse() != null && rev.getReverse() != dartsArr[i])
                 throw new RuntimeException("The other dart has a different reverse dart.");
@@ -81,7 +82,7 @@ public class SelfDualGraph {
         }
 
         // read all faces and set incident darts: next, prev, right
-        for (int i=0; i<F; i++) {
+        for (int i = 0; i < F; i++) {
             String[] content = graphInput.nextLine().split("\\s+");
             if (content.length < 3)
                 throw new RuntimeException("Wrong format for face information.");
@@ -93,8 +94,8 @@ public class SelfDualGraph {
             coordY += cur.getTail().getCoordY();
             face.initDart(cur);
             // read all incidental darts of given face
-            for (int j=1; j<degree; j++) {
-                Dart next = dartsArr[Integer.parseInt(content[j+2])];
+            for (int j = 1; j < degree; j++) {
+                Dart next = dartsArr[Integer.parseInt(content[j + 2])];
                 face.incrementDegree();
                 cur.setNext(next);
                 next.setPrev(cur);
@@ -111,8 +112,8 @@ public class SelfDualGraph {
                 // must provide coordY if coordX is provided
                 if (content.length <= degree + 3)
                     throw new RuntimeException("Must provide coordY if coordX is provided.");
-                coordX = Float.parseFloat(content[degree+2]);
-                coordY = Float.parseFloat(content[degree+3]);
+                coordX = Float.parseFloat(content[degree + 2]);
+                coordY = Float.parseFloat(content[degree + 3]);
             } else {
                 coordX /= degree;
                 coordY /= degree;
@@ -120,7 +121,7 @@ public class SelfDualGraph {
             face.setCoordX(coordX);
             face.setCoordY(coordY);
             if (content.length > degree + 4) {
-                face.setWeight(Double.parseDouble(content[degree+4]));
+                face.setWeight(Double.parseDouble(content[degree + 4]));
             }
             faces.add(face);
         }
@@ -166,6 +167,7 @@ public class SelfDualGraph {
      * (1) delete the given dart d and rev(d)
      * (2) merge the faces of left(d) and right(d), set all incidental darts' left() and right(), time O(degree)
      * (3) fix the pointers on neighboring darts of d and rev(d): next, prev, successor, predecessor
+     *
      * @param d: user should make sure d is NOT be a bridge, otherwise G will be disconnected
      */
     public void deleteEdge(Dart d) {
@@ -217,6 +219,7 @@ public class SelfDualGraph {
 
     /**
      * delete a self-loop, aka d.tail == d.head
+     *
      * @param d
      */
     private void deleteLoop(Dart d) {
@@ -241,15 +244,13 @@ public class SelfDualGraph {
         if (faceToKeep.getDegree() == 0) {
             // 0-degree face doesn't point to any incidental dart
             faceToKeep.setDart(null);
-        }
-        else if (faceToKeep.getFirstDart() == dart) {
+        } else if (faceToKeep.getFirstDart() == dart) {
             faceToKeep.setDart(dart.getNext());
         }
         Vertex v = dart.getTail();
         if (v.getDegree() == 0) {
             v.setDart(null);
-        }
-        else if (v.getFirstDart() == d || v.getFirstDart() == d.getReverse()) {
+        } else if (v.getFirstDart() == d || v.getFirstDart() == d.getReverse()) {
             v.setDart(dart.getPredecessor());
         }
     }
@@ -259,6 +260,7 @@ public class SelfDualGraph {
      * (1) delete the given dart d and rev(d)
      * (2) merge the vertices of head(d) and tail(d), set all incidental darts' head() and tail(), time O(degree)
      * (3) fix the pointers on neighboring darts of d and rev(d): next, prev, successor, predecessor
+     *
      * @param d: user should make sure d is NOT be a self-loop, otherwise the contract operation is not well defined
      */
     public void contractEdge(Dart d) {
@@ -314,6 +316,7 @@ public class SelfDualGraph {
 
     /**
      * contract a bridge, aka d.left == d.right
+     *
      * @param d
      */
     private void contractBridge(Dart d) {
@@ -340,15 +343,13 @@ public class SelfDualGraph {
         if (vertexToKeep.getDegree() == 0) {
             // 0-degree vertex doesn't point to any incidental dart
             vertexToKeep.setDart(null);
-        }
-        else if (vertexToKeep.getFirstDart() == dart) {
+        } else if (vertexToKeep.getFirstDart() == dart) {
             vertexToKeep.setDart(dart.getSuccessor());
         }
         Vertex f = dart.getLeft();
         if (f.getDegree() == 0) {
             f.setDart(null);
-        }
-        else if (f.getFirstDart() == d || f.getFirstDart() == d.getReverse()) {
+        } else if (f.getFirstDart() == d || f.getFirstDart() == d.getReverse()) {
             f.setDart(dart.getPrev());  //??
         }
     }
@@ -407,6 +408,7 @@ public class SelfDualGraph {
      * divide the face to the right of the given 2 darts into 2 faces
      * worst case time complexity O(deg(new-face)), best performance when new-face is a triangle
      * [WARNING] this function does NOT support adding loops, as this is not needed in graph triangulation
+     *
      * @param tail
      * @param head
      */
@@ -479,16 +481,50 @@ public class SelfDualGraph {
         }
     }
 
+    public void saveToFile(String fileName) throws FileNotFoundException {
+        PrintWriter out = new PrintWriter(fileName);
+        int vNum = vertices.size();
+        int fNum = faces.size();
+        int eNum = 0;
+        for (Vertex face : faces) {
+            eNum += face.getDegree();
+        }
+        out.printf("%d %d %d\n", vNum, eNum, fNum);
+        List<Vertex> vList = new ArrayList<>(vertices);
+        vList.sort(null);
+
+        for (Vertex v : vList) {
+            out.printf("%d %f %f %f\n", v.ID, v.getCoordX(), v.getCoordY(), v.getWeight());
+        }
+        for (Vertex v : vList) {
+            for (Dart d : v.getIncidenceList()) {
+                out.printf("%d %d %d %d %f %f\n", d.ID, d.getReverse().ID, d.getTail().ID, d.getHead().ID, d.getWeight(), d.getCapacity());
+            }
+        }
+
+        List<Vertex> fList = new ArrayList<>(faces);
+        fList.sort(null);
+        for (Vertex f : fList) {
+            StringBuilder sb = new StringBuilder(String.format("%d %d", f.ID, f.getDegree()));
+            for (Dart d : f.getIncidenceList()) {
+                sb.append(String.format(" %d", d.ID));
+            }
+            sb.append(String.format(" %f %f %f\n", f.getCoordX(), f.getCoordX(), f.getWeight()));
+            out.print(sb.toString());
+        }
+        out.close();
+    }
+
 
     // for debug only
     public static void main(String[] args) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
         g.buildGraph("./input_data/test_graph_0.txt");
         Set<Vertex> vertices = g.getVertices();
-        for (Vertex v :vertices) System.out.println(v);
+        for (Vertex v : vertices) System.out.println(v);
 
         Set<Vertex> faces = g.getFaces();
-        for (Vertex f :faces) System.out.println(f);
+        for (Vertex f : faces) System.out.println(f);
 
     }
 
