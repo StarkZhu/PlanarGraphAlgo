@@ -494,25 +494,34 @@ public class SelfDualGraph {
         vList.sort(null);
 
         for (Vertex v : vList) {
-            out.printf("%d %f %f %f\n", v.ID, v.getCoordX(), v.getCoordY(), v.getWeight());
+            out.printf("%d %f %f %f\n", v.getID(), v.getCoordX(), v.getCoordY(), v.getWeight());
         }
         for (Vertex v : vList) {
             for (Dart d : v.getIncidenceList()) {
-                out.printf("%d %d %d %d %f %f\n", d.ID, d.getReverse().ID, d.getTail().ID, d.getHead().ID, d.getWeight(), d.getCapacity());
+                out.printf("%d %d %d %d %f %f\n", d.getID(), d.getReverse().getID(), d.getTail().getID(), d.getHead().getID(), d.getWeight(), d.getCapacity());
             }
         }
 
         List<Vertex> fList = new ArrayList<>(faces);
         fList.sort(null);
         for (Vertex f : fList) {
-            StringBuilder sb = new StringBuilder(String.format("%d %d", f.ID, f.getDegree()));
+            StringBuilder sb = new StringBuilder(String.format("%d %d", f.getID(), f.getDegree()));
             for (Dart d : f.getIncidenceList()) {
-                sb.append(String.format(" %d", d.ID));
+                sb.append(String.format(" %d", d.getID()));
             }
             sb.append(String.format(" %f %f %f\n", f.getCoordX(), f.getCoordX(), f.getWeight()));
             out.print(sb.toString());
         }
         out.close();
+    }
+
+    /**
+     * re-numbering all vertices, darts, faces IDs
+     * keep all positive IDs, find the maximum
+     * all negative IDs take absolute value and add previous maximum to it
+     */
+    public void renumberIDs() {
+
     }
 
 

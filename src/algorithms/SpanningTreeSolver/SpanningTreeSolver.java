@@ -52,7 +52,7 @@ public abstract class SpanningTreeSolver {
             }
             Tree.TreeNode child = primalRoot.getChildren().iterator().next();
             face  = child.getParentDart().getRight();
-            System.out.printf("Default root for dual tree is selected to be face ID = %d\n", face.ID);
+            System.out.printf("Default root for dual tree is selected to be face ID = %d\n", face.getID());
         }
         treeAndcoTree[1] = new Tree(face);
         buildCoTree(treeAndcoTree[1].getRoot());

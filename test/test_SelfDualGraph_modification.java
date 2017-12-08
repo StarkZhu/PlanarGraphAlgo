@@ -25,7 +25,7 @@ public class test_SelfDualGraph_modification {
     protected Dart findDartByID(SelfDualGraph g, int dartID) {
         for (Vertex v : g.getVertices()) {
             for (Dart d : v.getIncidenceList()) {
-                if (d.ID == dartID) {
+                if (d.getID() == dartID) {
                     return d;
                 }
             }
@@ -39,22 +39,22 @@ public class test_SelfDualGraph_modification {
         Assert.assertEquals(boundaryVertexID.length, F.getDegree());
         Dart d = F.getFirstDart();
         for (int i = 0; i < F.getDegree(); i++) {
-            Assert.assertEquals(F.ID, d.getRight().ID);
-            Assert.assertEquals(F.ID, d.getReverse().getLeft().ID);
-            Assert.assertEquals(boundaryVertexID[i], d.getTail().ID);
+            Assert.assertEquals(F.getID(), d.getRight().getID());
+            Assert.assertEquals(F.getID(), d.getReverse().getLeft().getID());
+            Assert.assertEquals(boundaryVertexID[i], d.getTail().getID());
             d = d.getNext();
         }
-        Assert.assertEquals(boundaryVertexID[0], d.getTail().ID);
+        Assert.assertEquals(boundaryVertexID[0], d.getTail().getID());
     }
 
     protected void checkIncidentListOfVertex(Vertex V, int[] incidentVertexID) {
         Assert.assertEquals(incidentVertexID.length, V.getDegree());
         Dart d = V.getFirstDart();
         for (int i = 0; i < V.getDegree(); i++) {
-            Assert.assertEquals(incidentVertexID[i], d.getHead().ID);
+            Assert.assertEquals(incidentVertexID[i], d.getHead().getID());
             d = d.getSuccessor();
         }
-        Assert.assertEquals(incidentVertexID[0], d.getHead().ID);
+        Assert.assertEquals(incidentVertexID[0], d.getHead().getID());
     }
 
 
@@ -67,7 +67,7 @@ public class test_SelfDualGraph_modification {
         Dart[] darts = new Dart[22];
         for (Vertex v : g.getVertices()) {
             for (Dart d : v.getIncidenceList()) {
-                darts[d.ID] = d;
+                darts[d.getID()] = d;
             }
         }
         g.deleteEdge(darts[16]);
@@ -82,11 +82,11 @@ public class test_SelfDualGraph_modification {
         Assert.assertEquals(4, g.getFaceNum());
         Dart d8 = findDartByID(g, 8);
         Vertex V = d8.getTail();
-        Assert.assertEquals(5, V.ID);
+        Assert.assertEquals(5, V.getID());
         int[] incidentVertexID = new int[]{5, 2, 5, 5, 2, 5};
         checkIncidentListOfVertex(V, incidentVertexID);
         Vertex F = d8.getLeft();
-        Assert.assertEquals(0, F.ID);
+        Assert.assertEquals(0, F.getID());
         int[] boundaryVertexID = new int[]{2, 5, 5};
         checkIncidentListOfFace(F, boundaryVertexID);
 
@@ -98,7 +98,7 @@ public class test_SelfDualGraph_modification {
         checkIncidentListOfVertex(V, incidentVertexID);
         Dart d21 = findDartByID(g, 21);
         F = d21.getLeft();
-        Assert.assertEquals(1, F.ID);
+        Assert.assertEquals(1, F.getID());
         boundaryVertexID = new int[]{5, 2, 5};
         checkIncidentListOfFace(F, boundaryVertexID);
 
@@ -125,13 +125,13 @@ public class test_SelfDualGraph_modification {
 
         Dart d13 = findDartByID(g, 13);
         Vertex V = d13.getTail();
-        Assert.assertEquals(5, V.ID);
+        Assert.assertEquals(5, V.getID());
         Assert.assertEquals(3, V.getDegree());
         int[] incidentVertexID = new int[]{4, 0, 2};
         checkIncidentListOfVertex(V, incidentVertexID);
 
         Vertex F = d13.getRight();
-        Assert.assertEquals(1, F.ID);
+        Assert.assertEquals(1, F.getID());
         Assert.assertEquals(4, F.getDegree());
         int[] boundaryVertexID = new int[]{3, 2, 5, 4};
         checkIncidentListOfFace(F, boundaryVertexID);
@@ -142,7 +142,7 @@ public class test_SelfDualGraph_modification {
         Dart[] darts = new Dart[22];
         for (Vertex v : g.getVertices()) {
             for (Dart d : v.getIncidenceList()) {
-                darts[d.ID] = d;
+                darts[d.getID()] = d;
             }
         }
         g.deleteEdge(darts[16]);

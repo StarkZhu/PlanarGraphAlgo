@@ -14,10 +14,10 @@ public class test_SpanningTree {
         try {
             g.buildGraph("./input_data/test_graph_0.txt");
             for (Vertex v : g.getVertices()) {
-                if (v.ID == 0) treeRootVertex = v;
+                if (v.getID() == 0) treeRootVertex = v;
             }
             for (Vertex f : g.getFaces()) {
-                if (f.ID == 0) coTreeRootVertex = f;
+                if (f.getID() == 0) coTreeRootVertex = f;
             }
         } catch (FileNotFoundException e) {
             Assert.assertTrue(false);

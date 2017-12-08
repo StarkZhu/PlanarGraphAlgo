@@ -20,35 +20,35 @@ public class test_RootFinder {
     public void testGivenIdRoot() {
         RootFinder rf = new SpecificIdRootFinder();
         Vertex root = rf.selectRootVertex(g);
-        Assert.assertEquals(0, root.ID);
+        Assert.assertEquals(0, root.getID());
         root = rf.selectRootFace(g);
-        Assert.assertEquals(0, root.ID);
+        Assert.assertEquals(0, root.getID());
     }
 
     @Test
     public void testMaxDegreeRoot() {
         RootFinder rf = new MaxDegreeRootFinder();
         Vertex root = rf.selectRootVertex(g);
-        Assert.assertEquals(5, root.ID);
+        Assert.assertEquals(5, root.getID());
         root = rf.selectRootFace(g);
-        Assert.assertEquals(1, root.ID);
+        Assert.assertEquals(1, root.getID());
     }
 
     @Test
     public void testMinDegreeRoot() {
         RootFinder rf = new MinDegreeRootFinder();
         Vertex root = rf.selectRootVertex(g);
-        Assert.assertEquals(1, root.ID);
+        Assert.assertEquals(1, root.getID());
         root = rf.selectRootFace(g);
-        Assert.assertEquals(3, root.ID);
+        Assert.assertEquals(3, root.getID());
     }
 
     @Test
     public void testRandomRoot() {
         RootFinder rf = new RandomRootFinder();
         Vertex root = rf.selectRootVertex(g);
-        Assert.assertTrue(root.ID >= 0 && root.ID <= 5);
+        Assert.assertTrue(root.getID() >= 0 && root.getID() <= 5);
         root = rf.selectRootFace(g);
-        Assert.assertTrue(root.ID >= 0 && root.ID <= 6);
+        Assert.assertTrue(root.getID() >= 0 && root.getID() <= 6);
     }
 }

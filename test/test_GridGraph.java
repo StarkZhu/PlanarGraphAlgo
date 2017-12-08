@@ -29,7 +29,7 @@ public class test_GridGraph {
         Set<Integer> expectedID = new HashSet<>();
         for (int i : expectedVerticies) expectedID.add(i);
         for (Vertex v : separator) {
-            Assert.assertTrue(expectedID.contains(v.ID));
+            Assert.assertTrue(expectedID.contains(v.getID()));
         }
     }
 

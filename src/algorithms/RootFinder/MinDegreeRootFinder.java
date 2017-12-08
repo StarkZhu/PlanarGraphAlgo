@@ -11,7 +11,7 @@ public class MinDegreeRootFinder extends RootFinder {
         for (Vertex v : vertices) {
             if (root == null || v.getDegree() < root.getDegree()) {
                 root = v;
-            } else if (v.getDegree() == root.getDegree() && v.ID > root.ID) {
+            } else if (v.getDegree() == root.getDegree() && v.getID() > root.getID()) {
                 root = v;
             }
         }

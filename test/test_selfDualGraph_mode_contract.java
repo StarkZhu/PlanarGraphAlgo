@@ -14,27 +14,27 @@ public class test_selfDualGraph_mode_contract extends test_SelfDualGraph_modific
         Vertex V = dart.getTail();
 
         // check degree
-        Assert.assertEquals(5, F.ID);
+        Assert.assertEquals(5, F.getID());
         Assert.assertEquals(2, F.getDegree());
-        Assert.assertEquals(0, V.ID);
+        Assert.assertEquals(0, V.getID());
         Assert.assertEquals(5, V.getDegree());
 
         // check local pointers
         Dart prev = dart.getPrev();
         Dart next = dart.getNext();
         Dart succ = dart.getSuccessor();
-        Assert.assertEquals(14, prev.ID);
-        Assert.assertEquals(12, next.ID);
-        Assert.assertEquals(0, succ.ID);
-        Assert.assertEquals(12, prev.getNext().ID);
-        Assert.assertEquals(14, next.getPrev().ID);
-        Assert.assertEquals(11, succ.getPrev().ID);
-        Assert.assertEquals(0, succ.getPrev().getNext().ID);
+        Assert.assertEquals(14, prev.getID());
+        Assert.assertEquals(12, next.getID());
+        Assert.assertEquals(0, succ.getID());
+        Assert.assertEquals(12, prev.getNext().getID());
+        Assert.assertEquals(14, next.getPrev().getID());
+        Assert.assertEquals(11, succ.getPrev().getID());
+        Assert.assertEquals(0, succ.getPrev().getNext().getID());
 
-        Assert.assertEquals(10, succ.getPredecessor().ID);
-        Assert.assertEquals(0, succ.getPredecessor().getSuccessor().ID);
-        Assert.assertEquals(15, next.getPredecessor().ID);
-        Assert.assertEquals(12, next.getPredecessor().getSuccessor().ID);
+        Assert.assertEquals(10, succ.getPredecessor().getID());
+        Assert.assertEquals(0, succ.getPredecessor().getSuccessor().getID());
+        Assert.assertEquals(15, next.getPredecessor().getID());
+        Assert.assertEquals(12, next.getPredecessor().getSuccessor().getID());
 
         // check incident list of V
         int[] boundaryVertexID = new int[]{1, 2, 5, 5, 3};
@@ -58,27 +58,27 @@ public class test_selfDualGraph_mode_contract extends test_SelfDualGraph_modific
         Vertex V = dart.getTail();
 
         // check degree
-        Assert.assertEquals(1, F.ID);
+        Assert.assertEquals(1, F.getID());
         Assert.assertEquals(4, F.getDegree());
-        Assert.assertEquals(5, V.ID);
+        Assert.assertEquals(5, V.getID());
         Assert.assertEquals(7, V.getDegree());
 
         // check local pointers
         Dart prev = dart.getPrev();
         Dart next = dart.getNext();
         Dart succ = dart.getSuccessor();
-        Assert.assertEquals(20, prev.ID);
-        Assert.assertEquals(10, next.ID);
-        Assert.assertEquals(14, succ.ID);
-        Assert.assertEquals(10, prev.getNext().ID);
-        Assert.assertEquals(20, next.getPrev().ID);
-        Assert.assertEquals(8, succ.getPrev().ID);
-        Assert.assertEquals(14, succ.getPrev().getNext().ID);
+        Assert.assertEquals(20, prev.getID());
+        Assert.assertEquals(10, next.getID());
+        Assert.assertEquals(14, succ.getID());
+        Assert.assertEquals(10, prev.getNext().getID());
+        Assert.assertEquals(20, next.getPrev().getID());
+        Assert.assertEquals(8, succ.getPrev().getID());
+        Assert.assertEquals(14, succ.getPrev().getNext().getID());
 
-        Assert.assertEquals(9, succ.getPredecessor().ID);
-        Assert.assertEquals(14, succ.getPredecessor().getSuccessor().ID);
-        Assert.assertEquals(21, next.getPredecessor().ID);
-        Assert.assertEquals(10, next.getPredecessor().getSuccessor().ID);
+        Assert.assertEquals(9, succ.getPredecessor().getID());
+        Assert.assertEquals(14, succ.getPredecessor().getSuccessor().getID());
+        Assert.assertEquals(21, next.getPredecessor().getID());
+        Assert.assertEquals(10, next.getPredecessor().getSuccessor().getID());
 
         // check incident list of V
         int[] boundaryVertexID = new int[]{0, 2, 2, 5, 5, 3, 0};
@@ -102,27 +102,27 @@ public class test_selfDualGraph_mode_contract extends test_SelfDualGraph_modific
         Vertex V = dart.getTail();
 
         // check degree
-        Assert.assertEquals(2, F.ID);
+        Assert.assertEquals(2, F.getID());
         Assert.assertEquals(1, F.getDegree());
-        Assert.assertEquals(5, V.ID);
+        Assert.assertEquals(5, V.getID());
         Assert.assertEquals(8, V.getDegree());
 
         // check local pointers
         Dart prev = dart.getPrev();
         Dart next = dart.getNext();
         Dart succ = dart.getSuccessor();
-        Assert.assertEquals(18, prev.ID);
-        Assert.assertEquals(18, next.ID);
-        Assert.assertEquals(3, succ.ID);
-        Assert.assertEquals(18, prev.getNext().ID);
-        Assert.assertEquals(18, next.getPrev().ID);
-        Assert.assertEquals(15, succ.getPrev().ID);
-        Assert.assertEquals(3, succ.getPrev().getNext().ID);
+        Assert.assertEquals(18, prev.getID());
+        Assert.assertEquals(18, next.getID());
+        Assert.assertEquals(3, succ.getID());
+        Assert.assertEquals(18, prev.getNext().getID());
+        Assert.assertEquals(18, next.getPrev().getID());
+        Assert.assertEquals(15, succ.getPrev().getID());
+        Assert.assertEquals(3, succ.getPrev().getNext().getID());
 
-        Assert.assertEquals(14, succ.getPredecessor().ID);
-        Assert.assertEquals(3, succ.getPredecessor().getSuccessor().ID);
-        Assert.assertEquals(19, next.getPredecessor().ID);
-        Assert.assertEquals(18, next.getPredecessor().getSuccessor().ID);
+        Assert.assertEquals(14, succ.getPredecessor().getID());
+        Assert.assertEquals(3, succ.getPredecessor().getSuccessor().getID());
+        Assert.assertEquals(19, next.getPredecessor().getID());
+        Assert.assertEquals(18, next.getPredecessor().getSuccessor().getID());
 
         // check incident list of V
         int[] boundaryVertexID = new int[]{4, 0, 0, 3, 5, 5, 5, 5};
@@ -149,20 +149,20 @@ public class test_selfDualGraph_mode_contract extends test_SelfDualGraph_modific
         Vertex V = dart.getHead();
 
         // check degree
-        Assert.assertEquals(6, F.ID);
+        Assert.assertEquals(6, F.getID());
         Assert.assertEquals(4, F.getDegree());
-        Assert.assertEquals(3, V.ID);
+        Assert.assertEquals(3, V.getID());
         Assert.assertEquals(2, V.getDegree());
 
         // check local pointers
         Dart prev = dart.getReverse().getPrev();
         Dart next = dart.getNext();
-        Assert.assertEquals(7, prev.ID);
-        Assert.assertEquals(11, next.ID);
-        Assert.assertEquals(11, prev.getNext().ID);
-        Assert.assertEquals(7, next.getPrev().ID);
-        Assert.assertEquals(6, next.getPredecessor().ID);
-        Assert.assertEquals(11, prev.getReverse().getSuccessor().ID);
+        Assert.assertEquals(7, prev.getID());
+        Assert.assertEquals(11, next.getID());
+        Assert.assertEquals(11, prev.getNext().getID());
+        Assert.assertEquals(7, next.getPrev().getID());
+        Assert.assertEquals(6, next.getPredecessor().getID());
+        Assert.assertEquals(11, prev.getReverse().getSuccessor().getID());
 
         // check incident list of F
         int[] boundaryVertexID = new int[]{4, 0, 2, 3};

@@ -35,7 +35,7 @@ public class test_Separator {
         Set<Integer> expectedID = new HashSet<>();
         for (int i : expectedVerticies) expectedID.add(i);
         for (Vertex v : separator) {
-            Assert.assertTrue(expectedID.contains(v.ID));
+            Assert.assertTrue(expectedID.contains(v.getID()));
         }
     }
 
@@ -47,7 +47,7 @@ public class test_Separator {
         q.add(node);
         while (!q.isEmpty()) {
             node = q.poll();
-            if (ids.contains(node.getData().ID)) {
+            if (ids.contains(node.getData().getID())) {
                 node.setSelfWeight(0);
             }
             q.addAll(node.getChildren());
@@ -67,11 +67,11 @@ public class test_Separator {
         q.add(tree.getRoot());
         while (!q.isEmpty()) {
             Tree.TreeNode node = q.poll();
-            if (selfWeight.containsKey(node.getData().ID)) {
-                Assert.assertEquals(selfWeight.get(node.getData().ID), node.getSelfWeight(), 0.00001);
+            if (selfWeight.containsKey(node.getData().getID())) {
+                Assert.assertEquals(selfWeight.get(node.getData().getID()), node.getSelfWeight(), 0.00001);
             }
-            if (weightSum.containsKey(node.getData().ID)) {
-                Assert.assertEquals(weightSum.get(node.getData().ID), node.getDescendantWeightSum(), 0.00001);
+            if (weightSum.containsKey(node.getData().getID())) {
+                Assert.assertEquals(weightSum.get(node.getData().getID()), node.getDescendantWeightSum(), 0.00001);
             }
             q.addAll(node.getChildren());
         }
@@ -83,18 +83,18 @@ public class test_Separator {
         Assert.assertEquals(10, root.getDescendantWeightSum(), 0.0001);
         Separator sp = new LevelSeparator();
         Tree.TreeNode vertexSeparator = sp.leafmostHeavyVertex(root, 0.4, root.getDescendantWeightSum());
-        Assert.assertEquals(2, vertexSeparator.getData().ID);
+        Assert.assertEquals(2, vertexSeparator.getData().getID());
 
         root = trees[1].getRoot();
         Assert.assertEquals(18.05, root.getDescendantWeightSum(), 0.0001);
         vertexSeparator = sp.leafmostHeavyVertex(root, 0.5, root.getDescendantWeightSum());
-        Assert.assertEquals(6, vertexSeparator.getData().ID);
+        Assert.assertEquals(6, vertexSeparator.getData().getID());
     }
 
     @Test
     public void testVertexSeparator() {
         Vertex v = new LevelSeparator().findVertexSeparator(trees[1]);
-        Assert.assertEquals(6, v.ID);
+        Assert.assertEquals(6, v.getID());
     }
 
     @Test
@@ -147,13 +147,13 @@ public class test_Separator {
         Separator sp = new FundamentalCycleSeparator();
         Dart separator = sp.findEdgeSeparator(trees[1]);
         Assert.assertEquals(16.8, trees[1].getRoot().getDescendantWeightSum(), 0.001);
-        Assert.assertTrue(separator.ID == 10 || separator.ID == 11);
+        Assert.assertTrue(separator.getID() == 10 || separator.getID() == 11);
 
         TreeWeightAssigner twa = new VertexWeight();
         twa.calcWeightSum(trees[1].getRoot());
         separator = sp.findEdgeSeparator(trees[1]);
         Assert.assertEquals(5.3, trees[1].getRoot().getDescendantWeightSum(), 0.001);
-        Assert.assertTrue(separator.ID == 4 || separator.ID == 5);
+        Assert.assertTrue(separator.getID() == 4 || separator.getID() == 5);
     }
 
     @Test
@@ -165,8 +165,8 @@ public class test_Separator {
         RootFinder rf = new MaxDegreeRootFinder();
         TreeWeightAssigner twa = new VertexCount();
         Tree[] trees = sts.buildTreeCoTree(g, rf.selectRootVertex(g), null);
-        Assert.assertEquals(3, trees[0].getRoot().getData().ID);
-        Assert.assertEquals(0, trees[1].getRoot().getData().ID);
+        Assert.assertEquals(3, trees[0].getRoot().getData().getID());
+        Assert.assertEquals(0, trees[1].getRoot().getData().getID());
         FundamentalCycleSeparator sp = new FundamentalCycleSeparator();
         sp.assignCotreeWeight(twa, trees);
         double[][] coTreeWeightSum = new double[][] {{0, 8}, {1, 1}, {4, 3}, {5, 5}, {6, 1}};
@@ -189,8 +189,8 @@ public class test_Separator {
         RootFinder rf = new MinDegreeRootFinder();
         TreeWeightAssigner twa = new EdgeWeight();
         Tree[] trees = sts.buildTreeCoTree(g, rf.selectRootVertex(g), null);
-        Assert.assertEquals(2, trees[0].getRoot().getData().ID);
-        Assert.assertEquals(4, trees[1].getRoot().getData().ID);
+        Assert.assertEquals(2, trees[0].getRoot().getData().getID());
+        Assert.assertEquals(4, trees[1].getRoot().getData().getID());
         FundamentalCycleSeparator sp = new FundamentalCycleSeparator();
         sp.assignCotreeWeight(twa, trees);
         double[][] coTreeWeightSum = new double[][] {{0, 3.5}, {1, 8.25}, {4, 11.5}, {5, 10.25}, {6, 7}};

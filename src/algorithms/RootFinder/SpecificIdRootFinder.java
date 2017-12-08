@@ -19,7 +19,7 @@ public  class SpecificIdRootFinder extends RootFinder {
     @Override
     public Vertex selectRoot(Set<Vertex> vertices) {
         for (Vertex v : vertices) {
-            if (v.ID == rootID) return v;
+            if (v.getID() == rootID) return v;
         }
         throw new RuntimeException(String.format("No vertex has ID %d", rootID));
     }

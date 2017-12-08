@@ -81,10 +81,10 @@ public class test_SelfDualGraph_basic {
         int[] vertexDegree = new int[]{4, 2, 4, 3, 3, 6};
         int[] faceDegree = new int[]{4, 5, 2, 1, 3, 3, 4};
         for (Vertex v : g.getVertices()) {
-            Assert.assertEquals(vertexDegree[v.ID], v.getDegree());
+            Assert.assertEquals(vertexDegree[v.getID()], v.getDegree());
         }
         for (Vertex f : g.getFaces()) {
-            Assert.assertEquals(faceDegree[f.ID], f.getDegree());
+            Assert.assertEquals(faceDegree[f.getID()], f.getDegree());
         }
     }
 
@@ -92,7 +92,7 @@ public class test_SelfDualGraph_basic {
     public void testReverse() {
         for (Vertex v : g.getVertices()) {
             for (Dart d : v.getIncidenceList()) {
-                Assert.assertEquals(1, Math.abs(d.ID - d.getReverse().ID));
+                Assert.assertEquals(1, Math.abs(d.getID() - d.getReverse().getID()));
             }
         }
     }
@@ -110,13 +110,13 @@ public class test_SelfDualGraph_basic {
         };
         for (Vertex face : g.getFaces()) {
             Dart d = face.getFirstDart();
-            Assert.assertEquals(boundaryVertexIDs[face.ID].length - 1, face.getDegree());
-            Assert.assertEquals(boundaryVertexIDs[face.ID][0], d.getTail().ID);
-            Assert.assertEquals(boundaryVertexIDs[face.ID][0], d.getPrev().getHead().ID);
+            Assert.assertEquals(boundaryVertexIDs[face.getID()].length - 1, face.getDegree());
+            Assert.assertEquals(boundaryVertexIDs[face.getID()][0], d.getTail().getID());
+            Assert.assertEquals(boundaryVertexIDs[face.getID()][0], d.getPrev().getHead().getID());
             for (int i = 0; i < face.getDegree(); i++) {
-                Assert.assertEquals(boundaryVertexIDs[face.ID][i + 1], d.getHead().ID);
+                Assert.assertEquals(boundaryVertexIDs[face.getID()][i + 1], d.getHead().getID());
                 d = d.getNext();
-                Assert.assertEquals(boundaryVertexIDs[face.ID][i], d.getPrev().getTail().ID);
+                Assert.assertEquals(boundaryVertexIDs[face.getID()][i], d.getPrev().getTail().getID());
             }
         }
     }
@@ -136,7 +136,7 @@ public class test_SelfDualGraph_basic {
             int i = 0;
             for (Dart d : face.getIncidenceList()) {
                 Assert.assertEquals(face, d.getRight());
-                Assert.assertEquals(leftFaceIDs[face.ID][i++], d.getLeft().ID);
+                Assert.assertEquals(leftFaceIDs[face.getID()][i++], d.getLeft().getID());
             }
         }
     }

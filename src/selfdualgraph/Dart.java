@@ -14,7 +14,7 @@ public class Dart implements Comparable<Dart> {
     // static variables
     public static int uniqueID = 0;
 
-    public final int ID;
+    private int ID;
     private double weight, capacity;
     private Vertex tail, head, left, right;
     private Dart reverse, successor, predecessor, next, prev;
@@ -27,6 +27,14 @@ public class Dart implements Comparable<Dart> {
         weight = w;
         capacity = c;
         visited = false;
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
     }
 
     public Dart(Vertex t, Vertex h) {

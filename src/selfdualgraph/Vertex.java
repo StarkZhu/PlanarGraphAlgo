@@ -16,7 +16,7 @@ public class Vertex implements Comparable<Vertex>{
     public static int uniqueID = 0;
 
     public final String type;
-    public final int ID;
+    private int ID;
     private float coordX, coordY;
     private double weight;
     //List<Dart> incidenceList;   // package protected
@@ -39,6 +39,14 @@ public class Vertex implements Comparable<Vertex>{
     @Override
     public int compareTo(Vertex other) {
         return this.ID - other.ID;
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
     }
 
     public Vertex(int ID, String type) {
