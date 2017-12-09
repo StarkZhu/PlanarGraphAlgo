@@ -521,7 +521,34 @@ public class SelfDualGraph {
      * all negative IDs take absolute value and add previous maximum to it
      */
     public void renumberIDs() {
+        int maxVID = -1;
+        int maxDID = -1;
+        for (Vertex v : vertices) {
+            maxVID = Math.max(maxVID, v.getID());
+            for (Dart d : v.getIncidenceList()) {
+                maxDID = Math.max(maxDID, d.getID());
+            }
+        }
+        for (Vertex v : vertices) {
+            if (v.getID() < 0) {
+                v.setID(++maxVID);
+            }
+            for (Dart d : v.getIncidenceList()) {
+                if (d.getID() < 0) {
+                    d.setID(++maxDID);
+                }
+            }
+        }
 
+        int maxFID = -1;
+        for (Vertex f : faces) {
+            maxFID = Math.max(maxFID, f.getID());
+        }
+        for (Vertex f : faces) {
+            if (f.getID() < 0) {
+                f.setID(++maxFID);
+            }
+        }
     }
 
 
