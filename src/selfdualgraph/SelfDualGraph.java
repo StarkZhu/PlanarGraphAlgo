@@ -467,6 +467,10 @@ public class SelfDualGraph {
         head.getTail().incrementDegree();
     }
 
+    /**
+     * triangulate the entire graph
+     * any face with degree more than 3 will be divided by adding edges between a selected vertex and all non-adjacent vertices
+     */
     public void triangulate() {
         Set<Vertex> oldFaces = new HashSet<>(faces);
         for (Vertex face : oldFaces) {
@@ -481,6 +485,11 @@ public class SelfDualGraph {
         }
     }
 
+    /**
+     * save the current planar graph to test file, for future read and re-use
+     * @param fileName
+     * @throws FileNotFoundException
+     */
     public void saveToFile(String fileName) throws FileNotFoundException {
         PrintWriter out = new PrintWriter(fileName);
         int vNum = vertices.size();
@@ -548,6 +557,51 @@ public class SelfDualGraph {
             if (f.getID() < 0) {
                 f.setID(++maxFID);
             }
+        }
+    }
+
+    /**
+     * add a vertex on the given face, connect the new vertex to all vertices incidental to the face
+     * @param face
+     */
+    public void addVertex(Vertex face) {
+        Vertex vertex = new Vertex(Vertex.VERTEX);
+        vertices.add(vertex);
+
+        Dart d = face.getFirstDart();
+        Dart out = new Dart(vertex, d.getTail());
+        Dart in = new Dart(d.getTail(), vertex);
+        vertex.initDart(out);
+        face.incrementDegree(2);
+
+        in.setReverse(out);
+        in.setLeft(face);
+        in.setRight(face);
+        in.setPredecessor(d.getPredecessor());
+        in.setSuccessor(d);
+        in.setNext(out);
+        in.setPrev(d.getPrev());
+
+        out.setReverse(in);
+        out.setLeft(face);
+        out.setRight(face);
+        out.setPredecessor(out);
+        out.setPredecessor(out);
+        out.setPrev(in);
+        out.setNext(d);
+
+        d.getTail().incrementDegree();
+        d.getPredecessor().setSuccessor(in);
+        d.setPredecessor(in);
+        d.getPrev().setNext(in);
+        d.setPrev(out);
+
+        d = d.getNext();
+        Dart tail = out;
+        while (d != in) {
+            addEdge(tail, d);
+            d = d.getNext();
+            tail = tail.getPredecessor();
         }
     }
 

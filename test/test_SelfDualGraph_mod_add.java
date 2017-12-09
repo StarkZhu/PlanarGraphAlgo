@@ -1,3 +1,4 @@
+import algorithms.RootFinder.SpecificIdRootFinder;
 import org.junit.*;
 import selfdualgraph.*;
 
@@ -116,5 +117,22 @@ public class test_SelfDualGraph_mod_add extends test_SelfDualGraph_modification{
 
         checkIncidentListOfVertex(d.getTail(), new int[]{4, 0, 2, 2, 3, 5, 5, 3, 3});
         checkIncidentListOfVertex(d.getHead(), new int[]{1, 4, 5, 5, 5, 2, 2});
+    }
+
+    @Test
+    public void testAddVertex() {
+        g.addVertex(findDartByID(g, 14).getRight());
+        Assert.assertEquals(7, g.getVertexNum());
+        Assert.assertEquals(9, g.getFaceNum());
+        checkIncidentListOfVertex(findDartByID(g, 14).getTail(), new int[]{4, -1, 0, 2, 2, 5, 5});
+        checkIncidentListOfVertex(findDartByID(g, 12).getTail(), new int[]{0, -1, 5, 3});
+        checkIncidentListOfVertex(findDartByID(g, 8).getTail(), new int[]{1, 2, 5, -1, 4});
+
+        Vertex v = new SpecificIdRootFinder(-1).selectRoot(g.getVertices());
+        checkIncidentListOfVertex(v, new int[]{4, 0, 5});
+
+        checkIncidentListOfFace(findDartByID(g, 12).getRight(), new int[]{-1, 4, 5});
+        checkIncidentListOfFace(findDartByID(g, 14).getRight(), new int[]{-1, 5, 0});
+        checkIncidentListOfFace(findDartByID(g, 8).getRight(), new int[]{0, 4, -1});
     }
 }
