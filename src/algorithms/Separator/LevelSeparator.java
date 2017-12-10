@@ -75,14 +75,5 @@ public class LevelSeparator extends Separator {
         return subgraphs;
     }
 
-    /**
-     * all vertices above mid-level is one subgraph, the rest is the other one
-     * both subgraph include the level separator, for future r-division use
-     */
-    private void buildSubgraphs(List<Set<Tree.TreeNode>> levelList, int mLevel) {
-        subgraphs = new Set[2];
-        subgraphs[0] = getVerticesBetweenLevels(levelList, 0, mLevel);
-        subgraphs[1] = getVerticesBetweenLevels(levelList, mLevel, levelList.size() - 1);
-    }
 
 }

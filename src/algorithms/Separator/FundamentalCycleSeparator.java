@@ -112,6 +112,21 @@ public class FundamentalCycleSeparator extends Separator{
     }
 
 
+    /**
+     * all vertices inside the cycle is one subgraph, the rest is the other one
+     * both subgraph includes the level separator, for future r-division use
+     */
+    protected void buildSubgraphs(Tree.TreeNode separatorNode) {
+        subgraphs = new Set[2];
+        Set<Vertex> insideFaces = getDescendantVertices(separatorNode);
+
+        subgraphs[0] = getIncidentalVertices(insideFaces);
+        subgraphs[1] = g.getVertices();
+        subgraphs[1].removeAll(subgraphs[0]);
+        subgraphs[1].addAll(separator);
+    }
+
+
     @Override
     public Set<Vertex>[] findSubgraphs() {
         if (separator == null) {
@@ -120,30 +135,5 @@ public class FundamentalCycleSeparator extends Separator{
         return subgraphs;
     }
 
-    /**
-     * all vertices inside the cycle is one subgraph, the rest is the other one
-     * both subgraph includes the level separator, for future r-division use
-     */
-    private void buildSubgraphs(Tree.TreeNode separatorNode) {
-        subgraphs = new Set[2];
-        Set<Vertex> insideFaces = new HashSet<>();
-        Queue<Tree.TreeNode> q = new LinkedList<>();
-        q.add(separatorNode);
-        while (!q.isEmpty()) {
-            Tree.TreeNode node = q.poll();
-            insideFaces.add(node.getData());
-            q.addAll(node.getChildren());
-        }
-
-        subgraphs[0] = new HashSet<>();
-        for (Vertex f : insideFaces) {
-            for (Dart d : f.getIncidenceList()) {
-                subgraphs[0].add(d.getTail());
-            }
-        }
-        subgraphs[1] = g.getVertices();
-        subgraphs[1].removeAll(subgraphs[0]);
-        subgraphs[1].addAll(separator);
-    }
 
 }

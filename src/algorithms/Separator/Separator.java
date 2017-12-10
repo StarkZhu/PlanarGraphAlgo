@@ -197,6 +197,13 @@ public abstract class Separator {
         return map;
     }
 
+    /**
+     * give a list of TreeNodes for each level, find the set of vertices within the given level range
+     * @param list
+     * @param startLevel
+     * @param endLevel
+     * @return
+     */
     protected Set<Vertex> getVerticesBetweenLevels(List<Set<Tree.TreeNode>> list, int startLevel, int endLevel) {
         Set<Vertex> vertices = new HashSet<>();
         if (startLevel < 0 || endLevel < startLevel || endLevel >= list.size()) {
@@ -209,6 +216,49 @@ public abstract class Separator {
             }
         }
         return vertices;
+    }
+
+    /**
+     * give a TreeNode, find all vertices stored in its descendant nodes
+     * @param root
+     * @return
+     */
+    protected Set<Vertex> getDescendantVertices(Tree.TreeNode root) {
+        Set<Vertex> childrenVertices = new HashSet<>();
+        Queue<Tree.TreeNode> q = new LinkedList<>();
+        q.add(root);
+        while (!q.isEmpty()) {
+            Tree.TreeNode node = q.poll();
+            childrenVertices.add(node.getData());
+            q.addAll(node.getChildren());
+        }
+        return childrenVertices;
+    }
+
+    /**
+     * given a set of faces, find all incidental vertices
+     * @param faces
+     * @return
+     */
+    protected Set<Vertex> getIncidentalVertices(Set<Vertex> faces) {
+        Set<Vertex> vertices = new HashSet<>();
+        for (Vertex f : faces) {
+            for (Dart d : f.getIncidenceList()) {
+                vertices.add(d.getTail());
+            }
+        }
+        return vertices;
+    }
+
+
+    /**
+     * all vertices above mid-level is one subgraph, the rest is the other one
+     * both subgraph include the level separator, for future r-division use
+     */
+    protected void buildSubgraphs(List<Set<Tree.TreeNode>> levelList, int mLevel) {
+        subgraphs = new Set[2];
+        subgraphs[0] = getVerticesBetweenLevels(levelList, 0, mLevel);
+        subgraphs[1] = getVerticesBetweenLevels(levelList, mLevel, levelList.size() - 1);
     }
 
     public static void main(String[] args) {

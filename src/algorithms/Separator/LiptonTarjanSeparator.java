@@ -21,12 +21,10 @@ public class LiptonTarjanSeparator extends Separator {
         return findSeparator(null);
     }
 
-    /**
-     * G has to be triangulated
-     * @param rf
-     * @return
-     */
     public Set<Vertex> findSeparator(RootFinder rf) {
+        g.flatten();
+        g.triangulate();
+
         // Primal tree must be built with BFS
         SpanningTreeSolver sts = new BFSsolver();
         TreeWeightAssigner vertexCountTWA = new VertexCount();
@@ -48,6 +46,7 @@ public class LiptonTarjanSeparator extends Separator {
 
         if (list.get(mLevel).size() < 2 * sqrtN) {
             Set<Vertex> Lm = getVerticesBetweenLevels(list, mLevel, mLevel);
+            buildSubgraphs(list, mLevel);
             return Lm;
         }
 
@@ -87,6 +86,7 @@ public class LiptonTarjanSeparator extends Separator {
         separator.addAll(getVerticesBetweenLevels(list, aLevel, aLevel));
         separator.addAll(getVerticesBetweenLevels(list, zLevel, zLevel));
 
+        buildSubgraphs(list, aLevel, zLevel, separatorNode);
         return separator;
     }
 
@@ -97,6 +97,44 @@ public class LiptonTarjanSeparator extends Separator {
             findSeparator();
         }
         return subgraphs;
+    }
+
+    /**
+     * use the 2 levels and the fundamental cycle to construct the most balanced subgraphs
+     * @param levelList
+     * @param aLevel
+     * @param zLevel
+     * @param separatorNode
+     */
+    private void buildSubgraphs(List<Set<Tree.TreeNode>> levelList, int aLevel, int zLevel, Tree.TreeNode separatorNode) {
+        subgraphs = new Set[2];
+        Set<Vertex>[] sets = new Set[4];
+        sets[0] = getVerticesBetweenLevels(levelList, 0, aLevel - 1);
+        sets[1] = getVerticesBetweenLevels(levelList, zLevel + 1, levelList.size() - 1);
+        sets[3] = getVerticesBetweenLevels(levelList, aLevel + 1, zLevel - 1);
+
+        Set<Vertex> insideFaces = getDescendantVertices(separatorNode);
+        sets[2] = getIncidentalVertices(insideFaces);
+        sets[2].retainAll(sets[3]);
+        sets[3].removeAll(sets[2]);
+        for (Set<Vertex> set : sets) set.addAll(separator);
+
+        // find the most balance combination of 4 subset vertices
+        double bestRatio = 2.0;
+        for (int i = 0; i < 4; i++) {
+            for (int j = i; j< 4; j++) {
+                Set<Vertex> subgraph = new HashSet<>(sets[i]);
+                subgraph.addAll(sets[j]);
+                double ratio = subgraph.size() * 1.0 / (g.getVertexNum() + separator.size());
+                if (Math.abs(ratio - 0.5) < Math.abs(bestRatio - 0.5)) {
+                    bestRatio = ratio;
+                    subgraphs[0] = subgraph;
+                    subgraphs[1] = g.getVertices();
+                    subgraphs[1].removeAll(subgraph);
+                    subgraphs[1].addAll(separator);
+                }
+            }
+        }
     }
 
     /*
@@ -117,6 +155,4 @@ public class LiptonTarjanSeparator extends Separator {
         return faces;
     }
     */
-
-
 }
