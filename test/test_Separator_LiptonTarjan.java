@@ -6,7 +6,7 @@ import selfdualgraph.*;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-public class test_LiptonTarjan {
+public class test_Separator_LiptonTarjan extends test_Separator{
 
     public SelfDualGraph readGraph(String fileName) {
         SelfDualGraph g = new SelfDualGraph();
@@ -20,15 +20,6 @@ public class test_LiptonTarjan {
         return g;
     }
 
-    public void verifySeparator(int[] expectedVerticies, Set<Vertex> separator) {
-        Assert.assertEquals(expectedVerticies.length, separator.size());
-        Set<Integer> expectedID = new HashSet<>();
-        for (int i : expectedVerticies) expectedID.add(i);
-        for (Vertex v : separator) {
-            Assert.assertTrue(expectedID.contains(v.getID()));
-        }
-    }
-
     @Test
     public void testLiptonTarjan(){
         SelfDualGraph g = readGraph("./input_data/test_graph_0.txt");
@@ -38,13 +29,13 @@ public class test_LiptonTarjan {
         LiptonTarjanSeparator liptonTarjan = new LiptonTarjanSeparator(g);
 
         Set<Vertex> separator = liptonTarjan.findSeparator(new SpecificIdRootFinder(0));
-        verifySeparator(new int[]{0, 3, 5}, separator);
+        verifyVertexSet(new int[]{0, 3, 5}, separator);
 
         separator = liptonTarjan.findSeparator(new SpecificIdRootFinder(2));
-        verifySeparator(new int[]{0, 3, 5}, separator);
+        verifyVertexSet(new int[]{0, 3, 5}, separator);
 
         separator = liptonTarjan.findSeparator(new SpecificIdRootFinder(5));
-        verifySeparator(new int[]{0, 3, 5, 1}, separator);
+        verifyVertexSet(new int[]{0, 3, 5, 1}, separator);
     }
 
     @Test
@@ -54,7 +45,7 @@ public class test_LiptonTarjan {
         g.triangulate();
         LiptonTarjanSeparator liptonTarjan = new LiptonTarjanSeparator(g);
         Set<Vertex> separator = liptonTarjan.findSeparator(new SpecificIdRootFinder(0));
-        verifySeparator(new int[]{0, 5, 9, 14, 10, 6}, separator);
+        verifyVertexSet(new int[]{0, 5, 9, 14, 10, 6}, separator);
     }
 
 }

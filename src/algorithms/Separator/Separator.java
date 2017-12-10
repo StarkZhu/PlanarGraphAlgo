@@ -197,6 +197,19 @@ public abstract class Separator {
         return map;
     }
 
+    protected Set<Vertex> getVerticesBetweenLevels(List<Set<Tree.TreeNode>> list, int startLevel, int endLevel) {
+        Set<Vertex> vertices = new HashSet<>();
+        if (startLevel < 0 || endLevel < startLevel || endLevel >= list.size()) {
+            System.err.println("Invalid input, returning empty set");
+            return vertices;
+        }
+        for (int i = startLevel; i <= endLevel; i++) {
+            for (Tree.TreeNode node : list.get(i)) {
+                vertices.add(node.getData());
+            }
+        }
+        return vertices;
+    }
 
     public static void main(String[] args) {
         TreeWeightAssigner tmp = new VertexWeight();

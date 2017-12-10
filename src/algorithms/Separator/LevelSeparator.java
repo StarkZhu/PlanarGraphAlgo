@@ -81,15 +81,8 @@ public class LevelSeparator extends Separator {
      */
     private void buildSubgraphs(List<Set<Tree.TreeNode>> levelList, int mLevel) {
         subgraphs = new Set[2];
-        subgraphs[0] = new HashSet<>();
-        for (int i = 0; i < mLevel; i++) {
-            for (Tree.TreeNode n : levelList.get(i)) {
-                subgraphs[0].add(n.getData());
-            }
-        }
-        subgraphs[1] = g.getVertices();
-        subgraphs[1].removeAll(subgraphs[0]);
-        subgraphs[0].addAll(separator);
+        subgraphs[0] = getVerticesBetweenLevels(levelList, 0, mLevel);
+        subgraphs[1] = getVerticesBetweenLevels(levelList, mLevel, levelList.size() - 1);
     }
 
 }
