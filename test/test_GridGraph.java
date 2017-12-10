@@ -51,22 +51,22 @@ public class test_GridGraph {
 
     @Test
     public void testLevelSeparator() {
-        Set<Vertex> separator = new LevelSeparator().findSeparator(g, null, new SpecificIdRootFinder(0), null);
+        Set<Vertex> separator = new LevelSeparator(g).findSeparator(null, new SpecificIdRootFinder(0), null);
         verifySeparator(new int[]{3, 6, 9, 12}, separator);
 
-        separator = new LevelSeparator().findSeparator(g, null, null, null);
+        separator = new LevelSeparator(g).findSeparator(null, null, null);
         verifySeparator(new int[]{2, 5, 7, 8, 13, 15}, separator);
 
         g.flatten();
         g.triangulate();
-        separator = new LevelSeparator().findSeparator(g, null, null, null);
+        separator = new LevelSeparator(g).findSeparator(null, null, null);
         verifySeparator(new int[]{1, 2, 3, 4, 5, 7, 8, 11, 12, 13, 14, 15}, separator);
     }
 
     @Test
     public void testFCS_FaceCount() {
-        FundamentalCycleSeparator sp = new FundamentalCycleSeparator();
-        Set<Vertex> separator = sp.findSeparator(g, null, new SpecificIdRootFinder(0), null, -1);
+        FundamentalCycleSeparator sp = new FundamentalCycleSeparator(g);
+        Set<Vertex> separator = sp.findSeparator(null, new SpecificIdRootFinder(0), null, -1);
         verifySeparator(new int[]{0, 1, 4, 5, 8, 9, 12, 13}, separator);
     }
 }

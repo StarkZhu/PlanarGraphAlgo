@@ -12,19 +12,21 @@ import java.util.*;
  */
 public class LiptonTarjanSeparator extends Separator {
 
+    public LiptonTarjanSeparator(SelfDualGraph g) {
+        super(g);
+    }
+
     @Override
-    public Set<Vertex> findSeparator(SelfDualGraph g) {
-        return findSeparator(g, null);
+    public Set<Vertex> findSeparator() {
+        return findSeparator(null);
     }
 
     /**
      * G has to be triangulated
-     *
-     * @param g
      * @param rf
      * @return
      */
-    public Set<Vertex> findSeparator(SelfDualGraph g, RootFinder rf) {
+    public Set<Vertex> findSeparator(RootFinder rf) {
         // Primal tree must be built with BFS
         SpanningTreeSolver sts = new BFSsolver();
         TreeWeightAssigner vertexCountTWA = new VertexCount();
@@ -79,7 +81,7 @@ public class LiptonTarjanSeparator extends Separator {
         vertexWeightTWA.calcWeightSum(coTreeRoot);
         Tree.TreeNode separatorNode = leafmostHeavyVertex(coTreeRoot, 1.0 / 3, coTreeRoot.getDescendantWeightSum());
         Dart separatorDart = separatorNode.getParentDart();
-        Set<Vertex> separator = getCycle(trees[0], separatorDart);
+        separator = getCycle(trees[0], separatorDart);
 
         separator.retainAll(heavyMiddle);
         separator.addAll(getVerticesBetweenLevels(list, aLevel, aLevel));
@@ -102,6 +104,15 @@ public class LiptonTarjanSeparator extends Separator {
         return vertices;
     }
 
+    @Override
+    public Set<Vertex>[] findSubgraphs() {
+        if (separator == null) {
+            findSeparator();
+        }
+        return subgraphs;
+    }
+
+    /*
     private Set<Vertex> getFacesBetweenLevels(List<Set<Tree.TreeNode>> list, int startLevel, int endLevel) {
         Set<Vertex> vertices = new HashSet<>();
         if (startLevel < 0 || endLevel < startLevel || endLevel >= list.size()) {
@@ -118,6 +129,7 @@ public class LiptonTarjanSeparator extends Separator {
         }
         return faces;
     }
+    */
 
 
 }

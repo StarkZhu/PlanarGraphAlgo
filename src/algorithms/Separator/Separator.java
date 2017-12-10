@@ -6,8 +6,16 @@ import selfdualgraph.*;
 import java.util.*;
 
 public abstract class Separator {
+    protected SelfDualGraph g;
+    protected Set<Vertex> separator;
+    protected Set<Vertex>[] subgraphs;
 
-    public abstract Set<Vertex> findSeparator(SelfDualGraph g);
+    public Separator(SelfDualGraph g) {
+        this.g = g;
+    }
+
+    public abstract Set<Vertex> findSeparator();
+    public abstract Set<Vertex>[] findSubgraphs();
 
     /**
      * linear-time to find a vertex such that w(v0) > alpha * totalW, and every child v of v0 has w(v) <= alpha * totalW
@@ -71,7 +79,7 @@ public abstract class Separator {
      * @param tree a tree of degree at most three, and with 1/3-proper assignment of weights to edges and vertices
      * @return
      */
-    public Dart findEdgeSeparator(Tree tree, int maxDegree) {
+    public Tree.TreeNode findEdgeSeparator(Tree tree, int maxDegree) {
         Tree.TreeNode root = tree.getRoot();
         checkZeroWeightVerticesOfTree(root, maxDegree);
         if (root.getDescendantWeightSum() <= 0) {
@@ -79,13 +87,8 @@ public abstract class Separator {
             new VertexAndEdgeWeight().calcWeightSum(root);
         }
         Tree.TreeNode separatorNode = leafmostHeavyVertex(root, 1.0 / maxDegree, root.getDescendantWeightSum());
-        return separatorNode.getParentDart();
+        return separatorNode;
     }
-
-    public Dart findEdgeSeparator(Tree tree) {
-        return findEdgeSeparator(tree, 3);
-    }
-
 
     /**
      * build a list of vertices in each level

@@ -9,27 +9,32 @@ import java.util.*;
 
 public class FundamentalCycleSeparator extends Separator{
 
+    public FundamentalCycleSeparator(SelfDualGraph g) {
+        super(g);
+    }
+
     @Override
-    public  Set<Vertex> findSeparator(SelfDualGraph g) {
-        return findSeparator(g, null, null, null);
+    public  Set<Vertex> findSeparator() {
+        return findSeparator(null, null, null);
     }
 
     /**
      * Vertex/Face nodes' selfWeight will be overwrote in this method
      *
-     * @param g   must be flattened and triangulated
      * @param sts if null, use default BFSsolver
      * @param rf  if null, use default MaxDegreeRoot
      * @param twa if null, use default EdgeWeight
      * @return
      */
-    public  Set<Vertex> findSeparator(SelfDualGraph g, SpanningTreeSolver sts,
+    public  Set<Vertex> findSeparator(SpanningTreeSolver sts,
                                       RootFinder rf, TreeWeightAssigner twa) {
-        System.err.printf("Assume G has been triangulated and max-degree of coTree will be 3\n");
-        return findSeparator(g, sts, rf, twa, 3);
+        System.err.printf("G will be triangulated after invoking this method\n");
+        g.flatten();
+        g.triangulate();
+        return findSeparator(sts, rf, twa, 3);
     }
 
-    public  Set<Vertex> findSeparator(SelfDualGraph g, SpanningTreeSolver sts,
+    public  Set<Vertex> findSeparator(SpanningTreeSolver sts,
                                       RootFinder rf, TreeWeightAssigner twa, int maxDegree) {
         if (sts == null) {
             sts = new BFSsolver();
@@ -57,9 +62,11 @@ public class FundamentalCycleSeparator extends Separator{
             System.err.printf(String.format("Max-degree in coTree is not specified, automatically find the degree to be %d\n", maxDegree));
         }
 
-        Dart separatorDart = findEdgeSeparator(trees[1], maxDegree);
-        Set<Vertex> cycleSeparator = getCycle(trees[0], separatorDart);
-        return cycleSeparator;
+        Tree.TreeNode separatorNode = findEdgeSeparator(trees[1], maxDegree);
+        separator = getCycle(trees[0], separatorNode.getParentDart());
+
+        buildSubgraphs(separatorNode);
+        return separator;
     }
 
     /**
@@ -102,6 +109,41 @@ public class FundamentalCycleSeparator extends Separator{
             twa = new VertexAndEdgeWeight();
         }
         twa.calcWeightSum(trees[1].getRoot());
+    }
+
+
+    @Override
+    public Set<Vertex>[] findSubgraphs() {
+        if (separator == null) {
+            findSeparator();
+        }
+        return subgraphs;
+    }
+
+    /**
+     * all vertices inside the cycle is one subgraph, the rest is the other one
+     * both subgraph includes the level separator, for future r-division use
+     */
+    private void buildSubgraphs(Tree.TreeNode separatorNode) {
+        subgraphs = new Set[2];
+        Set<Vertex> insideFaces = new HashSet<>();
+        Queue<Tree.TreeNode> q = new LinkedList<>();
+        q.add(separatorNode);
+        while (!q.isEmpty()) {
+            Tree.TreeNode node = q.poll();
+            insideFaces.add(node.getData());
+            q.addAll(node.getChildren());
+        }
+
+        subgraphs[0] = new HashSet<>();
+        for (Vertex f : insideFaces) {
+            for (Dart d : f.getIncidenceList()) {
+                subgraphs[0].add(d.getTail());
+            }
+        }
+        subgraphs[1] = g.getVertices();
+        subgraphs[1].removeAll(subgraphs[0]);
+        subgraphs[1].addAll(separator);
     }
 
 }

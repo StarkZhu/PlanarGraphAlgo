@@ -81,7 +81,7 @@ public class test_Separator {
     public void testLeafmostHeavyVertex() {
         Tree.TreeNode root = trees[0].getRoot();
         Assert.assertEquals(10, root.getDescendantWeightSum(), 0.0001);
-        Separator sp = new LevelSeparator();
+        Separator sp = new LevelSeparator(g);
         Tree.TreeNode vertexSeparator = sp.leafmostHeavyVertex(root, 0.4, root.getDescendantWeightSum());
         Assert.assertEquals(2, vertexSeparator.getData().getID());
 
@@ -93,7 +93,7 @@ public class test_Separator {
 
     @Test
     public void testVertexSeparator() {
-        Vertex v = new LevelSeparator().findVertexSeparator(trees[1]);
+        Vertex v = new LevelSeparator(g).findVertexSeparator(trees[1]);
         Assert.assertEquals(6, v.getID());
     }
 
@@ -105,7 +105,7 @@ public class test_Separator {
                 new SpecificIdRootFinder(0).selectRootFace(g));
         TreeWeightAssigner twa = new VertexCount();
         twa.calcWeightSum(trees[0].getRoot());
-        LevelSeparator sp = new LevelSeparator();
+        LevelSeparator sp = new LevelSeparator(g);
         Set<Vertex> separator = sp.findLevelSeparatorOfTree(trees[0]);
         int[] expectedVertices = new int[]{2, 0, 4};
         verifySeparator(expectedVertices, separator);
@@ -132,7 +132,7 @@ public class test_Separator {
 
     @Test
     public void testLevelSeparatorGivenGraph() {
-        Set<Vertex> separator = new LevelSeparator().findSeparator(g, null, null, null);
+        Set<Vertex> separator = new LevelSeparator(g).findSeparator(null, null, null);
         verifySeparator(new int[]{4, 0, 2}, separator);
     }
 
@@ -144,14 +144,14 @@ public class test_Separator {
                 new SpecificIdRootFinder(0).selectRootFace(g));
 
         resetTreenodeSelfweight(trees[1], new int[]{1, 6});
-        Separator sp = new FundamentalCycleSeparator();
-        Dart separator = sp.findEdgeSeparator(trees[1]);
+        Separator sp = new FundamentalCycleSeparator(g);
+        Dart separator = sp.findEdgeSeparator(trees[1] ,3).getParentDart();
         Assert.assertEquals(16.8, trees[1].getRoot().getDescendantWeightSum(), 0.001);
         Assert.assertTrue(separator.getID() == 10 || separator.getID() == 11);
 
         TreeWeightAssigner twa = new VertexWeight();
         twa.calcWeightSum(trees[1].getRoot());
-        separator = sp.findEdgeSeparator(trees[1]);
+        separator = sp.findEdgeSeparator(trees[1], 3).getParentDart();
         Assert.assertEquals(5.3, trees[1].getRoot().getDescendantWeightSum(), 0.001);
         Assert.assertTrue(separator.getID() == 4 || separator.getID() == 5);
     }
@@ -167,16 +167,16 @@ public class test_Separator {
         Tree[] trees = sts.buildTreeCoTree(g, rf.selectRootVertex(g), null);
         Assert.assertEquals(3, trees[0].getRoot().getData().getID());
         Assert.assertEquals(0, trees[1].getRoot().getData().getID());
-        FundamentalCycleSeparator sp = new FundamentalCycleSeparator();
+        FundamentalCycleSeparator sp = new FundamentalCycleSeparator(g);
         sp.assignCotreeWeight(twa, trees);
         double[][] coTreeWeightSum = new double[][] {{0, 8}, {1, 1}, {4, 3}, {5, 5}, {6, 1}};
         double[][] coTreeSelfWeight = new double[][] {{0, 0}, {1, 0}, {4, 0}, {5, 0}, {6, 0}, {-1, 0}, {-2, 0}, {-3, 0}};
         verifyWeightSumOfTree(trees[1], coTreeWeightSum, coTreeSelfWeight);
 
-        Set<Vertex> separator = sp.findSeparator(g, null, null, null);
+        Set<Vertex> separator = sp.findSeparator(null, null, null);
         verifySeparator(new int[]{5, 0, 3}, separator);
 
-        separator = sp.findSeparator(g, null, null, new VertexWeight());
+        separator = sp.findSeparator(null, null, new VertexWeight());
         verifySeparator(new int[]{5, 0, 3}, separator);
     }
 
@@ -191,13 +191,13 @@ public class test_Separator {
         Tree[] trees = sts.buildTreeCoTree(g, rf.selectRootVertex(g), null);
         Assert.assertEquals(2, trees[0].getRoot().getData().getID());
         Assert.assertEquals(4, trees[1].getRoot().getData().getID());
-        FundamentalCycleSeparator sp = new FundamentalCycleSeparator();
+        FundamentalCycleSeparator sp = new FundamentalCycleSeparator(g);
         sp.assignCotreeWeight(twa, trees);
         double[][] coTreeWeightSum = new double[][] {{0, 3.5}, {1, 8.25}, {4, 11.5}, {5, 10.25}, {6, 7}};
         double[][] coTreeSelfWeight = new double[][] {{0, 0.5}, {1, 0}, {4, 1.25}, {5, 1}, {6, 0}};
         verifyWeightSumOfTree(trees[1], coTreeWeightSum, coTreeSelfWeight);
 
-        Set<Vertex> separator = sp.findSeparator(g, new BFSsolver(),
+        Set<Vertex> separator = sp.findSeparator(new BFSsolver(),
                 new MinDegreeRootFinder(), new EdgeWeight());
         verifySeparator(new int[]{4, 0, 3, 2}, separator);
     }

@@ -9,6 +9,9 @@ import java.util.*;
 
 public class LevelSeparator extends Separator {
 
+    public LevelSeparator(SelfDualGraph g) {
+        super(g);
+    }
 
     /**
      * find the median level vertices as a balanced separator
@@ -16,7 +19,7 @@ public class LevelSeparator extends Separator {
      * @param tree
      * @return
      */
-    public  Set<Vertex> findLevelSeparatorOfTree(Tree tree) {
+    public Set<Vertex> findLevelSeparatorOfTree(Tree tree) {
         double totalSum = tree.getRoot().getDescendantWeightSum();
         if (totalSum <= 0) {
             throw new RuntimeException("Weight has not been assigned to this tree");
@@ -24,23 +27,23 @@ public class LevelSeparator extends Separator {
         List<Set<Tree.TreeNode>> list = buildVertexLevels(tree.getRoot(), new ArrayList<>(), 0);
 
         int medianLevel = findMedianLevel(list, totalSum);
-        Set<Vertex> separator = new HashSet<>();
+        separator = new HashSet<>();
         for (Tree.TreeNode node : list.get(medianLevel)) {
             separator.add(node.getData());
         }
+        buildSubgraphs(list, medianLevel);
         return separator;
     }
 
     /**
      * find a set of vertices as separator for the given planar graph
      *
-     * @param g
      * @param sts if null, use default BFSsolver
      * @param rf  if null, use default MaxDegreeRoot
      * @param twa if null, use default VertexCount
      * @return
      */
-    public Set<Vertex> findSeparator(SelfDualGraph g, SpanningTreeSolver sts, RootFinder rf, TreeWeightAssigner twa) {
+    public Set<Vertex> findSeparator(SpanningTreeSolver sts, RootFinder rf, TreeWeightAssigner twa) {
         if (sts == null) {
             sts = new BFSsolver();
         }
@@ -55,12 +58,38 @@ public class LevelSeparator extends Separator {
 
         Tree[] trees = sts.buildTreeCoTree(g, rf.selectRootVertex(g), null);
         twa.calcWeightSum(trees[0].getRoot());
-        Set<Vertex> separator = findLevelSeparatorOfTree(trees[0]);
-        return separator;
+        return findLevelSeparatorOfTree(trees[0]);
     }
 
     @Override
-    public Set<Vertex> findSeparator(SelfDualGraph g) {
-        return findSeparator(g, null, null, null);
+    public Set<Vertex> findSeparator() {
+        return findSeparator(null, null, null);
     }
+
+
+    @Override
+    public Set<Vertex>[] findSubgraphs() {
+        if (separator == null) {
+            findSeparator();
+        }
+        return subgraphs;
+    }
+
+    /**
+     * all vertices above mid-level is one subgraph, the rest is the other one
+     * both subgraph include the level separator, for future r-division use
+     */
+    private void buildSubgraphs(List<Set<Tree.TreeNode>> levelList, int mLevel) {
+        subgraphs = new Set[2];
+        subgraphs[0] = new HashSet<>();
+        for (int i = 0; i < mLevel; i++) {
+            for (Tree.TreeNode n : levelList.get(i)) {
+                subgraphs[0].add(n.getData());
+            }
+        }
+        subgraphs[1] = g.getVertices();
+        subgraphs[1].removeAll(subgraphs[0]);
+        subgraphs[0].addAll(separator);
+    }
+
 }
