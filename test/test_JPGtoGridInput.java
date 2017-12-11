@@ -37,9 +37,9 @@ public class test_JPGtoGridInput {
         JPGtoGridInput testImg = new JPGtoGridInput("./input_data/test_img_82x77.jpeg");
         Assert.assertEquals(77, testImg.jpgImage.getHeight());
         Assert.assertEquals(82, testImg.jpgImage.getWidth());
-        Assert.assertEquals(6314, testImg.vNum);
-        Assert.assertEquals(24938, testImg.eNum);
-        Assert.assertEquals(6157, testImg.fNum);
+        Assert.assertEquals(6314, testImg.getVNum());
+        Assert.assertEquals(24938, testImg.getENum());
+        Assert.assertEquals(6157, testImg.getFNum());
     }
 
     @Test
