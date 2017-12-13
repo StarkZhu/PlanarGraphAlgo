@@ -564,7 +564,7 @@ public class SelfDualGraph {
      * add a vertex on the given face, connect the new vertex to all vertices incidental to the face
      * @param face
      */
-    public void addVertex(Vertex face) {
+    public Vertex addVertex(Vertex face) {
         Vertex vertex = new Vertex(Vertex.VERTEX);
         vertices.add(vertex);
 
@@ -603,6 +603,7 @@ public class SelfDualGraph {
             d = d.getNext();
             tail = tail.getPredecessor();
         }
+        return vertex;
     }
 
 
