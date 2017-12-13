@@ -609,13 +609,9 @@ public class SelfDualGraph {
     // for debug only
     public static void main(String[] args) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
-        g.buildGraph("./input_data/test_graph_0.txt");
-        Set<Vertex> vertices = g.getVertices();
-        for (Vertex v : vertices) System.out.println(v);
-
-        Set<Vertex> faces = g.getFaces();
-        for (Vertex f : faces) System.out.println(f);
-
+        g.buildGraph("./input_data/grids/5.txt");
+        System.out.println(g.getFaceNum());
+        System.out.println(g.getVertexNum());
     }
 
 }
