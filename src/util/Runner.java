@@ -39,7 +39,7 @@ public class Runner {
         out.printf("\tSeparator Size\tBalance Ratio\tRuntime (ms)\tSeparator Size\tBalance Ratio\tRuntime (ms)\tSeparator Size\tBalance Ratio\tRuntime (s)\n");
         Random random = new Random();
         Separator sp;
-        for (int i = 0;  i< trials; i++) {
+        for (int i = 0; i < trials; i++) {
             Vertex root = rootCandidates.get(random.nextInt(rootCandidates.size()));
             StringBuilder sb = new StringBuilder(String.format("%d", i));
 
@@ -68,7 +68,7 @@ public class Runner {
     }
 
     public static void testGrids() throws FileNotFoundException {
-        for (int i=1; i<=5; i++) {
+        for (int i = 1; i <= 5; i++) {
             String input = String.format("./input_data/grids/%d.txt", i);
             String output = String.format("./output/grids/%d.txt", i);
             runTest(input, 32, false, output);
@@ -76,20 +76,38 @@ public class Runner {
     }
 
     public static void testCylinder() throws FileNotFoundException {
-        for (int i=1; i<=5; i++) {
+        for (int i = 1; i <= 5; i++) {
             String input = String.format("./input_data/cylinder/%d.txt", i);
             String output = String.format("./output/cylinder/%d.txt", i);
             runTest(input, 32, false, output);
         }
     }
 
+    public static void testSphere() throws FileNotFoundException {
+        for (int i = 1; i <= 10; i++) {
+            String input = String.format("./input_data/sphere/c_%d.txt", i);
+            String output = String.format("./output/sphere/c_%d.txt", i);
+            runTest(input, 32, false, output);
+        }
+        for (int i = 1; i <= 11; i++) {
+            String input = String.format("./input_data/sphere/t_%d.txt", i);
+            String output = String.format("./output/sphere/t_%d.txt", i);
+            runTest(input, 32, false, output);
+        }
+    }
+
+    public static void testRandom() throws FileNotFoundException {
+        for (int i = 2; i <= 5; i++) {
+            String input = String.format("./input_data/random/%d.txt", 1 << i);
+            String output = String.format("./output/random/%d.txt", 1 << i);
+            runTest(input, 32, false, output);
+        }
+    }
+
     public static void main(String[] args) throws FileNotFoundException {
         //testGrids();
-//        testCylinder();
-
-        SelfDualGraph g = new SelfDualGraph();
-        g.buildGraph("./input_data/random/8.txt");
-
-        System.out.println(g.getVertexNum());
+        //testCylinder();
+        //testSphere();
+        testRandom();
     }
 }
