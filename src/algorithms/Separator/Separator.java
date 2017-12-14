@@ -1,5 +1,7 @@
 package algorithms.Separator;
 
+import algorithms.RootFinder.*;
+import algorithms.SpanningTreeSolver.*;
 import algorithms.TreeWeightAssigner.*;
 import selfdualgraph.*;
 
@@ -15,6 +17,7 @@ public abstract class Separator {
     }
 
     public abstract Set<Vertex> findSeparator();
+    public abstract Set<Vertex> findSeparator(SpanningTreeSolver sts, RootFinder rf, TreeWeightAssigner twa);
     public abstract Set<Vertex>[] findSubgraphs();
 
     /**
@@ -29,6 +32,23 @@ public abstract class Separator {
         if (alpha <= 0 || alpha >= 1) {
             throw new RuntimeException("alpha must be in range (0, 1)");
         }
+        Tree.TreeNode node = root;
+        while (true) {
+            boolean finished = true;
+            for (Tree.TreeNode child : node.getChildren()) {
+                if (child.getDescendantWeightSum() > alpha * totalW) {
+                    node = child;
+                    finished = false;
+                }
+            }
+            if (finished) return node;
+        }
+    }
+    /*
+    public Tree.TreeNode leafmostHeavyVertex(Tree.TreeNode root, double alpha, double totalW) {
+        if (alpha <= 0 || alpha >= 1) {
+            throw new RuntimeException("alpha must be in range (0, 1)");
+        }
         for (Tree.TreeNode child : root.getChildren()) {
             if (child.getDescendantWeightSum() > alpha * totalW) {
                 return leafmostHeavyVertex(child, alpha, totalW);
@@ -36,6 +56,7 @@ public abstract class Separator {
         }
         return root;
     }
+    */
 
 
     /**
@@ -62,6 +83,21 @@ public abstract class Separator {
      * @param root
      */
     private void checkZeroWeightVerticesOfTree(Tree.TreeNode root, int maxDegree) {
+        Queue<Tree.TreeNode> q = new LinkedList<>();
+        q.add(root);
+        while (!q.isEmpty()) {
+            Tree.TreeNode node = q.poll();
+            if (node.getChildren().size() > maxDegree - 1) {
+                throw new RuntimeException(String.format("This is not a valid %d-degree tree", maxDegree));
+            }
+            if (node.getParentDart() != null && node.getChildren().size() >= maxDegree - 1 && node.getSelfWeight() != 0) {
+                throw new RuntimeException(String.format("Degree-%d vertices mush have 0 weight", maxDegree));
+            }
+            for (Tree.TreeNode child : node.getChildren()) q.add(child);
+        }
+    }
+    /*
+    private void checkZeroWeightVerticesOfTree(Tree.TreeNode root, int maxDegree) {
         if (root.getChildren().size() > maxDegree -1) {
             throw new RuntimeException(String.format("This is not a valid %d-degree tree", maxDegree));
         }
@@ -72,6 +108,7 @@ public abstract class Separator {
             checkZeroWeightVerticesOfTree(node, maxDegree);
         }
     }
+    */
 
     /**
      * Note: degree-three vertices in the given tree must be assigned 0 weight
@@ -97,6 +134,26 @@ public abstract class Separator {
      * @return
      */
     protected List<Set<Tree.TreeNode>> buildVertexLevels(Tree.TreeNode root,
+                                                         List<Set<Tree.TreeNode>> list, int level) {
+        Queue<Tree.TreeNode> q = new LinkedList<>();
+        q.add(root);
+        q.add(null);
+        while (!q.isEmpty()) {
+            if (level >= list.size()) list.add(new HashSet<>());
+            Tree.TreeNode node = q.poll();
+            if (node == null) {
+                level++;
+                if (q.isEmpty()) break;
+                q.add(null);
+                continue;
+            }
+            list.get(level).add(node);
+            for (Tree.TreeNode child : node.getChildren()) q.add(child);
+        }
+        return list;
+    }
+    /*
+    protected List<Set<Tree.TreeNode>> buildVertexLevels(Tree.TreeNode root,
                                                        List<Set<Tree.TreeNode>> list, int level) {
         if (level >= list.size()) list.add(new HashSet<>());
         list.get(level).add(root);
@@ -105,6 +162,7 @@ public abstract class Separator {
         }
         return list;
     }
+    */
 
     /**
      * find the median level of a Tree

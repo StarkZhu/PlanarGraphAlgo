@@ -65,6 +65,8 @@ public abstract class SpanningTreeSolver {
      * coTree is unique given primal tree, so is independent of what algrothim used
      * @param root  root of the existing primal spanning tree
      */
+    /*
+    // causing StackOverflow when graph has large depth, such as cylinders
     private void buildCoTree(Tree.TreeNode root) {
         // build coTree with DFS, but child should be the face from dart.getLeft()
         Vertex vertex = root.getData();
@@ -79,6 +81,30 @@ public abstract class SpanningTreeSolver {
                 buildCoTree(child);
             }
         }
+    }
+    */
+
+    // rewrite a stack version, instead of recursion
+    private void buildCoTree(Tree.TreeNode root) {
+        // build coTree with DFS, but child should be the face from dart.getLeft()
+        Stack<Tree.TreeNode> stack = new Stack<>();
+        stack.push(root);
+        while (!stack.isEmpty()) {
+            Tree.TreeNode node = stack.pop();
+            Vertex vertex = node.getData();
+            vertex.setVisited(true);
+            for (Dart d : vertex.getIncidenceList()) {
+                Vertex f = d.getLeft();
+                if (!d.isVisited() && !f.isVisited()) {
+                    Tree.TreeNode child = new Tree.TreeNode(f, node, d);
+                    node.addChild(child);
+                    d.setVisited(true);
+                    d.getReverse().setVisited(true);
+                    stack.push(child);
+                }
+            }
+        }
+
     }
 
 

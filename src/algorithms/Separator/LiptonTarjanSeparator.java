@@ -21,6 +21,11 @@ public class LiptonTarjanSeparator extends Separator {
         return findSeparator(null);
     }
 
+    @Override
+    public Set<Vertex> findSeparator(SpanningTreeSolver sts, RootFinder rf, TreeWeightAssigner twa) {
+        return findSeparator(rf);
+    }
+
     public Set<Vertex> findSeparator(RootFinder rf) {
         g.flatten();
         g.triangulate();

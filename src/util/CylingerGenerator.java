@@ -26,7 +26,7 @@ public class CylingerGenerator {
         while (outerFace.getID() != 0) outerFace = it.next();
 
         for (int i = 0; i < limit; i++) {
-            for (int j=0; j<3; j++) {
+            for (int j = 0; j < 3; j++) {
                 Vertex newV = g.addVertex(outerFace);
                 Vertex minNeighbor = newV.getFirstDart().getHead();
                 for (Dart d : newV.getIncidenceList()) {
@@ -46,15 +46,15 @@ public class CylingerGenerator {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        for (int i=0; i< 5; i++) {
+        for (int i = 0; i < 5; i++) {
             SelfDualGraph g = new SelfDualGraph();
             g.buildGraph("./input_data/cylinder/0.txt");
             System.out.println(g.getFaceNum());
             System.out.println(g.getVertexNum());
 
             CylingerGenerator cg = new CylingerGenerator(g);
-            cg.generatCylinders(i+1);
-            g.saveToFile(String.format("./input_data/cylinder/%d.txt", i+1));
+            cg.generatCylinders(i + 1);
+            g.saveToFile(String.format("./input_data/cylinder/%d.txt", i + 1));
         }
     }
 }

@@ -54,20 +54,20 @@ public class SelfDualGraph {
             float coordX = Float.parseFloat(content[1]);
             float coordY = Float.parseFloat(content[2]);
             double weight = content.length > 3 ? Double.parseDouble(content[3]) : 1.0;
-            verticesArr[i] = new Vertex(id, Vertex.VERTEX, coordX, coordY, weight);
-            vertices.add(verticesArr[i]);
+            verticesArr[id] = new Vertex(id, Vertex.VERTEX, coordX, coordY, weight);
+            vertices.add(verticesArr[id]);
         }
 
         // read and create all darts
         for (int i = 0; i < E; i++) {
             String[] content = graphInput.nextLine().split("\\s+");
             int id = Integer.parseInt(content[0]);
-            dartRev[i] = Integer.parseInt(content[1]);
+            dartRev[id] = Integer.parseInt(content[1]);
             int t = Integer.parseInt(content[2]);
             int h = Integer.parseInt(content[3]);
             double weight = content.length > 4 ? Double.parseDouble(content[4]) : 1.0;
             double capacity = content.length > 5 ? Double.parseDouble(content[5]) : 1.0;
-            dartsArr[i] = new Dart(id, verticesArr[t], verticesArr[h], weight, capacity);
+            dartsArr[id] = new Dart(id, verticesArr[t], verticesArr[h], weight, capacity);
             if (verticesArr[t].getDegree() == 0) {
                 verticesArr[t].initDart(dartsArr[i]);
             }
@@ -530,6 +530,21 @@ public class SelfDualGraph {
      * all negative IDs take absolute value and add previous maximum to it
      */
     public void renumberIDs() {
+        int vID = 0;
+        int dID = 0;
+        for (Vertex v : vertices) {
+            v.setID(vID++);
+            for (Dart d : v.getIncidenceList()) {
+                d.setID(dID++);
+            }
+        }
+        int fID = 0;
+        for (Vertex f : faces) {
+            f.setID(fID++);
+        }
+    }
+    /*
+    public void renumberIDs() {
         int maxVID = -1;
         int maxDID = -1;
         for (Vertex v : vertices) {
@@ -559,6 +574,7 @@ public class SelfDualGraph {
             }
         }
     }
+    */
 
     /**
      * add a vertex on the given face, connect the new vertex to all vertices incidental to the face

@@ -44,6 +44,7 @@ public class RandomSubgraphGenerator {
                 }
             }
         }
+        g.renumberIDs();
     }
 
     public static void main(String[] args) throws FileNotFoundException {

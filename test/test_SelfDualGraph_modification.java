@@ -2,8 +2,7 @@ import org.junit.*;
 import selfdualgraph.*;
 
 import java.io.FileNotFoundException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
 public class test_SelfDualGraph_modification {
@@ -196,56 +195,31 @@ public class test_SelfDualGraph_modification {
 
     @Test
     public void testRenumber() {
-        int oldVNum = g.getVertexNum();
-        int oldFNum = g.getFaceNum();
-        int oldDNum = 0;
-        for (Vertex f : g.getFaces()) {
-            oldDNum += f.getDegree();
-        }
-
         g.flatten();
         g.triangulate();
-        oldDNum -= 4;
 
-        Set<Vertex> vertices = new HashSet<>();
-        Set<Dart> darts = new HashSet<>();
-        for (Vertex v : g.getVertices()) {
-            if (v.getID() < 0) vertices.add(v);
-            for (Dart d : v.getIncidenceList()) {
-                if (d.getID() < 0) {
-                    darts.add(d);
-                }
-            }
-        }
-        Set<Vertex> faces = new HashSet<>();
+        int dNum = 0;
+        int vNum = g.getVertexNum();
+        int fNum = g.getFaceNum();
         for (Vertex f : g.getFaces()) {
-            if (f.getID() < 0) {
-                faces.add(f);
-            }
+            dNum += f.getDegree();
         }
 
         g.renumberIDs();
         for (Vertex v : g.getVertices()) {
-            if (v.getID() >= oldVNum) {
-                Assert.assertEquals(true, vertices.contains(v));
-                vertices.remove(v);
+            if (v.getID() < 0 || v.getID() >= vNum) {
+                Assert.assertEquals(true, false);
             }
             for (Dart d : v.getIncidenceList()) {
-                if (d.getID() >= oldDNum) {
-                    Assert.assertEquals(true, darts.contains(d));
-                    darts.remove(d);
+                if (d.getID() < 0 || d.getID() >= dNum) {
+                    Assert.assertEquals(true, false);
                 }
             }
         }
-        Assert.assertEquals(0, vertices.size());
-        Assert.assertEquals(0, darts.size());
-
         for (Vertex f : g.getFaces()) {
-            if (f.getID() >= oldFNum) {
-                Assert.assertEquals(true, faces.contains(f));
-                faces.remove(f);
+            if (f.getID() < 0 || f.getID() >= fNum) {
+                Assert.assertEquals(true, false);
             }
         }
-        Assert.assertEquals(0, faces.size());
     }
 }
