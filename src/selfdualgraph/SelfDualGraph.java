@@ -162,6 +162,10 @@ public class SelfDualGraph {
         return new HashSet<>(faces);
     }
 
+    public boolean contains(Vertex v) {
+        return vertices.contains(v) || faces.contains(v);
+    }
+
     /**
      * delete an undirected edge, which performs the following actions:
      * (1) delete the given dart d and rev(d)
@@ -384,7 +388,12 @@ public class SelfDualGraph {
                     d = succ;
                     continue;
                 }
+                int tmp = 0;
                 while (succ.getHead() == d.getHead() && succ != start) {
+                    tmp++;
+                    if (tmp >= 10000) {
+                        System.out.println("bad");
+                    }
                     if (succ.getWeight() >= d.getWeight()) {
                         toDelete.add(succ);
                         succ = succ.getSuccessor();
@@ -476,6 +485,7 @@ public class SelfDualGraph {
         for (Vertex face : oldFaces) {
             if (face.getDegree() <= 3) continue;
             Dart tail = face.getFirstDart();
+            //if (tail.getHead().getDegree() == 1) tail = tail.getNext();
             Dart head = tail.getNext().getNext();
             while (head.getHead() != tail.getTail()) {
                 addEdge(tail, head);

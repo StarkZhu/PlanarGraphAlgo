@@ -37,17 +37,20 @@ public class Runner {
         out.printf("Current run parameter:\tuse_max_degree_root = %b\n", rndMaxDegRoot);
         out.printf("\t\tLevel Separator\t\t\tFundamental Cycle Separator\t\t\tLipton-Tarjan Separator\n");
         out.printf("\tSeparator Size\tBalance Ratio\tRuntime (ms)\tSeparator Size\tBalance Ratio\tRuntime (ms)\tSeparator Size\tBalance Ratio\tRuntime (s)\n");
-        Random random = new Random();
+        Random random = new Random(-1);
         Separator sp;
         for (int i = 0; i < trials; i++) {
+            System.out.printf("Iteration %d\n", i);
             Vertex root = rootCandidates.get(random.nextInt(rootCandidates.size()));
             StringBuilder sb = new StringBuilder(String.format("%d", i));
 
             sp = new LevelSeparator(g);
             testSeparator(sp, root, sb);
+            System.out.println("LevelSeparator done");
 
             sp = new FundamentalCycleSeparator(g);
             testSeparator(sp, root, sb);
+            System.out.println("FundamentalCycleSeparator done");
 
             sp = new LiptonTarjanSeparator(g);
             testSeparator(sp, root, sb);
@@ -97,9 +100,10 @@ public class Runner {
     }
 
     public static void testRandom() throws FileNotFoundException {
-        for (int i = 2; i <= 5; i++) {
-            String input = String.format("./input_data/random/%d.txt", 1 << i);
-            String output = String.format("./output/random/%d.txt", 1 << i);
+        for (int i = 1; i <= 5; i++) {
+            String input = String.format("./input_data/random/%d.txt", i);
+            String output = String.format("./output/random/%d.txt", i);
+            System.out.println(input);
             runTest(input, 32, false, output);
         }
     }

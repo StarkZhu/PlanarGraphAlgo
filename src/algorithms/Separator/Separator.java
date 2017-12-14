@@ -88,6 +88,7 @@ public abstract class Separator {
         while (!q.isEmpty()) {
             Tree.TreeNode node = q.poll();
             if (node.getChildren().size() > maxDegree - 1) {
+                System.err.println(node.getData());
                 throw new RuntimeException(String.format("This is not a valid %d-degree tree", maxDegree));
             }
             if (node.getParentDart() != null && node.getChildren().size() >= maxDegree - 1 && node.getSelfWeight() != 0) {
