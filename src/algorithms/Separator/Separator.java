@@ -206,7 +206,7 @@ public abstract class Separator {
      */
     protected Set<Vertex> getCycle(Tree tree, Dart separatorDart) {
         // build Vertex --> TreeNode mapping for the primal Tree
-        Map<Vertex, Tree.TreeNode> map = mapVertexToTreeNode(tree, false);
+        Map<Vertex, Tree.TreeNode> map = tree.mapVertexToTreeNode(false);
 
         // find the least common ancestor of the 2 ends of separatorDart
         Tree.TreeNode p = map.get(separatorDart.getTail());
@@ -234,27 +234,6 @@ public abstract class Separator {
         return cycleSeparator;
     }
 
-
-
-    /**
-     * map all vertices stored in a tree to the corresponding TreeNode that stores it
-     * @param tree
-     * @param resetVertexSelfweight
-     * @return
-     */
-    protected Map<Vertex, Tree.TreeNode> mapVertexToTreeNode(Tree tree, boolean resetVertexSelfweight) {
-        Tree.TreeNode node = tree.getRoot();
-        Map<Vertex, Tree.TreeNode> map = new HashMap<>();
-        Queue<Tree.TreeNode> q = new LinkedList<>();
-        q.add(node);
-        while (!q.isEmpty()) {
-            node = q.poll();
-            map.put(node.getData(), node);
-            if (resetVertexSelfweight) node.setSelfWeight(0);
-            q.addAll(node.getChildren());
-        }
-        return map;
-    }
 
     /**
      * give a list of TreeNodes for each level, find the set of vertices within the given level range

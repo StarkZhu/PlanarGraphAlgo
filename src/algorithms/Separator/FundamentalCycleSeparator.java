@@ -75,7 +75,7 @@ public class FundamentalCycleSeparator extends Separator{
      */
     private void reassignTreeNodeWeight(Tree[] trees) {
         // reset all TreeNodes' selfWeight to 0 in the coTree, build mapping Vertex --> TreeNode
-        Map<Vertex, Tree.TreeNode> map = mapVertexToTreeNode(trees[1], true);
+        Map<Vertex, Tree.TreeNode> map = trees[1].mapVertexToTreeNode(true);
 
         //traverse primal Tree, split edge weight evenly to faces on both sides
         Queue<Tree.TreeNode> q = new LinkedList<>();
@@ -102,7 +102,7 @@ public class FundamentalCycleSeparator extends Separator{
      */
     public void assignCotreeWeight(TreeWeightAssigner twa, Tree[] trees) {
         // reset all vertices selfweigth to 0 in coTree
-        mapVertexToTreeNode(trees[1], true);
+        trees[1].mapVertexToTreeNode(true);
         if (twa.getClass() == EdgeWeight.class) {
             reassignTreeNodeWeight(trees);
             // each faceVertex contains weight from edges in primal Tree

@@ -68,7 +68,7 @@ public class LiptonTarjanSeparator extends Separator {
         // then the FCS will be balanced in terms of faces inside (La, Lz) strip
         Set<Vertex> outsideMiddle = g.getVertices();
         outsideMiddle.removeAll(heavyMiddle);
-        Map<Vertex, Tree.TreeNode> faceToNode = mapVertexToTreeNode(trees[1], false);
+        Map<Vertex, Tree.TreeNode> faceToNode = trees[1].mapVertexToTreeNode(false);
         for (Vertex v : outsideMiddle) {
             for (Dart d : v.getIncidenceList()) {
                 if (outsideMiddle.contains(d.getHead())) {
