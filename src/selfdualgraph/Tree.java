@@ -16,6 +16,20 @@ public class Tree {
         return root;
     }
 
+    /**
+     * assign distance (from root to TreeNode) to all nodes in the tree
+     */
+    public void updateDistance() {
+        updateDistance(root, 0);
+    }
+
+    private void updateDistance(TreeNode root, int dist) {
+        root.setDist(dist);
+        for (TreeNode n : root.children) {
+            updateDistance(n, dist+1);
+        }
+    }
+
     @Override
     public String toString() {
         return printTree(root, 0);
@@ -80,6 +94,28 @@ public class Tree {
         return map;
     }
 
+    /**
+     * find the least common ancestor of 2 TreeNodes
+     * @param p
+     * @param q
+     * @return
+     */
+    public TreeNode leastCommonAncestor(TreeNode p, TreeNode q) {
+        Set<Tree.TreeNode> parents = new HashSet<>();
+        parents.add(p);
+        // store p's parents all the way to root
+        while (p.getParent() != null) {
+            parents.add(p.getParent());
+            p = p.getParent();
+        }
+        // find first TreeNode contained in p's parents, it is the least common ancestor (LCA)
+        while (!parents.contains(q)) {
+            parents.add(q);
+            q = q.getParent();
+        }
+        return q;
+    }
+
     public static class TreeNode {
         private Vertex data;
         private double descendantWeightSum;
@@ -87,6 +123,7 @@ public class Tree {
         private TreeNode parent;
         private Dart parentDart;
         private List<TreeNode> children;
+        private int dist;
 
         public TreeNode(Vertex nodeData, TreeNode parent, Dart d) {
             data = nodeData;
@@ -95,6 +132,7 @@ public class Tree {
             descendantWeightSum = 0.0;
             parentDart = d;
             selfWeight = nodeData.getWeight();
+            dist = -1;
         }
 
         public Vertex getData() {
@@ -135,7 +173,16 @@ public class Tree {
         public void setSelfWeight(double selfWeight) {
             this.selfWeight = selfWeight;
         }
-/*
+
+        public void setDist(int dist) {
+            this.dist = dist;
+        }
+
+        public int getDist() {
+            return dist;
+        }
+
+        /*
         public boolean isRoot() {
             return (this.parent == null);
         }

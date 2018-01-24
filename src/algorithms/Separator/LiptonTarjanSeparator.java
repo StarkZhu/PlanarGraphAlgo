@@ -23,6 +23,12 @@ public class LiptonTarjanSeparator extends Separator {
 
     @Override
     public Set<Vertex> findSeparator(SpanningTreeSolver sts, RootFinder rf, TreeWeightAssigner twa) {
+        if (sts == null || sts.getClass() != BFSsolver.class) {
+            System.err.printf("LiptonTarjanSeparator must use default BFSsolver as SpanningTreeSolver\n");
+        }
+        if (twa == null || twa.getClass() != VertexCount.class) {
+            System.err.printf("LiptonTarjanSeparator must use default VertexCount as TreeWeightAssigner\n");
+        }
         return findSeparator(rf);
     }
 
@@ -62,7 +68,6 @@ public class LiptonTarjanSeparator extends Separator {
         while (zLevel < list.size() && list.get(zLevel).size() > sqrtN) zLevel++;
         Set<Vertex> heavyMiddle = getVerticesBetweenLevels(list, aLevel + 1, zLevel - 1);
 
-        // TODO: verify correctness - use vertex weight instead of modify graph or tree
         // adjust coTree node weight such that:
         // faces (dual nodes) outside La and Lz has zero weight
         // then the FCS will be balanced in terms of faces inside (La, Lz) strip

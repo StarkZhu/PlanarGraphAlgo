@@ -211,21 +211,16 @@ public abstract class Separator {
         // find the least common ancestor of the 2 ends of separatorDart
         Tree.TreeNode p = map.get(separatorDart.getTail());
         Tree.TreeNode q = map.get(separatorDart.getHead());
+
+        Tree.TreeNode lca = tree.leastCommonAncestor(p, q);
         Set<Tree.TreeNode> parents = new HashSet<>();
-        parents.add(p);
-        // store p's parents all the way to root
-        while (p.getParent() != null) {
-            parents.add(p.getParent());
+        parents.add(lca);
+        while (p != lca) {
+            parents.add(p);
             p = p.getParent();
         }
-        // find first TreeNode contained in p's parents, it is the least common ancestor (LCA)
-        while (!parents.contains(q)) {
+        while (q != lca) {
             parents.add(q);
-            q = q.getParent();
-        }
-        // remove all LCA's parent, as they are not in the cycle separator
-        while (q.getParent() != null) {
-            parents.remove(q.getParent());
             q = q.getParent();
         }
 
