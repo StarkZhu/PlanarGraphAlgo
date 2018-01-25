@@ -63,10 +63,20 @@ public class FundamentalCycleSeparator extends Separator{
         }
 
         Tree.TreeNode separatorNode = findEdgeSeparator(trees[1], maxDegree);
+        separatorNode = chooseNode(separatorNode, trees[0], trees[1], maxDegree);
         separator = getCycle(trees[0], separatorNode.getParentDart());
 
         buildSubgraphs(separatorNode);
         return separator;
+    }
+
+    /**
+     * helper function for modified version of FCS
+     * @param node
+     * @return
+     */
+    protected Tree.TreeNode chooseNode(Tree.TreeNode node, Tree tree, Tree coTree, int maxDegree) {
+        return node;
     }
 
     /**
