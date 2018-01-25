@@ -48,7 +48,8 @@ public class Runner {
             testSeparator(sp, root, sb);
             System.out.println("LevelSeparator done");
 
-            sp = new FundamentalCycleSeparator(g);
+            //sp = new FundamentalCycleSeparator(g);
+            sp = new ModifiedFCS(g);
             testSeparator(sp, root, sb);
             System.out.println("FundamentalCycleSeparator done");
 
@@ -108,10 +109,19 @@ public class Runner {
         }
     }
 
+    public static void testCylinderModified() throws FileNotFoundException {
+        for (int i = 1; i <= 5; i++) {
+            String input = String.format("./input_data/cylinder/%d.txt", i);
+            String output = String.format("./output/cylinder_m/%d.txt", i);
+            runTest(input, 32, false, output);
+        }
+    }
+
     public static void main(String[] args) throws FileNotFoundException {
         //testGrids();
         //testCylinder();
         //testSphere();
-        testRandom();
+        //testRandom();
+        testCylinderModified();
     }
 }

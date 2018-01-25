@@ -24,9 +24,24 @@ public class Tree {
     }
 
     private void updateDistance(TreeNode root, int dist) {
+        /*
         root.setDist(dist);
         for (TreeNode n : root.children) {
             updateDistance(n, dist+1);
+        }
+        */
+        Queue<Tree.TreeNode> q = new LinkedList<>();
+        q.add(root);
+        q.add(null);
+        while (q.size() > 1) {
+            Tree.TreeNode n = q.poll();
+            if (n == null) {
+                q.add(null);
+                dist++;
+                continue;
+            }
+            n.setDist(dist);
+            q.addAll(n.children);
         }
     }
 

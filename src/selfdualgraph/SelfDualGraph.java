@@ -388,6 +388,7 @@ public class SelfDualGraph {
                     d = succ;
                     continue;
                 }
+                // TODO: fix bug for self-loop
                 int tmp = 0;
                 while (succ.getHead() == d.getHead() && succ != start) {
                     tmp++;
