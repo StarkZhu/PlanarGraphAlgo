@@ -70,6 +70,14 @@ public class test_SelfDualGraph_basic {
         return maps;
     }
 
+    protected Vertex findVertexByID(Set<Vertex> vertices, int id) {
+        for (Vertex v : vertices) {
+            if (v.getID() == id) return v;
+        }
+        return null;
+    }
+
+
     @Test
     public void testElementNum() {
         Assert.assertEquals(6, g.getVertexNum());
@@ -85,6 +93,47 @@ public class test_SelfDualGraph_basic {
         }
         for (Vertex f : g.getFaces()) {
             Assert.assertEquals(faceDegree[f.getID()], f.getDegree());
+        }
+    }
+
+    @Test
+    public void testIncidenceListOfVertices() {
+        int[][] neighbors = new int[][]{{1, 2, 5, 4},
+                {0, 3},
+                {0, 3, 5, 5},
+                {1, 4, 2},
+                {0, 5, 3},
+                {4, 0, 2, 2, 5, 5}};
+        for (int i = 0; i <= 5; i++) {
+            Vertex v = findVertexByID(g.getVertices(), i);
+            List<Dart> inciList = v.getIncidenceList();
+            Assert.assertEquals(neighbors[i].length, inciList.size());
+            int j = 0;
+            for (Dart d : inciList) {
+                Assert.assertEquals(neighbors[i][j], d.getHead().getID());
+                j++;
+            }
+        }
+    }
+
+    @Test
+    public void testIncidenceListOfFaces() {
+        int[][] neighbors = new int[][]{{2, 3, 1, 0},
+                {2, 5, 5, 4, 3},
+                {2, 5},
+                {5},
+                {2, 0, 5},
+                {5, 0, 4},
+                {0, 1, 3, 4}};
+        for (int i = 0; i <= 6; i++) {
+            Vertex f = findVertexByID(g.getFaces(), i);
+            List<Dart> inciList = f.getIncidenceList();
+            Assert.assertEquals(neighbors[i].length, inciList.size());
+            int j = 0;
+            for (Dart d : inciList) {
+                Assert.assertEquals(neighbors[i][j], d.getHead().getID());
+                j++;
+            }
         }
     }
 

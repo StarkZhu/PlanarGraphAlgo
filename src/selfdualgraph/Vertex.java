@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Vertex is a vertex or a face in the primal graph, which is a face or a vertex in the dual graph
  * <p>
- * degree(V): the number of darts whose head is vertex V
+ * degree(V): the number of darts whose tail is vertex V
  * degree(F): the number of darts whose right is face F
  */
 public class Vertex implements Comparable<Vertex>{
