@@ -294,9 +294,5 @@ public abstract class Separator {
         subgraphs[1] = getVerticesBetweenLevels(levelList, mLevel, levelList.size() - 1);
     }
 
-    public static void main(String[] args) {
-        TreeWeightAssigner tmp = new VertexWeight();
-        System.out.println(tmp.getClass() == VertexWeight.class);
-    }
 
 }
