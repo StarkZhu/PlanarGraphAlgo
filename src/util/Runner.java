@@ -81,8 +81,8 @@ public class Runner {
 
     public static void testCylinder() throws FileNotFoundException {
         for (int i = 1; i <= 5; i++) {
-            String input = String.format("./input_data/cylinder/%d.txt", i);
-            String output = String.format("./output/cylinder/%d.txt", i);
+            String input = String.format("./input_data/cylinder/test/%d.txt", i);
+            String output = String.format("./output/cylinder/test/%d.txt", i);
             runTest(input, 32, false, output);
         }
     }
@@ -122,6 +122,6 @@ public class Runner {
         testCylinder();
         //testSphere();
         //testRandom();
-        testCylinderModified();
+        //testCylinderModified();
     }
 }
