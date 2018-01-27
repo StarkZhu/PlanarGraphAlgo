@@ -119,7 +119,7 @@ public class Runner {
 
     public static void main(String[] args) throws FileNotFoundException {
         //testGrids();
-        //testCylinder();
+        testCylinder();
         //testSphere();
         //testRandom();
         testCylinderModified();

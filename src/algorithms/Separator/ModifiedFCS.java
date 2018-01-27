@@ -1,7 +1,9 @@
 package algorithms.Separator;
 
+import algorithms.RootFinder.*;
 import selfdualgraph.*;
 
+import java.io.*;
 import java.util.*;
 
 public class ModifiedFCS extends FundamentalCycleSeparator {
@@ -45,6 +47,9 @@ public class ModifiedFCS extends FundamentalCycleSeparator {
         Tree.TreeNode result = node;
         Dart d = result.getParentDart();
         int cycleLen = map.get(d.getTail()).getDist() + map.get(d.getHead()).getDist();
+        //TODO: correct cycle size calculation make run time O(n^2)
+        //Tree.TreeNode lca = coTree.leastCommonAncestor(map.get(d.getTail()), map.get(d.getHead()));
+        //int cycleLen = map.get(d.getTail()).getDist() + map.get(d.getHead()).getDist() - 2*lca.getDist();
 
         Queue<Tree.TreeNode> visiting = new LinkedList<>();
         visiting.add(coTree.getRoot());
@@ -52,6 +57,8 @@ public class ModifiedFCS extends FundamentalCycleSeparator {
             Tree.TreeNode n = visiting.poll();
             if (n.getDescendantWeightSum() > alpha * totalW && n.getDescendantWeightSum() < (1 - alpha) * totalW) {
                 d = n.getParentDart();
+                //lca = coTree.leastCommonAncestor(map.get(d.getTail()), map.get(d.getHead()));
+                //int len = map.get(d.getTail()).getDist() + map.get(d.getHead()).getDist() - 2*lca.getDist();
                 int len = map.get(d.getTail()).getDist() + map.get(d.getHead()).getDist();
                 if (len < cycleLen) {
                     cycleLen = len;
@@ -65,5 +72,13 @@ public class ModifiedFCS extends FundamentalCycleSeparator {
         }
 
         return result;
+    }
+
+    public static void main(String[] args) throws FileNotFoundException {
+        SelfDualGraph g = new SelfDualGraph();
+        g.buildGraph("./input_data/cylinder/1.txt");
+        Separator sp = new ModifiedFCS(g);
+        Set<Vertex> separator = sp.findSeparator(null, new SpecificIdRootFinder(0), null);
+        System.out.println(separator.size());
     }
 }
