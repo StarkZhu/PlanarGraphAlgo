@@ -171,7 +171,7 @@ public class CylinderGenerator {
     public static void main(String[] args) throws FileNotFoundException {
         for (int i = 0; i < 5; i++) {
             CylinderGenerator cg = new CylinderGenerator(null);
-            cg.generatCylindersManual2(i, String.format("./input_data/cylinder/test/%d.txt", i + 1));
+            cg.generatCylindersManual2(i + 1, String.format("./input_data/cylinder/test/%d.txt", i + 1));
         }
 
         /*
