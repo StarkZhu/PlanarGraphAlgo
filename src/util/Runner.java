@@ -35,8 +35,8 @@ public class Runner {
         PrintWriter out = new PrintWriter(outputFileName);
         out.printf("Graph Info:\t%s\tNumber of Vertices\t%d\n", inputFileName, g.getVertexNum());
         out.printf("Current run parameter:\tuse_max_degree_root = %b\n", rndMaxDegRoot);
-        out.printf("\t\tLevel Separator\t\t\tFundamental Cycle Separator\t\t\tLipton-Tarjan Separator\n");
-        out.printf("\tSeparator Size\tBalance Ratio\tRuntime (ms)\tSeparator Size\tBalance Ratio\tRuntime (ms)\tSeparator Size\tBalance Ratio\tRuntime (s)\n");
+        out.printf("\t\tLevel Separator\t\t\tFundamental Cycle Separator\t\t\tModifiedFCS\t\t\tLipton-Tarjan Separator\t\t\tSimple Cycle Separator\n");
+        out.printf("\tSeparator Size\tBalance Ratio\tRuntime (ms)\tSeparator Size\tBalance Ratio\tRuntime (ms)\tSeparator Size\tBalance Ratio\tRuntime (ms)\tSeparator Size\tBalance Ratio\tRuntime (s)\tSeparator Size\tBalance Ratio\tRuntime (s)\n");
         Random random = new Random(-1);
         Separator sp;
         for (int i = 0; i < trials; i++) {
@@ -48,13 +48,21 @@ public class Runner {
             testSeparator(sp, root, sb);
             System.out.println("LevelSeparator done");
 
-            //sp = new FundamentalCycleSeparator(g);
-            sp = new ModifiedFCS(g);
+            sp = new FundamentalCycleSeparator(g);
             testSeparator(sp, root, sb);
             System.out.println("FundamentalCycleSeparator done");
 
+            sp = new ModifiedFCS(g);
+            testSeparator(sp, root, sb);
+            System.out.println("ModifiedFCS done");
+
             sp = new LiptonTarjanSeparator(g);
             testSeparator(sp, root, sb);
+            System.out.println("LiptonTarjan done");
+
+            sp = new SimpleCycleSeparator(g);
+            testSeparator(sp, root, sb);
+            System.out.println("SimpleCycleSeparator done");
 
             out.println(sb.toString());
         }
@@ -74,15 +82,23 @@ public class Runner {
     public static void testGrids() throws FileNotFoundException {
         for (int i = 1; i <= 5; i++) {
             String input = String.format("./input_data/grids/%d.txt", i);
-            String output = String.format("./output/grids/%d.txt", i);
+            String output = String.format("./output/grids/test/%d.txt", i);
+            runTest(input, 32, false, output);
+        }
+    }
+
+    public static void testCylinderTest() throws FileNotFoundException {
+        for (int i = 1; i <= 5; i++) {
+            String input = String.format("./input_data/cylinder/test/%d.txt", i);
+            String output = String.format("./output/cylinder/test/%d.txt", i);
             runTest(input, 32, false, output);
         }
     }
 
     public static void testCylinder() throws FileNotFoundException {
         for (int i = 1; i <= 5; i++) {
-            String input = String.format("./input_data/cylinder/test/%d.txt", i);
-            String output = String.format("./output/cylinder/test/%d.txt", i);
+            String input = String.format("./input_data/cylinder/%d.txt", i);
+            String output = String.format("./output/cylinder/%d.txt", i);
             runTest(input, 32, false, output);
         }
     }
@@ -118,8 +134,8 @@ public class Runner {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        //testGrids();
-        testCylinder();
+        testGrids();
+        //testCylinder();
         //testSphere();
         //testRandom();
         //testCylinderModified();
