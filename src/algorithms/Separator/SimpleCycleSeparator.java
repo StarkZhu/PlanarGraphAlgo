@@ -50,19 +50,13 @@ public class SimpleCycleSeparator extends Separator {
         Tree.TreeNode separatorNode = leafmostHeavyVertex(coTreeRoot, 1.0 / 3, coTreeRoot.getDescendantWeightSum());
         Map<Vertex, Tree.TreeNode> primalTreeMap = trees[0].mapVertexToTreeNode(false);
         Dart uv = separatorNode.getParentDart();
-        Vertex u = uv.getTail();
-        Vertex v = uv.getHead();
-        Tree.TreeNode root = trees[0].leastCommonAncestor(primalTreeMap.get(u), primalTreeMap.get(v));
+        Tree.TreeNode root = trees[0].leastCommonAncestor(primalTreeMap.get(uv.getTail()), primalTreeMap.get(uv.getHead()));
         trees[0].reRoot(root);
 
         // calculate distance of every vertex and group them by distance to root
         trees[0].updateDistance();
-        Vertex phi = u;
-        int h = primalTreeMap.get(u).getDist();
-        if (primalTreeMap.get(u).getDist() < primalTreeMap.get(v).getDist()) {
-            h = primalTreeMap.get(v).getDist();
-            phi = v;
-        }
+        Vertex phi = getVertexPhi(uv, primalTreeMap);
+        int h = primalTreeMap.get(phi).getDist();
         List<Set<Vertex>> levels = verticeLevels(primalTreeMap, h);
         Set<Vertex> path = pathToPhi(primalTreeMap, phi);
 
@@ -78,7 +72,7 @@ public class SimpleCycleSeparator extends Separator {
         vNum_in_out[h][0] = g.getVertexNum() - 3;
         vNum_in_out[h][1] = 0;
         for (int i = 1; i < h; i++) {
-            vNum_in_out[i][0] = vNum_in_out[i - 1][0] + vertexRegions[i].size();
+            vNum_in_out[i][0] = vNum_in_out[i - 1][0] + outerBoundaries.get(i - 1).size() + vertexRegions[i].size();
             vNum_in_out[i][1] = g.getVertexNum() - vNum_in_out[i][0] - outerBoundaries.get(i).size();
             // check if any level boundary is small and balanced, use it as separator
             if (outerBoundaries.get(i).size() < 4 * sqrtN
@@ -141,10 +135,21 @@ public class SimpleCycleSeparator extends Separator {
             Set<Vertex> tmp = subgraphs[0];
             tmp.addAll(A);
             tmp.addAll(outerBoundaries.get(a));
-            buildSubgraphs(phi, tmp);
+            C.addAll(D);
+            buildSubgraphs(C.iterator().next(), tmp);
         }
 
         return separator;
+    }
+
+    public Vertex getVertexPhi(Dart uv, Map<Vertex, Tree.TreeNode> primalTreeMap) {
+        Vertex u = uv.getTail();
+        Vertex v = uv.getHead();
+        Vertex phi = u;
+        if (primalTreeMap.get(u).getDist() < primalTreeMap.get(v).getDist()) {
+            phi = v;
+        }
+        return phi;
     }
 
     /**
@@ -190,7 +195,7 @@ public class SimpleCycleSeparator extends Separator {
      * @param root
      * @return
      */
-    private Set<Vertex>[] identifyVertexRegions(List<Set<Vertex>> outerBoundaries, Tree.TreeNode root) {
+    public Set<Vertex>[] identifyVertexRegions(List<Set<Vertex>> outerBoundaries, Tree.TreeNode root) {
         for (Vertex vertex : g.getVertices()) vertex.setVisited(false);
         root.getData().setVisited(true);
         Set<Vertex>[] VertexRegions = new Set[outerBoundaries.size()];
@@ -235,8 +240,8 @@ public class SimpleCycleSeparator extends Separator {
      * @param path
      * @return
      */
-    private List<Set<Vertex>> identifyBoundaries(Map<Vertex, Tree.TreeNode> primalTreeMap, Dart uv, int h,
-                                                 List<Set<Vertex>> levels, Set<Vertex> path) {
+    public List<Set<Vertex>> identifyBoundaries(Map<Vertex, Tree.TreeNode> primalTreeMap, Dart uv, int h,
+                                                List<Set<Vertex>> levels, Set<Vertex> path) {
         List<Set<Vertex>> outerBoundaries = new ArrayList<>(h + 1);
         for (int i = 0; i < h; i++) {
             outerBoundaries.add(new HashSet<>());
@@ -279,15 +284,16 @@ public class SimpleCycleSeparator extends Separator {
                     }
                     if (levels.get(i).contains(next)) {
                         outerBoundaries.get(i).add(next);
-                        nextD = d.getReverse().getSuccessor();
+                        nextD = d.getReverse();
                         continue LEVEL_LOOP;
                     }
                     d = d.getSuccessor();
                 }
                 nextD = null;
+                // TODO: problem - loop is not closed
             }
             //TODO: for test
-            System.out.println(String.format("%d --> %d\n", levels.get(i).size(), outerBoundaries.get(i).size()));
+            System.out.printf("%d --> %d\n", levels.get(i).size(), outerBoundaries.get(i).size());
         }
 
         // identify 1 face incidental to (uv) to be the outer face
@@ -306,7 +312,7 @@ public class SimpleCycleSeparator extends Separator {
      * @param phi
      * @return
      */
-    private Set<Vertex> pathToPhi(Map<Vertex, Tree.TreeNode> primalTreeMap, Vertex phi) {
+    public Set<Vertex> pathToPhi(Map<Vertex, Tree.TreeNode> primalTreeMap, Vertex phi) {
         Set<Vertex> path = new HashSet<>();
         Tree.TreeNode tmp = primalTreeMap.get(phi);
         while (tmp != null) {
@@ -323,7 +329,7 @@ public class SimpleCycleSeparator extends Separator {
      * @param h
      * @return
      */
-    private List<Set<Vertex>> verticeLevels(Map<Vertex, Tree.TreeNode> primalTreeMap, int h) {
+    public List<Set<Vertex>> verticeLevels(Map<Vertex, Tree.TreeNode> primalTreeMap, int h) {
         List<Set<Vertex>> levels = new ArrayList<>(h + 1);
         for (int i = 0; i <= h; i++) {
             levels.add(new HashSet<>());
@@ -347,9 +353,9 @@ public class SimpleCycleSeparator extends Separator {
 
     public static void main(String[] args) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
-        g.buildGraph("./input_data/grids/1.txt");
+        g.buildGraph("./test/benchmark_img_4x4.txt");
         Separator sp = new SimpleCycleSeparator(g);
-        Set<Vertex> separator = sp.findSeparator(null, new SpecificIdRootFinder(5), null);
+        Set<Vertex> separator = sp.findSeparator(null, new SpecificIdRootFinder(1), null);
         System.out.println(separator);
     }
 }
