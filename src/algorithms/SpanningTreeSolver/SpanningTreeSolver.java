@@ -1,6 +1,7 @@
 package algorithms.SpanningTreeSolver;
 
 import selfdualgraph.*;
+
 import java.io.FileNotFoundException;
 import java.util.*;
 
@@ -12,9 +13,11 @@ import java.util.*;
 public abstract class SpanningTreeSolver {
 
     public abstract void buildTreeFromRoot(Tree.TreeNode root);
+    public abstract void rebuildTreeFromRoot(Tree.TreeNode root, Map<Vertex, Tree.TreeNode> boundary);
 
     /**
      * build spanning tree/cotree of graph G rooted at any vertex/face
+     *
      * @param g
      * @return
      */
@@ -24,22 +27,14 @@ public abstract class SpanningTreeSolver {
 
     /**
      * build spanning tree/cotree of graph G rooted at the given vertex/face
+     *
      * @param g
      * @param vertex
-     * @param face if null, select a face with at least 1 incidental edge included in primal tree
+     * @param face   if null, select a face with at least 1 incidental edge included in primal tree
      * @return array of 2 trees, [0] is the primal spanning Tree, [1] is the corresponding coTree
      */
     public Tree[] buildTreeCoTree(SelfDualGraph g, Vertex vertex, Vertex face) {
-        // set every vertex, face, dart to be unvisited
-        for (Vertex v : g.getVertices()) {
-            v.setVisited(false);
-            for (Dart d : v.getIncidenceList()) {
-                d.setVisited(false);
-            }
-        }
-        for (Vertex f : g.getFaces()) {
-            f.setVisited(false);
-        }
+        g.resetAllToUnvisited();
 
         Tree[] treeAndcoTree = new Tree[2];
         treeAndcoTree[0] = new Tree(vertex);
@@ -51,7 +46,7 @@ public abstract class SpanningTreeSolver {
                 throw new RuntimeException("Primal tree has only 1 node");
             }
             Tree.TreeNode child = primalRoot.getChildren().iterator().next();
-            face  = child.getParentDart().getRight();
+            face = child.getParentDart().getRight();
             System.out.printf("Default root for dual tree is selected to be face ID = %d\n", face.getID());
         }
         treeAndcoTree[1] = new Tree(face);
@@ -61,9 +56,52 @@ public abstract class SpanningTreeSolver {
     }
 
     /**
+     * rebuild tree and cotree from root, keep unchanged part
+     *
+     * @param trees
+     * @param g
+     * @param unchanged
+     */
+    public void rebuildTreeCoTree(Tree[] trees, SelfDualGraph g, Set<Vertex> unchanged, Map<Vertex, Tree.TreeNode> boundary) {
+        // set every vertex, face, dart to be unvisited
+        g.resetAllToUnvisited();
+        // traverse primal tree, keep unchanged part and mark them visited
+        pruneTree(trees[0].getRoot(), unchanged);
+
+        // rebuild tree using information of boundary vertices
+        rebuildTreeFromRoot(trees[0].getRoot(), boundary);
+        // rebuild cotree
+        trees[1] = new Tree(trees[1].getRoot().getData());
+        buildCoTree(trees[1].getRoot());
+    }
+
+    public void pruneTree(Tree.TreeNode root, Set<Vertex> unchanged) {
+        Queue<Tree.TreeNode> q = new LinkedList<>();
+        q.add(root);
+        root.getData().setVisited(true);
+        while (!q.isEmpty()) {
+            Tree.TreeNode node = q.poll();
+            Set<Tree.TreeNode> toRemove = new HashSet<>();
+            for (Tree.TreeNode child : node.getChildren()) {
+                if (!unchanged.contains(child.getData())) {
+                    toRemove.add(child);
+                } else {
+                    child.getData().setVisited(true);
+                    Dart d = child.getParentDart();
+                    d.setVisited(true);
+                    d.getReverse().setVisited(true);
+                    q.add(child);
+                }
+            }
+            node.removeChildren(toRemove);
+        }
+    }
+
+    /**
      * build coTree based on the existing spanning tree, called only after a primal spanning tree is built
      * coTree is unique given primal tree, so is independent of what algrothim used
-     * @param root  root of the existing primal spanning tree
+     *
+     * @param root root of the existing primal spanning tree
      */
     /*
     // causing StackOverflow when graph has large depth, such as cylinders
@@ -85,7 +123,7 @@ public abstract class SpanningTreeSolver {
     */
 
     // rewrite a stack version, instead of recursion
-    private void buildCoTree(Tree.TreeNode root) {
+    public void buildCoTree(Tree.TreeNode root) {
         // build coTree with DFS, but child should be the face from dart.getLeft()
         Stack<Tree.TreeNode> stack = new Stack<>();
         stack.push(root);

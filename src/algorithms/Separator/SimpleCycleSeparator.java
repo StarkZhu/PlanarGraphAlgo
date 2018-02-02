@@ -355,7 +355,7 @@ public class SimpleCycleSeparator extends Separator {
         SelfDualGraph g = new SelfDualGraph();
         g.buildGraph("./test/benchmark_img_4x4.txt");
         Separator sp = new SimpleCycleSeparator(g);
-        Set<Vertex> separator = sp.findSeparator(null, new SpecificIdRootFinder(1), null);
+        Set<Vertex> separator = sp.findSeparator(null, new SpecificIdRootFinder(3), null);
         System.out.println(separator);
     }
 }

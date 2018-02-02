@@ -52,6 +52,7 @@ public class Tree {
 
     /**
      * print the tree from the given root, with increased indentation
+     *
      * @param root
      * @param spaceNum
      * @return
@@ -61,13 +62,14 @@ public class Tree {
         sb.append(new String(new char[spaceNum]).replace("\0", " "));
         sb.append(String.format("%s\n", root.getData()));
         for (TreeNode child : root.getChildren()) {
-            sb.append(printTree(child, spaceNum+2));
+            sb.append(printTree(child, spaceNum + 2));
         }
         return sb.toString();
     }
 
     /**
      * Re-root the tree at the given node
+     *
      * @param node must be in this tree, not checked
      */
     public void reRoot(TreeNode node) {
@@ -92,6 +94,7 @@ public class Tree {
 
     /**
      * map all vertices stored in a tree to the corresponding TreeNode that stores it
+     *
      * @param resetVertexSelfweight
      * @return
      */
@@ -111,6 +114,7 @@ public class Tree {
 
     /**
      * find the least common ancestor of 2 TreeNodes
+     *
      * @param p
      * @param q
      * @return
@@ -168,6 +172,16 @@ public class Tree {
 
         public void addChild(TreeNode child) {
             children.add(child);
+        }
+
+        public void removeChildren(Set<TreeNode> toRemove) {
+            Set<TreeNode> remainSet = new HashSet<>(children);
+            remainSet.removeAll(toRemove);
+            List<TreeNode> remainList = new ArrayList<>();
+            for (TreeNode child : children) {
+                if (remainSet.contains(child)) remainList.add(child);
+            }
+            children = remainList;
         }
 
         public void setDescendantWeightSum(double v) {

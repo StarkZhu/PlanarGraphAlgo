@@ -633,6 +633,18 @@ public class SelfDualGraph {
         return vertex;
     }
 
+    public void resetAllToUnvisited() {
+        // set every vertex, face, dart to be unvisited
+        for (Vertex v : vertices) {
+            v.setVisited(false);
+            for (Dart d : v.getIncidenceList()) {
+                d.setVisited(false);
+            }
+        }
+        for (Vertex f : faces) {
+            f.setVisited(false);
+        }
+    }
 
     // for debug only
     public static void main(String[] args) throws FileNotFoundException {

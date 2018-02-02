@@ -40,4 +40,9 @@ public class Primsolver extends SpanningTreeSolver {
             vertex = v;
         }
     }
+
+    @Override
+    public void rebuildTreeFromRoot(Tree.TreeNode root, Map<Vertex, Tree.TreeNode> boundary) {
+        throw new RuntimeException("Function not implemented");
+    }
 }

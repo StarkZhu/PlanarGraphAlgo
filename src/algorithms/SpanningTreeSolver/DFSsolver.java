@@ -2,6 +2,8 @@ package algorithms.SpanningTreeSolver;
 
 import selfdualgraph.*;
 
+import java.util.*;
+
 /**
  * build spanning tree using DFS method
  */
@@ -20,5 +22,10 @@ public class DFSsolver extends SpanningTreeSolver{
                 buildTreeFromRoot(child);
             }
         }
+    }
+
+    @Override
+    public void rebuildTreeFromRoot(Tree.TreeNode root, Map<Vertex, Tree.TreeNode> boundary) {
+        throw new RuntimeException("Function not implemented");
     }
 }
