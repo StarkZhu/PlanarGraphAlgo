@@ -53,6 +53,10 @@ public class SimpleCycleSeparator extends Separator {
         Tree.TreeNode root = trees[0].leastCommonAncestor(primalTreeMap.get(uv.getTail()), primalTreeMap.get(uv.getHead()));
         trees[0].reRoot(root);
 
+        // rebuild BFS tree and coTree
+        rebuildBFStrees(sts, trees, separatorNode, primalTreeMap);
+        primalTreeMap = trees[0].mapVertexToTreeNode(false);
+
         // calculate distance of every vertex and group them by distance to root
         trees[0].updateDistance();
         Vertex phi = getVertexPhi(uv, primalTreeMap);
@@ -140,6 +144,16 @@ public class SimpleCycleSeparator extends Separator {
         }
 
         return separator;
+    }
+
+    public void rebuildBFStrees(SpanningTreeSolver sts, Tree[] trees, Tree.TreeNode separatorNode, Map<Vertex, Tree.TreeNode> primalTreeMap) {
+        Set<Vertex> unchanged = getIncidentalVertices(getDescendantVertices(separatorNode));
+        Set<Vertex> cycle = getCycle(trees[0], separatorNode.getParentDart());
+        Map<Vertex, Tree.TreeNode> margin = new HashMap<>(primalTreeMap);
+        for (Vertex v : new HashSet<>(margin.keySet())) {
+            if (!cycle.contains(v)) margin.remove(v);
+        }
+        sts.rebuildTreeCoTree(trees, g, unchanged, margin);
     }
 
     public Vertex getVertexPhi(Dart uv, Map<Vertex, Tree.TreeNode> primalTreeMap) {

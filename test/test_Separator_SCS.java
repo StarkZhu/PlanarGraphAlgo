@@ -30,11 +30,13 @@ public class test_Separator_SCS {
         org_trees[1] = trees[1];
         Tree.TreeNode coTreeRoot = trees[1].getRoot();
         vertexCountTWA.calcWeightSum(coTreeRoot);
-        Tree.TreeNode separatorNode = (new SimpleCycleSeparator(g)).leafmostHeavyVertex(coTreeRoot, 1.0 / 3, coTreeRoot.getDescendantWeightSum());
+        SimpleCycleSeparator sp = new SimpleCycleSeparator(g);
+        Tree.TreeNode separatorNode = sp.leafmostHeavyVertex(coTreeRoot, 1.0 / 3, coTreeRoot.getDescendantWeightSum());
         Map<Vertex, Tree.TreeNode> primalTreeMap = trees[0].mapVertexToTreeNode(false);
         Dart uv = separatorNode.getParentDart();
         Tree.TreeNode root = trees[0].leastCommonAncestor(primalTreeMap.get(uv.getTail()), primalTreeMap.get(uv.getHead()));
         trees[0].reRoot(root);
+        sp.rebuildBFStrees(sts, trees, separatorNode, primalTreeMap);
         trees[0].updateDistance();
         return uv;
     }
@@ -118,22 +120,22 @@ public class test_Separator_SCS {
         verify_phi(9, 2, phi, h);
 
         List<Set<Vertex>> levels = scs.verticeLevels(primalTreeMap, h);
-        verify_setList(new int[][]{{0}, {3, 4, 5, 8, 12, 13, 14, 15}, {2, 7, 9}}, levels);
+        verify_setList(new int[][]{{0}, {1, 2, 3, 4, 5, 7, 8, 11, 12, 13, 14, 15}, {6, 9, 10}}, levels);
 
         Set<Vertex> path = scs.pathToPhi(primalTreeMap, phi);
-        verify_set(new int[]{0, 1, 14}, path);
+        verify_set(new int[]{0, 14, 9}, path);
 
         List<Set<Vertex>> outerBoundaries = scs.identifyBoundaries(primalTreeMap, uv, h, levels, path);
-        verify_setList(new int[][]{{1}, {0, 2, 5, 6}, {9, 10, 14}}, outerBoundaries);
+        verify_setList(new int[][]{{0}, {1, 2, 4, 5, 7, 8, 11, 13, 14, 15}, {9, 10}}, outerBoundaries);
 
         Set<Vertex>[] vertexRegions = scs.identifyVertexRegions(outerBoundaries, trees[0].getRoot());
-        int[][] regions = new int[][]{{}, {}, {3, 4, 7, 8, 11, 12, 13, 15}};
+        int[][] regions = new int[][]{{}, {3, 12}, {6}};
         for (int i = 0; i < vertexRegions.length; i++) {
             verify_set(regions[i], vertexRegions[i]);
         }
 
         Set<Vertex> separator = scs.findSeparator(null, new SpecificIdRootFinder(3), null);
-        verify_set(new int[]{0, 2, 5, 6, 9, 14}, separator);
+        verify_set(new int[]{1, 2, 4, 5, 7, 8, 11, 13, 14, 15}, separator);
     }
 
     public void verify_uv(Dart uv, int[] ids) {
