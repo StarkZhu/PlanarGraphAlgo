@@ -19,7 +19,7 @@ public class CylinderGenerator {
      * @param magnitude 1 ~ 5
      * @return
      */
-    public void generatCylinders(int magnitude) {
+    public void generateWeirdCylinders(int magnitude) {
         //int limit = (int) Math.pow(10, magnitude);
         int limit = 2;
         Iterator<Vertex> it = g.getFaces().iterator();
@@ -47,12 +47,31 @@ public class CylinderGenerator {
     }
 
     /**
+     * randomly pick a newly added face, add a vertex on it
+     *
+     * @param magnitude
+     */
+    public void generateRandomylinders(int magnitude) {
+        int limit = 3 * (int) Math.pow(10, magnitude);
+        //int limit = 2;
+        Vertex newFace = g.getFaces().iterator().next();
+        for (int i = 0; i < limit; i++) {
+            Vertex newV = g.addVertex(newFace);
+            Dart newDart = newV.getFirstDart();
+            int rnd = (int) (Math.random() * 3);
+            for (int j = 0; j < rnd; j++) newDart = newDart.getSuccessor();
+            newFace = newDart.getLeft();
+        }
+        g.renumberIDs();
+    }
+
+    /**
      * hard code the process of generating each ring
      *
      * @param magnitude 1 ~ 5
      * @return
      */
-    public void generatCylindersManual(int magnitude, String outputFileName) throws FileNotFoundException {
+    public void generateySymmetricCylinder(int magnitude, String outputFileName) throws FileNotFoundException {
         int limit = (int) Math.pow(10, magnitude);
         int vID = 3;
         int dID = 6;
@@ -105,7 +124,7 @@ public class CylinderGenerator {
         out.close();
     }
 
-    public void generatCylindersManual2(int magnitude, String outputFileName) throws FileNotFoundException {
+    public void generateUnsymmetricCylinder(int magnitude, String outputFileName) throws FileNotFoundException {
         int limit = (int) Math.pow(10, magnitude);
         //int limit = 1;
         int vID = 3;
@@ -170,9 +189,18 @@ public class CylinderGenerator {
 
     public static void main(String[] args) throws FileNotFoundException {
         for (int i = 0; i < 5; i++) {
-            CylinderGenerator cg = new CylinderGenerator(null);
-            cg.generatCylindersManual2(i + 1, String.format("./input_data/cylinder/test/%d.txt", i + 1));
+            SelfDualGraph g = new SelfDualGraph();
+            g.buildGraph("./input_data/cylinder/0.txt");
+            CylinderGenerator cg = new CylinderGenerator(g);
+            cg.generateRandomylinders(i + 1);
+            g.saveToFile(String.format("./input_data/cylinder/rnd/%d.txt", i + 1));
         }
+        /*
+        for (int i = 0; i < 5; i++) {
+            CylinderGenerator cg = new CylinderGenerator(null);
+            cg.generateUnsymmetricCylinder(i + 1, String.format("./input_data/cylinder/rnd/%d.txt", i + 1));
+        }
+        */
 
         /*
         for (int i = 0; i < 5; i++) {
@@ -182,7 +210,7 @@ public class CylinderGenerator {
             System.out.println(g.getVertexNum());
 
             CylinderGenerator cg = new CylinderGenerator(g);
-            cg.generatCylinders(i + 1);
+            cg.generateWeirdCylinders(i + 1);
             g.saveToFile(String.format("./input_data/cylinder/%d.txt", i + 1));
         }
          */
@@ -194,7 +222,7 @@ public class CylinderGenerator {
 //        System.out.println(g.getVertexNum());
 //
 //        CylinderGenerator cg = new CylinderGenerator(g);
-//        cg.generatCylindersManual2(1, "./input_data/cylinder/test/1.txt");
+//        cg.generateUnsymmetricCylinder(1, "./input_data/cylinder/test/1.txt");
 
     }
 }

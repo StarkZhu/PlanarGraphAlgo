@@ -1,0 +1,85 @@
+package util;
+
+import algorithms.LCAHeuristic.CotreeDepthHeuristic;
+import algorithms.LCAHeuristic.TreeDistHeuristic;
+import algorithms.RootFinder.*;
+import algorithms.Separator.*;
+import selfdualgraph.*;
+
+import java.io.*;
+import java.util.*;
+
+public class CompareLCA {
+    public static void runTest(String inputFileName, int trials, boolean rndMaxDegRoot, String outputFileName) throws FileNotFoundException {
+        SelfDualGraph g = new SelfDualGraph();
+        g.buildGraph(inputFileName);
+        g.flatten();
+        g.triangulate();    // g is always triangulated
+
+        Set<Vertex> vertices = g.getVertices();
+        if (rndMaxDegRoot) {
+            // select all vertices with degree equal to maxDegree
+            Set<Vertex> maxDegreeV = new HashSet<>();
+            int maxDegree = 0;
+            for (Vertex v : g.getVertices()) {
+                if (v.getDegree() > maxDegree) {
+                    maxDegreeV = new HashSet<>();
+                    maxDegreeV.add(v);
+                    maxDegree = v.getDegree();
+                } else if (v.getDegree() == maxDegree) {
+                    maxDegreeV.add(v);
+                }
+            }
+            vertices = maxDegreeV;
+        }
+        List<Vertex> rootCandidates = new ArrayList<>(vertices);
+
+        PrintWriter out = new PrintWriter(outputFileName);
+        out.printf("Graph Info:\t%s\tNumber of Vertices\t%d\n", inputFileName, g.getVertexNum());
+        out.printf("Current run parameter:\tuse_max_degree_root = %b\n", rndMaxDegRoot);
+        out.printf("\t\tTree Dist Heuristic\t\t\tCotree Depth Heuristic\n");
+        out.printf("\tSeparator Size\tBalance Ratio\tRuntime (ms)\tSeparator Size\tBalance Ratio\tRuntime (ms)\n");
+        // TODO: for testing and comparison purpose
+        Random random = new Random(-1);
+        Separator sp;
+        for (int i = 0; i < trials; i++) {
+            System.out.printf("Iteration %d\n", i);
+            Vertex root = rootCandidates.get(random.nextInt(rootCandidates.size()));
+            StringBuilder sb = new StringBuilder(String.format("%d", i));
+
+            sp = new ModifiedFCS(g, new TreeDistHeuristic());
+            testSeparator(sp, root, sb);
+            System.out.println("TreeDistHeuristic done");
+
+            sp = new ModifiedFCS(g, new CotreeDepthHeuristic());
+            testSeparator(sp, root, sb);
+            System.out.println("CotreeDepthHeuristic done");
+
+            out.println(sb.toString());
+        }
+
+        out.close();
+    }
+
+    public static void testSeparator(Separator sp, Vertex root, StringBuilder sb) {
+        long startTime = System.nanoTime();
+        Set<Vertex> separator = sp.findSeparator(null, new SpecificIdRootFinder(root.getID()), null);
+        long endTime = System.nanoTime();
+        Set<Vertex>[] subgraphs = sp.findSubgraphs();
+        double ratio = Math.max(subgraphs[0].size() * 1.0 / subgraphs[1].size(), subgraphs[1].size() * 1.0 / subgraphs[0].size());
+        sb.append(String.format("\t%d\t%.5f\t%.2f", separator.size(), ratio, (endTime - startTime) / 1000000.0));
+    }
+
+    public static void runTest() throws FileNotFoundException {
+        String[] types = new String[]{"cylinder/rnd/5", "cylinder/symm/5", "cylinder/unsymm/5", "./grids/5", "./random/5", "./sphere/c_5"};
+        for (String type : types) {
+            String input = String.format("./input_data/%s.txt", type);
+            String output = String.format("./output/lcaHeuristic/%s.txt", type.substring(type.indexOf("/"), type.lastIndexOf("/")));
+            runTest(input, 64, false, output);
+        }
+    }
+
+    public static void main(String[] args) throws FileNotFoundException {
+        runTest();
+    }
+}

@@ -87,19 +87,14 @@ public class Runner {
         }
     }
 
-    public static void testCylinderTest() throws FileNotFoundException {
-        for (int i = 1; i <= 5; i++) {
-            String input = String.format("./input_data/cylinder/test/%d.txt", i);
-            String output = String.format("./output/cylinder/test/%d.txt", i);
-            runTest(input, 32, false, output);
-        }
-    }
-
     public static void testCylinder() throws FileNotFoundException {
-        for (int i = 1; i <= 5; i++) {
-            String input = String.format("./input_data/cylinder/%d.txt", i);
-            String output = String.format("./output/cylinder/%d.txt", i);
-            runTest(input, 32, false, output);
+        String[] types = new String[]{"rnd", "symm", "unsymm"};
+        for (String type : types) {
+            for (int i = 1; i <= 5; i++) {
+                String input = String.format("./input_data/cylinder/%s/%d.txt", type, i);
+                String output = String.format("./output/cylinder/%s/%d.txt", type, i);
+                runTest(input, 32, false, output);
+            }
         }
     }
 
@@ -125,19 +120,10 @@ public class Runner {
         }
     }
 
-    public static void testCylinderModified() throws FileNotFoundException {
-        for (int i = 1; i <= 5; i++) {
-            String input = String.format("./input_data/cylinder/%d.txt", i);
-            String output = String.format("./output/cylinder_m/%d.txt", i);
-            runTest(input, 32, false, output);
-        }
-    }
-
     public static void main(String[] args) throws FileNotFoundException {
         testGrids();
         //testCylinder();
         //testSphere();
         //testRandom();
-        //testCylinderModified();
     }
 }

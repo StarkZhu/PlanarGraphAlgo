@@ -112,6 +112,17 @@ public class Tree {
         return map;
     }
 
+    public void resetDist() {
+        TreeNode node = getRoot();
+        Queue<TreeNode> q = new LinkedList<>();
+        q.add(node);
+        while (!q.isEmpty()) {
+            node = q.poll();
+            node.setDist(-1);
+            q.addAll(node.getChildren());
+        }
+    }
+
     /**
      * find the least common ancestor of 2 TreeNodes
      *

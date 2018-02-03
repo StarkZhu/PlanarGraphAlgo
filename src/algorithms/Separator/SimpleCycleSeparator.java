@@ -236,7 +236,7 @@ public class SimpleCycleSeparator extends Separator {
             totalVNum += VertexRegions[i].size();
         }
         totalVNum += outerBoundaries.get(outerBoundaries.size() - 1).size();
-        // TODO: for test
+
         if (totalVNum != g.getVertexNum()) {
             throw new RuntimeException("Vertex number is not equal.");
         }
@@ -290,7 +290,7 @@ public class SimpleCycleSeparator extends Separator {
                 while (d != nextD) {
                     Vertex next = d.getHead();
                     if (outerBoundaries.get(i).contains(next)) {
-                        //TODO: for test
+
                         if (next != startV) {
                             throw new RuntimeException("Closing vertex is not startV");
                         }
@@ -304,10 +304,8 @@ public class SimpleCycleSeparator extends Separator {
                     d = d.getSuccessor();
                 }
                 nextD = null;
-                // TODO: problem - loop is not closed
             }
-            //TODO: for test
-            System.out.printf("%d --> %d\n", levels.get(i).size(), outerBoundaries.get(i).size());
+            //System.out.printf("%d --> %d\n", levels.get(i).size(), outerBoundaries.get(i).size());
         }
 
         // identify 1 face incidental to (uv) to be the outer face
@@ -367,9 +365,9 @@ public class SimpleCycleSeparator extends Separator {
 
     public static void main(String[] args) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
-        g.buildGraph("./test/benchmark_img_4x4.txt");
+        g.buildGraph("./input_data/grids/1.txt");
         Separator sp = new SimpleCycleSeparator(g);
-        Set<Vertex> separator = sp.findSeparator(null, new SpecificIdRootFinder(6), null);
+        Set<Vertex> separator = sp.findSeparator(null, new SpecificIdRootFinder(5), null);
         System.out.println(separator);
     }
 }
