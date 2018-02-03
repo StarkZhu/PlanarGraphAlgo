@@ -138,6 +138,39 @@ public class test_Separator_SCS {
         verify_set(new int[]{1, 2, 4, 5, 7, 8, 11, 13, 14, 15}, separator);
     }
 
+    @Test
+    public void test_grid4x4_rt6() {
+        SelfDualGraph g = readGraph("./test/benchmark_img_4x4.txt");
+        SimpleCycleSeparator scs = new SimpleCycleSeparator(g);
+        Tree[] trees = new Tree[2];
+        Dart uv = findUV(g, new SpecificIdRootFinder(6), trees);
+        verify_uv(uv, new int[]{9, 13});
+        Assert.assertEquals(6, trees[0].getRoot().getData().getID());
+
+        Map<Vertex, Tree.TreeNode> primalTreeMap = trees[0].mapVertexToTreeNode(false);
+        Vertex phi = scs.getVertexPhi(uv, primalTreeMap);
+        int h = primalTreeMap.get(phi).getDist();
+        verify_phi(13, 3, phi, h);
+
+        List<Set<Vertex>> levels = scs.verticeLevels(primalTreeMap, h);
+        verify_setList(new int[][]{{6}, {1, 2, 5, 7, 10, 11}, {0, 3, 4, 9, 14, 15}, {8, 12, 13}}, levels);
+
+        Set<Vertex> path = scs.pathToPhi(primalTreeMap, phi);
+        verify_set(new int[]{6, 2, 0, 13}, path);
+
+        List<Set<Vertex>> outerBoundaries = scs.identifyBoundaries(primalTreeMap, uv, h, levels, path);
+        verify_setList(new int[][]{{6}, {1, 2, 5, 7, 10, 11}, {0, 4, 9, 14}, {13}}, outerBoundaries);
+
+        Set<Vertex>[] vertexRegions = scs.identifyVertexRegions(outerBoundaries, trees[0].getRoot());
+        int[][] regions = new int[][]{{}, {}, {3, 15}, {8, 12}};
+        for (int i = 0; i < vertexRegions.length; i++) {
+            verify_set(regions[i], vertexRegions[i]);
+        }
+
+        Set<Vertex> separator = scs.findSeparator(null, new SpecificIdRootFinder(6), null);
+        verify_set(new int[]{0, 2, 5, 6}, separator);
+    }
+
     public void verify_uv(Dart uv, int[] ids) {
         Set<Integer> vertexUV = new HashSet<>();
         for (int i : ids) vertexUV.add(i);
