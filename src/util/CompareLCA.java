@@ -3,6 +3,7 @@ package util;
 import algorithms.LCAHeuristic.CombinedHeuristic;
 import algorithms.LCAHeuristic.DistToLeafHeuristic;
 import algorithms.LCAHeuristic.DistToRootHeuristic;
+import algorithms.LCAHeuristic.ExactLCA;
 import algorithms.RootFinder.*;
 import algorithms.Separator.*;
 import selfdualgraph.*;
@@ -38,8 +39,8 @@ public class CompareLCA {
         PrintWriter out = new PrintWriter(outputFileName);
         out.printf("Graph Info:\t%s\tNumber of Vertices\t%d\n", inputFileName, g.getVertexNum());
         out.printf("Current run parameter:\tuse_max_degree_root = %b\n", rndMaxDegRoot);
-        out.printf("\t\tDistToRoot Heuristic\t\t\tDistToLeaf Heuristic\t\t\tCombined Heuristic\n");
-        out.printf("\tSeparator Size\tBalance Ratio\tRuntime (ms)\tSeparator Size\tBalance Ratio\tRuntime (ms)\tSeparator Size\tBalance Ratio\tRuntime (ms)\n");
+        out.printf("\t\tExact LCA\t\tDistToRoot Heuristic\t\t\tDistToLeaf Heuristic\t\t\tCombined Heuristic\n");
+        out.printf("\tSeparator Size\tBalance Ratio\tRuntime (ms)\tSeparator Size\tBalance Ratio\tRuntime (ms)\tSeparator Size\tBalance Ratio\tRuntime (ms)\tSeparator Size\tBalance Ratio\tRuntime (ms)\n");
         // TODO: for testing and comparison purpose
         Random random = new Random(-1);
         Separator sp;
@@ -47,6 +48,10 @@ public class CompareLCA {
             System.out.printf("Iteration %d\n", i);
             Vertex root = rootCandidates.get(random.nextInt(rootCandidates.size()));
             StringBuilder sb = new StringBuilder(String.format("%d", i));
+
+            sp = new ModifiedFCS(g, new ExactLCA());
+            testSeparator(sp, root, sb);
+            System.out.println("DistToRootHeuristic done");
 
             sp = new ModifiedFCS(g, new DistToRootHeuristic());
             testSeparator(sp, root, sb);
@@ -76,10 +81,10 @@ public class CompareLCA {
     }
 
     public static void runTest() throws FileNotFoundException {
-        String[] types = new String[]{"cylinder/rnd/5", "cylinder/symm/5", "cylinder/unsymm/5", "./grids/5", "./random/5", "./sphere/c_5"};
+        String[] types = new String[]{"cylinder/rnd/4", "cylinder/symm/4", "cylinder/unsymm/4", "./grids/4", "./random/4", "./sphere/c_8"};
         for (String type : types) {
             String input = String.format("./input_data/%s.txt", type);
-            String output = String.format("./output/lcaHeuristic/%s.txt", type.substring(type.indexOf("/"), type.lastIndexOf("/")));
+            String output = String.format("./output/lcaHeuristic/4/%s.txt", type.substring(type.indexOf("/"), type.lastIndexOf("/")));
             runTest(input, 64, false, output);
         }
     }
