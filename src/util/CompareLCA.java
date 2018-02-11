@@ -1,7 +1,8 @@
 package util;
 
-import algorithms.LCAHeuristic.CotreeDepthHeuristic;
-import algorithms.LCAHeuristic.TreeDistHeuristic;
+import algorithms.LCAHeuristic.CombinedHeuristic;
+import algorithms.LCAHeuristic.DistToLeafHeuristic;
+import algorithms.LCAHeuristic.DistToRootHeuristic;
 import algorithms.RootFinder.*;
 import algorithms.Separator.*;
 import selfdualgraph.*;
@@ -37,8 +38,8 @@ public class CompareLCA {
         PrintWriter out = new PrintWriter(outputFileName);
         out.printf("Graph Info:\t%s\tNumber of Vertices\t%d\n", inputFileName, g.getVertexNum());
         out.printf("Current run parameter:\tuse_max_degree_root = %b\n", rndMaxDegRoot);
-        out.printf("\t\tTree Dist Heuristic\t\t\tCotree Depth Heuristic\n");
-        out.printf("\tSeparator Size\tBalance Ratio\tRuntime (ms)\tSeparator Size\tBalance Ratio\tRuntime (ms)\n");
+        out.printf("\t\tDistToRoot Heuristic\t\t\tDistToLeaf Heuristic\t\t\tCombined Heuristic\n");
+        out.printf("\tSeparator Size\tBalance Ratio\tRuntime (ms)\tSeparator Size\tBalance Ratio\tRuntime (ms)\tSeparator Size\tBalance Ratio\tRuntime (ms)\n");
         // TODO: for testing and comparison purpose
         Random random = new Random(-1);
         Separator sp;
@@ -47,13 +48,17 @@ public class CompareLCA {
             Vertex root = rootCandidates.get(random.nextInt(rootCandidates.size()));
             StringBuilder sb = new StringBuilder(String.format("%d", i));
 
-            sp = new ModifiedFCS(g, new TreeDistHeuristic());
+            sp = new ModifiedFCS(g, new DistToRootHeuristic());
             testSeparator(sp, root, sb);
-            System.out.println("TreeDistHeuristic done");
+            System.out.println("DistToRootHeuristic done");
 
-            sp = new ModifiedFCS(g, new CotreeDepthHeuristic());
+            sp = new ModifiedFCS(g, new DistToLeafHeuristic());
             testSeparator(sp, root, sb);
-            System.out.println("CotreeDepthHeuristic done");
+            System.out.println("DistToLeafHeuristic done");
+
+            sp = new ModifiedFCS(g, new CombinedHeuristic());
+            testSeparator(sp, root, sb);
+            System.out.println("CombinedHeuristic done");
 
             out.println(sb.toString());
         }

@@ -4,13 +4,15 @@ import selfdualgraph.*;
 
 import java.util.*;
 
-public class TreeDistHeuristic extends LCAHeuristic{
+public class CombinedHeuristic extends LCAHeuristic {
     private Map<Vertex, Tree.TreeNode> primalMap;
 
     @Override
     public void setTrees(Tree tree, Tree cotree) {
         super.setTrees(tree, cotree);
         primalMap = tree.mapVertexToTreeNode(false);
+        cotree.resetDist();
+        cotree.updateDistToLeaf();
     }
 
     @Override
@@ -19,6 +21,8 @@ public class TreeDistHeuristic extends LCAHeuristic{
      */
     public int cycleLenHeuristic(Tree.TreeNode coTreeNode) {
         Dart d = coTreeNode.getParentDart();
-        return primalMap.get(d.getTail()).getDist() + primalMap.get(d.getHead()).getDist();
+        int distToRoot = primalMap.get(d.getTail()).getDist() + primalMap.get(d.getHead()).getDist();
+        int distToLeaf = coTreeNode.getDist() + 2;
+        return Math.min(distToLeaf, distToRoot);
     }
 }

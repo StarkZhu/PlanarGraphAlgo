@@ -19,17 +19,11 @@ public class Tree {
     /**
      * assign distance (from root to TreeNode) to all nodes in the tree
      */
-    public void updateDistance() {
-        updateDistance(root, 0);
+    public void updateDistToRoot() {
+        updateDistToRoot(root, 0);
     }
 
-    private void updateDistance(TreeNode root, int dist) {
-        /*
-        root.setDist(dist);
-        for (TreeNode n : root.children) {
-            updateDistance(n, dist+1);
-        }
-        */
+    private void updateDistToRoot(TreeNode root, int dist) {
         Queue<Tree.TreeNode> q = new LinkedList<>();
         q.add(root);
         q.add(null);
@@ -144,6 +138,35 @@ public class Tree {
             q = q.getParent();
         }
         return q;
+    }
+
+    /**
+     * Conjecture: dist of u,v to their LCA is roughly the deepest child of uv* in coTree
+     *
+     */
+    public void updateDistToLeaf() {
+        Stack<TreeNode> stack = new Stack<>();
+        stack.push(getRoot());
+        while (!stack.isEmpty()) {
+            TreeNode node = stack.pop();
+            if (node.getDist() == -1) {
+                if (node.getChildren().size() == 0) node.setDist(0);
+                else {
+                    stack.push(node);
+                    for (TreeNode child : node.getChildren()) stack.push(child);
+                    node.setDist(-2);   // indicate all its children are visited
+                }
+            } else if (node.getDist() == -2) {
+                if (node.children.size() == 1) {
+                    node.setDist(node.children.iterator().next().getDist() + 1);
+                }
+                else {  // have to children
+                    for (TreeNode child : node.getChildren()) {
+                        node.setDist(Math.max(node.getDist(), child.getDist()));
+                    }
+                }
+            }
+        }
     }
 
     public static class TreeNode {

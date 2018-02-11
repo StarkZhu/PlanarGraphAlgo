@@ -1,10 +1,11 @@
 import algorithms.RootFinder.*;
+import algorithms.Separator.*;
 import algorithms.SpanningTreeSolver.*;
 import org.junit.*;
 import selfdualgraph.*;
 
-import java.io.FileNotFoundException;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 public class test_Tree {
     private SelfDualGraph g;
@@ -101,26 +102,43 @@ public class test_Tree {
     }
 
     @Test
-    public void testDist() {
+    public void testDistToRoot() {
         RootFinder rf = new SpecificIdRootFinder(2);
         Vertex root = rf.selectRootVertex(g);
         SpanningTreeSolver bfs = new BFSsolver();
         Tree[] trees = bfs.buildTreeCoTree(g, root, null);
         Map<Vertex, Tree.TreeNode> map = trees[0].mapVertexToTreeNode(false);
-        trees[0].updateDistance();
-        int[] dist = new int[]{1, 2, 0, 1, 2, 1};
-        for (Vertex v : g.getVertices()) {
-            Tree.TreeNode n = map.get(v);
-            Assert.assertEquals(dist[v.getID()], n.getDist());
-        }
+        trees[0].updateDistToRoot();
+        verify_tree_dist(new int[]{1, 2, 0, 1, 2, 1}, trees[0]);
 
         Vertex v1 = (new SpecificIdRootFinder(1)).selectRootVertex(g);
         trees[0].reRoot(map.get(v1));
-        trees[0].updateDistance();
-        int[] dist1 = new int[]{1, 0, 2, 3, 2, 3};
-        for (Vertex v : g.getVertices()) {
-            Tree.TreeNode n = map.get(v);
-            Assert.assertEquals(dist1[v.getID()], n.getDist());
+        trees[0].updateDistToRoot();
+        verify_tree_dist(new int[]{1, 0, 2, 3, 2, 3}, trees[0]);
+    }
+
+
+    @Test
+    public void testDistToLeaf() throws FileNotFoundException {
+        SpanningTreeSolver bfs = new BFSsolver();
+        RootFinder rf = new SpecificIdRootFinder(0);
+        Tree[] trees = bfs.buildTreeCoTree(g, rf.selectRootVertex(g), rf.selectRootFace(g));
+
+        trees[0].updateDistToRoot();
+        verify_tree_dist(new int[]{0, 1, 1, 2, 1, 1}, trees[0]);
+
+        trees[1].resetDist();
+        trees[1].updateDistToLeaf();
+        verify_tree_dist(new int[]{2, 1, 1, 0, 0, 0, 0}, trees[1]);
+    }
+
+    public void verify_tree_dist(int[] dists, Tree tree) {
+        Queue<Tree.TreeNode> q = new LinkedList<>();
+        q.add(tree.getRoot());
+        while (!q.isEmpty()) {
+            Tree.TreeNode node = q.poll();
+            Assert.assertEquals(dists[node.getData().getID()], node.getDist());
+            q.addAll(node.getChildren());
         }
     }
 }

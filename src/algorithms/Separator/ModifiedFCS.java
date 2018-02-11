@@ -1,7 +1,8 @@
 package algorithms.Separator;
 
+import algorithms.LCAHeuristic.CombinedHeuristic;
+import algorithms.LCAHeuristic.DistToRootHeuristic;
 import algorithms.LCAHeuristic.LCAHeuristic;
-import algorithms.LCAHeuristic.TreeDistHeuristic;
 import algorithms.RootFinder.*;
 import selfdualgraph.*;
 
@@ -12,7 +13,7 @@ public class ModifiedFCS extends FundamentalCycleSeparator {
     private LCAHeuristic heuristic;
 
     public ModifiedFCS(SelfDualGraph g) {
-        this(g, new TreeDistHeuristic());
+        this(g, new CombinedHeuristic());
     }
 
     public ModifiedFCS(SelfDualGraph g, LCAHeuristic lca) {
@@ -53,8 +54,7 @@ public class ModifiedFCS extends FundamentalCycleSeparator {
         double alpha = 1.0 / maxDegree;
         double totalW = coTree.getRoot().getDescendantWeightSum();
 
-        tree.updateDistance();
-        prepareCoTreeHeuristic(coTree);
+        tree.updateDistToRoot();
         Map<Vertex, Tree.TreeNode> map = tree.mapVertexToTreeNode(false);
         Tree.TreeNode result = node;
 
@@ -95,37 +95,10 @@ public class ModifiedFCS extends FundamentalCycleSeparator {
         return primalMap.get(d.getTail()).getDist() + primalMap.get(d.getHead()).getDist() - 2 * lca.getDist();
     }
 
-    /**
-     * Conjecture: dist of u,v to their LCA is roughly the deepest child of uv* in coTree
-     *
-     * @param cotree
-     */
-    public void prepareCoTreeHeuristic(Tree cotree) {
-        cotree.resetDist();
-        Stack<Tree.TreeNode> stack = new Stack<>();
-        stack.push(cotree.getRoot());
-        while (!stack.isEmpty()) {
-            Tree.TreeNode node = stack.pop();
-            if (node.getDist() < 0) {
-                if (node.getChildren().size() == 0) node.setDist(1);
-                else {
-                    stack.push(node);
-                    for (Tree.TreeNode child : node.getChildren()) stack.push(child);
-                    node.setDist(0);
-                }
-            } else if (node.getDist() == 0) {
-                for (Tree.TreeNode child : node.getChildren()) {
-                    node.setDist(Math.max(node.getDist(), child.getDist()));
-                }
-                node.setDist(node.getDist() + 1);
-            }
-        }
-    }
-
     public static void main(String[] args) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
         g.buildGraph("./input_data/cylinder/1.txt");
-        Separator sp = new ModifiedFCS(g, new TreeDistHeuristic());
+        Separator sp = new ModifiedFCS(g, new DistToRootHeuristic());
         Set<Vertex> separator = sp.findSeparator(null, new SpecificIdRootFinder(0), null);
         System.out.println(separator.size());
     }

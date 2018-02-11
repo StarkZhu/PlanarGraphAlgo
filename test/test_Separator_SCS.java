@@ -37,7 +37,7 @@ public class test_Separator_SCS {
         Tree.TreeNode root = trees[0].leastCommonAncestor(primalTreeMap.get(uv.getTail()), primalTreeMap.get(uv.getHead()));
         trees[0].reRoot(root);
         sp.rebuildBFStrees(sts, trees, separatorNode, primalTreeMap);
-        trees[0].updateDistance();
+        trees[0].updateDistToRoot();
         return uv;
     }
 

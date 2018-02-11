@@ -58,7 +58,7 @@ public class SimpleCycleSeparator extends Separator {
         primalTreeMap = trees[0].mapVertexToTreeNode(false);
 
         // calculate distance of every vertex and group them by distance to root
-        trees[0].updateDistance();
+        trees[0].updateDistToRoot();
         Vertex phi = getVertexPhi(uv, primalTreeMap);
         int h = primalTreeMap.get(phi).getDist();
         List<Set<Vertex>> levels = verticeLevels(primalTreeMap, h);
