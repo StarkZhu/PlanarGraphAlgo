@@ -130,13 +130,14 @@ public class CylinderGenerator {
         int vID = 3;
         int dID = 6;
         int fID = 1;
-        StringBuilder vString = new StringBuilder("0 0 1\n1 -1 0\n2 1 0\n");
+        double sqrt3 = Math.sqrt(3);
+        StringBuilder vString = new StringBuilder(String.format("0 0 1\n1 %f -0.5\n2 %f -0.5\n", -0.5 * sqrt3, 0.5 * sqrt3));
         StringBuilder dString = new StringBuilder("0 1 0 1\n1 0 1 0\n2 3 1 2\n3 2 2 1\n4 5 2 0\n5 4 0 2\n");
-        StringBuilder fString = new StringBuilder("0 3 5 3 1\n");
+        StringBuilder fString = new StringBuilder("0 3 5 3 1 0 0\n");
         for (int i = 0; i < limit; i++) {
             vString.append(String.format("%d 0 %d\n", vID++, i + 2));
-            vString.append(String.format("%d %d 0\n", vID++, -(i + 2)));
-            vString.append(String.format("%d %d 0\n", vID++, i + 2));
+            vString.append(String.format("%d %f %f\n", vID++, -(i + 2) * sqrt3 * 0.5, -0.5 * (i + 2)));
+            vString.append(String.format("%d %f %f\n", vID++, (i + 2) * sqrt3 * 0.5, -0.5 * (i + 2)));
 
             for (int j = 0; j < 3; j++) {
                 dString.append(String.format("%d %d %d %d\n%d %d %d %d\n",
@@ -177,7 +178,7 @@ public class CylinderGenerator {
         }
 
         // out most face
-        fString.append(String.format("%d 3 %d %d %d\n", fID++, 18 * limit, 18 * limit + 2, 18 * limit + 4));
+        fString.append(String.format("%d 3 %d %d %d 0 %d\n", fID++, 18 * limit, 18 * limit + 2, 18 * limit + 4, limit + 2));
 
         PrintWriter out = new PrintWriter(new File(outputFileName));
         out.print(String.format("%d %d %d\n", 3 + limit * 3, 6 + limit * 18, 2 + limit * 6));
@@ -188,19 +189,21 @@ public class CylinderGenerator {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        for (int i = 0; i < 5; i++) {
+        /*
+        for (int i = 0; i < 1; i++) {
             SelfDualGraph g = new SelfDualGraph();
             g.buildGraph("./input_data/cylinder/0.txt");
             CylinderGenerator cg = new CylinderGenerator(g);
             cg.generateRandomylinders(i + 1);
             g.saveToFile(String.format("./input_data/cylinder/rnd/%d.txt", i + 1));
         }
-        /*
-        for (int i = 0; i < 5; i++) {
-            CylinderGenerator cg = new CylinderGenerator(null);
-            cg.generateUnsymmetricCylinder(i + 1, String.format("./input_data/cylinder/rnd/%d.txt", i + 1));
-        }
         */
+
+        for (int i = 0; i < 1; i++) {
+            CylinderGenerator cg = new CylinderGenerator(null);
+            cg.generateUnsymmetricCylinder(i + 1, String.format("./input_data/cylinder/unsymm/%d.txt", i + 1));
+        }
+
 
         /*
         for (int i = 0; i < 5; i++) {

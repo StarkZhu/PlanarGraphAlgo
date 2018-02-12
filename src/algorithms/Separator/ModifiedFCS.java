@@ -50,7 +50,7 @@ public class ModifiedFCS extends FundamentalCycleSeparator {
     */
 
     @Override
-    protected Tree.TreeNode chooseNode(Tree.TreeNode node, Tree tree, Tree coTree, int maxDegree) {
+    public Tree.TreeNode chooseNode(Tree.TreeNode node, Tree tree, Tree coTree, int maxDegree) {
         double alpha = 1.0 / maxDegree;
         double totalW = coTree.getRoot().getDescendantWeightSum();
 
@@ -97,9 +97,9 @@ public class ModifiedFCS extends FundamentalCycleSeparator {
 
     public static void main(String[] args) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
-        g.buildGraph("./input_data/cylinder/1.txt");
+        g.buildGraph("./input_data/cylinder/unsymm/1.txt");
         Separator sp = new ModifiedFCS(g, new DistToRootHeuristic());
-        Set<Vertex> separator = sp.findSeparator(null, new SpecificIdRootFinder(0), null);
+        Set<Vertex> separator = sp.findSeparator(null, new SpecificIdRootFinder(32), null);
         System.out.println(separator.size());
     }
 }

@@ -89,7 +89,33 @@ public class CompareLCA {
         }
     }
 
+    public static void tryRootSelection() throws FileNotFoundException {
+        SelfDualGraph g = new SelfDualGraph();
+        g.buildGraph("./input_data/cylinder/unsymm/3.txt");
+        g.flatten();
+        g.triangulate();    // g is always triangulated
+
+        PrintWriter out = new PrintWriter("./output/lcaHeuristic/3/result.txt");
+        out.printf("Graph Info:\tNumber of Vertices\t%d\n", g.getVertexNum());
+        out.printf("\t\tExact LCA\n");
+        out.printf("\tSeparator Size\tBalance Ratio\tRuntime (ms)\n");
+
+        int vNum = g.getVertexNum();
+        for (int i = 0; i < vNum; i++) {
+
+            System.out.printf("Iteration %d\n", i);
+            RootFinder rf = new SpecificIdRootFinder(i);
+            Vertex root = rf.selectRootVertex(g);
+            StringBuilder sb = new StringBuilder(String.format("%d", i));
+            Separator sp = new ModifiedFCS(g, new ExactLCA());
+            testSeparator(sp, root, sb);
+            out.println(sb.toString());
+        }
+        out.close();
+    }
+
     public static void main(String[] args) throws FileNotFoundException {
-        runTest();
+        //runTest();
+        tryRootSelection();
     }
 }

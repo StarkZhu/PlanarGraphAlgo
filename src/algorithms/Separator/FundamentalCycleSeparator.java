@@ -75,7 +75,7 @@ public class FundamentalCycleSeparator extends Separator{
      * @param node
      * @return
      */
-    protected Tree.TreeNode chooseNode(Tree.TreeNode node, Tree tree, Tree coTree, int maxDegree) {
+    public Tree.TreeNode chooseNode(Tree.TreeNode node, Tree tree, Tree coTree, int maxDegree) {
         return node;
     }
 
