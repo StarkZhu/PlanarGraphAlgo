@@ -1,5 +1,7 @@
 package selfdualgraph;
 
+import algorithms.RDivision.GraphDivider;
+
 import java.io.*;
 import java.util.*;
 
@@ -18,6 +20,8 @@ import java.util.*;
 public class SelfDualGraph {
     private Set<Vertex> vertices;
     private Set<Vertex> faces;
+    private Map<Integer, Vertex> idToVertex;
+    private Map<Integer, Vertex> idToFace;
 
     public SelfDualGraph(int V, int E, int F) {
         vertices = new HashSet<>(V);
@@ -654,4 +658,27 @@ public class SelfDualGraph {
         System.out.println(g.getVertexNum());
     }
 
+    public Set<Vertex> getVerticesFromID(Set<Integer> ids) {
+        if (idToVertex == null) {
+            idToVertex = new HashMap<>();
+            for (Vertex v : vertices) idToVertex.put(v.getID(), v);
+        }
+        Set<Vertex> vs = new HashSet<>();
+        for (int i : ids) vs.add(idToVertex.get(i));
+        return vs;
+    }
+
+    public SelfDualGraph buildSubgraph(Set<Integer> vertices, Set<Integer> boundary) {
+        // TODO: deep copy vertices from g, modify incidence list to only have edges inside subgraph
+        return null;
+    }
+
+    public SelfDualGraph buildSubgraph(Set<Vertex> vertices) {
+        // TODO: deep copy vertices from g, modify incidence list to only have edges inside subgraph
+        return null;
+    }
+
+    public Set<Vertex> findBoundary(Set<Vertex> subgraph, Set<Vertex> boundary) {
+        return null;
+    }
 }
