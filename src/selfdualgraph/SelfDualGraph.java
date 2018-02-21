@@ -22,10 +22,12 @@ public class SelfDualGraph {
     private Set<Vertex> faces;
     private Map<Integer, Vertex> idToVertex;
     private Map<Integer, Vertex> idToFace;
+    private Set<Vertex> boundary;
 
     public SelfDualGraph(int V, int E, int F) {
         vertices = new HashSet<>(V);
         faces = new HashSet<>(F);
+        boundary = new HashSet<>();
     }
 
     public SelfDualGraph() {
@@ -650,6 +652,31 @@ public class SelfDualGraph {
         }
     }
 
+    public SelfDualGraph buildSubgraph(Set<Vertex> vertices, Set<Vertex> separator) {
+        // TODO: deep copy vertices from g, modify incidence list to only have edges inside subgraph, detect subgraph's boundary
+        return null;
+    }
+
+    public Set<Vertex> findBoundary(Set<Vertex> subgraph, Set<Vertex> boundary) {
+        return null;
+    }
+
+    public int getBoundarySize() {
+        return boundary.size();
+    }
+
+    public void addToBoundary(Vertex v) {
+        boundary.add(v);
+    }
+
+    public void addToBoundary(Set<Vertex> vertices) {
+        boundary.addAll(vertices);
+    }
+
+    public Set<Vertex> getBoundary() {
+        return new HashSet<>(boundary);
+    }
+
     // for debug only
     public static void main(String[] args) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
@@ -668,17 +695,5 @@ public class SelfDualGraph {
         return vs;
     }
 
-    public SelfDualGraph buildSubgraph(Set<Integer> vertices, Set<Integer> boundary) {
-        // TODO: deep copy vertices from g, modify incidence list to only have edges inside subgraph
-        return null;
-    }
 
-    public SelfDualGraph buildSubgraph(Set<Vertex> vertices) {
-        // TODO: deep copy vertices from g, modify incidence list to only have edges inside subgraph
-        return null;
-    }
-
-    public Set<Vertex> findBoundary(Set<Vertex> subgraph, Set<Vertex> boundary) {
-        return null;
-    }
 }
