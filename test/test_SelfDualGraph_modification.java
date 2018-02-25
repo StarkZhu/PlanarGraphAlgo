@@ -36,6 +36,14 @@ public class test_SelfDualGraph_modification {
         return null;
     }
 
+    protected Vertex findVertexByID(Set<Vertex> vertices, int id) {
+        for (Vertex v : vertices) {
+            if (v.getID() == id) return v;
+        }
+        System.out.printf("Graph does NOT contain Vertex with ID = %d\n", id);
+        return null;
+    }
+
     protected void checkIncidentListOfFace(Vertex F, int[] boundaryVertexID) {
         Assert.assertEquals(boundaryVertexID.length, F.getDegree());
         Dart d = F.getFirstDart();

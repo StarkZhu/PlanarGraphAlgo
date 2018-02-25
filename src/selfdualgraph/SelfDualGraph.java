@@ -1,7 +1,5 @@
 package selfdualgraph;
 
-import algorithms.RDivision.GraphDivider;
-
 import java.io.*;
 import java.util.*;
 
@@ -561,38 +559,6 @@ public class SelfDualGraph {
             f.setID(fID++);
         }
     }
-    /*
-    public void renumberIDs() {
-        int maxVID = -1;
-        int maxDID = -1;
-        for (Vertex v : vertices) {
-            maxVID = Math.max(maxVID, v.getID());
-            for (Dart d : v.getIncidenceList()) {
-                maxDID = Math.max(maxDID, d.getID());
-            }
-        }
-        for (Vertex v : vertices) {
-            if (v.getID() < 0) {
-                v.setID(++maxVID);
-            }
-            for (Dart d : v.getIncidenceList()) {
-                if (d.getID() < 0) {
-                    d.setID(++maxDID);
-                }
-            }
-        }
-
-        int maxFID = -1;
-        for (Vertex f : faces) {
-            maxFID = Math.max(maxFID, f.getID());
-        }
-        for (Vertex f : faces) {
-            if (f.getID() < 0) {
-                f.setID(++maxFID);
-            }
-        }
-    }
-    */
 
     /**
      * add a vertex on the given face, connect the new vertex to all vertices incidental to the face
@@ -744,8 +710,8 @@ public class SelfDualGraph {
                 }
             }
         }
-        subgraph.triangulate();
-        subgraph.renumberIDs();
+        //subgraph.triangulate();
+        //subgraph.renumberIDs();
         return subgraph;
     }
 
@@ -758,6 +724,8 @@ public class SelfDualGraph {
     }
 
     public Set<Vertex> findBoundary(Vertex src, Set<Vertex> subgraph, Set<Vertex> allBoundary) {
+        if (src == null) throw new RuntimeException("Source vertex is NULL");
+        if (allBoundary.contains(src)) throw new RuntimeException("Source vertex is on the boundary.");
         for (Vertex v : subgraph) v.setVisited(false);
         Set<Vertex> boundary = new HashSet<>();
         Queue<Vertex> q = new LinkedList<>();
@@ -788,13 +756,6 @@ public class SelfDualGraph {
         return new HashSet<>(boundary);
     }
 
-    // for debug only
-    public static void main(String[] args) throws FileNotFoundException {
-        SelfDualGraph g = new SelfDualGraph();
-        g.buildGraph("./input_data/grids/5.txt");
-        System.out.println(g.getFaceNum());
-        System.out.println(g.getVertexNum());
-    }
 
     public Set<Vertex> getVerticesFromID(Set<Integer> ids) {
         if (idToVertex == null) {
@@ -806,5 +767,14 @@ public class SelfDualGraph {
         return vs;
     }
 
-
+    // for debug only
+    public static void main(String[] args) throws FileNotFoundException {
+        /*
+        SelfDualGraph g = new SelfDualGraph();
+        g.buildGraph("./input_data/grids/5.txt");
+        System.out.println(g.getFaceNum());
+        System.out.println(g.getVertexNum());
+        */
+        System.out.println(-1 % 5);
+    }
 }
