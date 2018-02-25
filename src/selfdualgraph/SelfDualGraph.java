@@ -504,6 +504,7 @@ public class SelfDualGraph {
 
     /**
      * save the current planar graph to test file, for future read and re-use
+     *
      * @param fileName
      * @throws FileNotFoundException
      */
@@ -595,6 +596,7 @@ public class SelfDualGraph {
 
     /**
      * add a vertex on the given face, connect the new vertex to all vertices incidental to the face
+     *
      * @param face
      */
     public Vertex addVertex(Vertex face) {
@@ -652,13 +654,78 @@ public class SelfDualGraph {
         }
     }
 
-    public SelfDualGraph buildSubgraph(Set<Vertex> vertices, Set<Vertex> separator) {
+    /**
+     * build subgraph by copy-construct all vertices, darts and faces
+     * incidence list of vertices may be changed to exclude vertices not in subgraph
+     *
+     * @param subgraphV  all vertices are object of this graph
+     * @param separator
+     * @return
+     */
+    public SelfDualGraph buildSubgraph(Set<Vertex> subgraphV, Set<Vertex> separator) {
         // TODO: deep copy vertices from g, modify incidence list to only have edges inside subgraph, detect subgraph's boundary
+        //for (Vertex v : vertices) v.setVisited(false);
+        Set<Vertex> tmp = new HashSet<>(subgraphV);
+        tmp.removeAll(separator);
+        Vertex src = tmp.iterator().next();
+        separator.addAll(this.boundary);    // separator now include g's boundary vertices
+
+        SelfDualGraph subgraph = new SelfDualGraph();
+        subgraph.boundary = findBoundary(src, subgraphV, separator);
+
+        // map old Vertice, Darts, Faces to new graph
+        Map<Vertex, Vertex> vMap = new HashMap<>();
+        Map<Vertex, Vertex> fMap = new HashMap<>();
+        Map<Dart, Dart> dMap = new HashMap<>();
+        for (Vertex v : subgraphV) {
+            Vertex v2 = new Vertex(v);
+            subgraph.vertices.add(v2);
+            vMap.put(v, v2);
+            for (Dart d : v.getIncidenceList()) {
+                if (subgraphV.contains(d.getHead())) dMap.put(d, new Dart(d));
+            }
+        }
+        for (Vertex f : faces) {
+            if (isInSubgraph(f, dMap)) {
+                Vertex f2 = new Vertex(f);
+                subgraph.faces.add(f2);
+                fMap.put(f, f2);
+            }
+        }
+
+
         return null;
     }
 
-    public Set<Vertex> findBoundary(Set<Vertex> subgraph, Set<Vertex> boundary) {
-        return null;
+    private boolean isInSubgraph(Vertex face, Map<Dart, Dart> dMap) {
+        if (face.type != Vertex.FACE) throw new RuntimeException("Func only applies to faces");
+        for (Dart d : face.getIncidenceList()) {
+            if (!dMap.containsKey(d)) return false;
+        }
+        return true;
+    }
+
+    public Set<Vertex> findBoundary(Vertex src, Set<Vertex> subgraph, Set<Vertex> allBoundary) {
+        for (Vertex v : subgraph) v.setVisited(false);
+        Set<Vertex> boundary = new HashSet<>();
+        Queue<Vertex> q = new LinkedList<>();
+        q.add(src);
+        src.setVisited(true);
+        while (!q.isEmpty()) {
+            Vertex v = q.poll();
+            for (Dart d : v.getIncidenceList()) {
+                Vertex u = d.getHead();
+                if (!u.isVisited()) {
+                    u.setVisited(true);
+                    if (allBoundary.contains(u)) {
+                        boundary.add(u);
+                    } else {
+                        q.add(u);
+                    }
+                }
+            }
+        }
+        return boundary;
     }
 
     public int getBoundarySize() {

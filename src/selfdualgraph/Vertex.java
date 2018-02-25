@@ -19,7 +19,6 @@ public class Vertex implements Comparable<Vertex>{
     private int ID;
     private float coordX, coordY;
     private double weight;
-    //List<Dart> incidenceList;   // package protected
     private boolean visited;
     private int degree;
     private Dart dart;  // points to an arbitrary dart with tail(d) = current vertex
@@ -30,7 +29,17 @@ public class Vertex implements Comparable<Vertex>{
         this.coordX = coordX;
         this.coordY = coordY;
         this.weight = weight;
-        //incidenceList = new LinkedList<>();
+        visited = false;
+        degree = 0;
+        dart = null;
+    }
+
+    public Vertex (Vertex other) {
+        this.ID = other.ID;
+        this.type = other.type;
+        this.coordX = other.coordX;
+        this.coordY = other.coordY;
+        this.weight = other.weight;
         visited = false;
         degree = 0;
         dart = null;

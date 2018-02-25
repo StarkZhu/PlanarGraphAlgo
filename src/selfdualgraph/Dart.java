@@ -29,6 +29,13 @@ public class Dart implements Comparable<Dart> {
         visited = false;
     }
 
+    public Dart(Dart other) {
+        ID = other.ID;
+        weight = other.weight;
+        capacity = other.capacity;
+        visited = false;
+    }
+
     public int getID() {
         return ID;
     }
