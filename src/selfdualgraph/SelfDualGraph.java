@@ -658,7 +658,7 @@ public class SelfDualGraph {
      * build subgraph by copy-construct all vertices, darts and faces
      * incidence list of vertices may be changed to exclude vertices not in subgraph
      *
-     * @param subgraphV  all vertices are object of this graph
+     * @param subgraphV all vertices are object of this graph
      * @param separator
      * @return
      */
@@ -669,10 +669,9 @@ public class SelfDualGraph {
         tmp.removeAll(separator);
         Vertex src = tmp.iterator().next();
         separator.addAll(this.boundary);    // separator now include g's boundary vertices
+        Set<Vertex> subB = findBoundary(src, subgraphV, separator);
 
         SelfDualGraph subgraph = new SelfDualGraph();
-        subgraph.boundary = findBoundary(src, subgraphV, separator);
-
         // map old Vertice, Darts, Faces to new graph
         Map<Vertex, Vertex> vMap = new HashMap<>();
         Map<Vertex, Vertex> fMap = new HashMap<>();
@@ -688,13 +687,66 @@ public class SelfDualGraph {
         for (Vertex f : faces) {
             if (isInSubgraph(f, dMap)) {
                 Vertex f2 = new Vertex(f);
+                f2.incrementDegree(f.getDegree());
                 subgraph.faces.add(f2);
                 fMap.put(f, f2);
             }
         }
+        for (Vertex v : subB) subgraph.boundary.add(vMap.get(v));
 
-
-        return null;
+        // set darts for vertices and faces
+        for (Vertex v : vMap.keySet()) {
+            Vertex v2 = vMap.get(v);
+            Dart first = v.getFirstDart();
+            while (!dMap.containsKey(first)) first = first.getSuccessor();
+            v2.setDart(dMap.get(first));
+        }
+        for (Vertex f : fMap.keySet()) {
+            Vertex f2 = fMap.get(f);
+            Dart first = f.getFirstDart();
+            while (!dMap.containsKey(first)) first = first.getNext();
+            f2.setDart(dMap.get(first));
+        }
+        // set pointers for darts
+        for (Dart d : dMap.keySet()) {
+            Dart d2 = dMap.get(d);
+            d2.setTail(vMap.get(d.getTail()));
+            d2.setHead(vMap.get(d.getHead()));
+            d2.setReverse(dMap.get(d.getReverse()));
+            d2.getTail().incrementDegree();
+            // successor & predecessor
+            Dart succ = d.getSuccessor();
+            while (!dMap.containsKey(succ)) succ = succ.getSuccessor();
+            d2.setSuccessor(dMap.get(succ));
+            Dart pred = d.getPredecessor();
+            while (!dMap.containsKey(pred)) pred = pred.getPredecessor();
+            d2.setPredecessor(dMap.get(pred));
+        }
+        // next & prev are easy when all succ and pred are set
+        for (Dart d : dMap.keySet()) {
+            Dart d2 = dMap.get(d);
+            d2.setNext(d2.getReverse().getSuccessor());
+            d2.setPrev(d2.getPredecessor().getReverse());
+            d2.setLeft(fMap.getOrDefault(d.getLeft(), null));
+            d2.setRight(fMap.getOrDefault(d.getRight(), null));
+        }
+        // examine all boundary darts and create boundary faces
+        for (Dart d2 : dMap.values()) {
+            if (d2.getRight() == null) {
+                Vertex f = new Vertex(Vertex.FACE);
+                subgraph.faces.add(f);
+                f.setDart(d2);
+                while (d2.getRight() == null) {
+                    d2.setRight(f);
+                    d2.getReverse().setLeft(f);
+                    f.incrementDegree();
+                    d2 = d2.getNext();
+                }
+            }
+        }
+        subgraph.triangulate();
+        subgraph.renumberIDs();
+        return subgraph;
     }
 
     private boolean isInSubgraph(Vertex face, Map<Dart, Dart> dMap) {
@@ -730,14 +782,6 @@ public class SelfDualGraph {
 
     public int getBoundarySize() {
         return boundary.size();
-    }
-
-    public void addToBoundary(Vertex v) {
-        boundary.add(v);
-    }
-
-    public void addToBoundary(Set<Vertex> vertices) {
-        boundary.addAll(vertices);
     }
 
     public Set<Vertex> getBoundary() {

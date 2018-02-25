@@ -7,7 +7,7 @@ package selfdualgraph;
  * tail & head: a dart leaves its tail vertex and enters its head vertex, d = tail -> head
  * reverse: rev(rev(d)) == d
  * left & right: face on the left/right side of a dart
- * successor & predecessor: the next dart entering tail(d) in counter-clockwise/clockwise order after d
+ * successor & predecessor: the next dart leaving tail(d) in counter-clockwise/clockwise order after d
  * next & prev: the next dart after d in clockwise/counter-clockwise order around the boundary of right(d)
  */
 public class Dart implements Comparable<Dart> {
