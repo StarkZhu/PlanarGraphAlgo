@@ -629,13 +629,13 @@ public class SelfDualGraph {
      * @return
      */
     public SelfDualGraph buildSubgraph(Set<Vertex> subgraphV, Set<Vertex> separator) {
-        // TODO: deep copy vertices from g, modify incidence list to only have edges inside subgraph, detect subgraph's boundary
-        //for (Vertex v : vertices) v.setVisited(false);
         Set<Vertex> tmp = new HashSet<>(subgraphV);
         tmp.removeAll(separator);
-        Vertex src = tmp.iterator().next();
-        separator.addAll(this.boundary);    // separator now include g's boundary vertices
-        Set<Vertex> subB = findBoundary(src, subgraphV, separator);
+        Set<Vertex> subB = separator;
+        if (tmp.size() > 0) {
+            Vertex src = tmp.iterator().next();
+            subB = findBoundary(src, subgraphV, separator);
+        }
 
         SelfDualGraph subgraph = new SelfDualGraph();
         // map old Vertice, Darts, Faces to new graph
@@ -710,8 +710,6 @@ public class SelfDualGraph {
                 }
             }
         }
-        //subgraph.triangulate();
-        //subgraph.renumberIDs();
         return subgraph;
     }
 
@@ -723,9 +721,9 @@ public class SelfDualGraph {
         return true;
     }
 
-    public Set<Vertex> findBoundary(Vertex src, Set<Vertex> subgraph, Set<Vertex> allBoundary) {
+    public Set<Vertex> findBoundary(Vertex src, Set<Vertex> subgraph, Set<Vertex> separator) {
         if (src == null) throw new RuntimeException("Source vertex is NULL");
-        if (allBoundary.contains(src)) throw new RuntimeException("Source vertex is on the boundary.");
+        if (separator.contains(src)) throw new RuntimeException("Source vertex is on the boundary.");
         for (Vertex v : subgraph) v.setVisited(false);
         Set<Vertex> boundary = new HashSet<>();
         Queue<Vertex> q = new LinkedList<>();
@@ -737,10 +735,11 @@ public class SelfDualGraph {
                 Vertex u = d.getHead();
                 if (!u.isVisited()) {
                     u.setVisited(true);
-                    if (allBoundary.contains(u)) {
+                    if (separator.contains(u)) {
                         boundary.add(u);
                     } else {
                         q.add(u);
+                        if (this.boundary.contains(u)) boundary.add(u);
                     }
                 }
             }

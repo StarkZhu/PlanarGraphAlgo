@@ -7,11 +7,11 @@ import java.util.*;
 
 public class test_SelfDualGraph_subgraph extends test_SelfDualGraph_modification {
 
-    protected Set<Vertex> findVertices(int[] IDs) {
+    protected Set<Vertex> findVertices(SelfDualGraph graph, int[] IDs) {
         Set<Vertex> vertices = new HashSet<>();
         Set<Integer> vIDs = new HashSet<>();
         for (int i : IDs) vIDs.add(i);
-        for (Vertex v : g.getVertices()) {
+        for (Vertex v : graph.getVertices()) {
             if (vIDs.contains(v.getID())) vertices.add(v);
         }
         return vertices;
@@ -28,8 +28,8 @@ public class test_SelfDualGraph_subgraph extends test_SelfDualGraph_modification
 
     @Test
     public void testFindBoundary_1() {
-        Set<Vertex> subg = findVertices(new int[]{0, 1, 2, 3, 4});
-        Set<Vertex> boundary = findVertices(new int[]{0, 2, 3, 4, 5});
+        Set<Vertex> subg = findVertices(g, new int[]{0, 1, 2, 3, 4});
+        Set<Vertex> boundary = findVertices(g, new int[]{0, 2, 3, 4, 5});
         Vertex src = (new SpecificIdRootFinder(1)).selectRootVertex(g);
         Set<Vertex> ans = g.findBoundary(src, subg, boundary);
         verifyVertexSet(new int[]{0, 3}, ans);
@@ -37,8 +37,8 @@ public class test_SelfDualGraph_subgraph extends test_SelfDualGraph_modification
 
     @Test
     public void testFindBoundary_5() {
-        Set<Vertex> subg = findVertices(new int[]{0, 2, 3, 4, 5});
-        Set<Vertex> boundary = findVertices(new int[]{0, 2, 3, 4});
+        Set<Vertex> subg = findVertices(g, new int[]{0, 2, 3, 4, 5});
+        Set<Vertex> boundary = findVertices(g, new int[]{0, 2, 3, 4});
         Vertex src = (new SpecificIdRootFinder(5)).selectRootVertex(g);
         Set<Vertex> ans = g.findBoundary(src, subg, boundary);
         verifyVertexSet(new int[]{0, 2, 4}, ans);
@@ -88,8 +88,8 @@ public class test_SelfDualGraph_subgraph extends test_SelfDualGraph_modification
 
     @Test
     public void testSubgraph_13() {
-        Set<Vertex> subg = findVertices(new int[]{0, 1, 2, 3, 4});
-        Set<Vertex> separator = findVertices(new int[]{0, 2, 4});
+        Set<Vertex> subg = findVertices(g, new int[]{0, 1, 2, 3, 4});
+        Set<Vertex> separator = findVertices(g, new int[]{0, 2, 4});
 
         SelfDualGraph subgraph = g.buildSubgraph(subg, separator);
         Assert.assertEquals(5, subgraph.getVertexNum());
@@ -109,6 +109,84 @@ public class test_SelfDualGraph_subgraph extends test_SelfDualGraph_modification
         checkNewFace(ff, new int[]{0, 4, 3, 2});
     }
 
+    @Test
+    public void testSubgraph_13_2() {
+        Set<Vertex> subg1 = findVertices(g, new int[]{0, 1, 2, 3, 4});
+        Set<Vertex> separator1 = findVertices(g, new int[]{0, 2, 4});
+        SelfDualGraph subgraph1 = g.buildSubgraph(subg1, separator1);
+
+        Set<Vertex> subg2 = findVertices(subgraph1, new int[]{0, 2, 3, 4});
+        Set<Vertex> separator2 = findVertices(subgraph1, new int[]{0, 2, 3, 4}); // {0, 3}
+        SelfDualGraph subgraph = subgraph1.buildSubgraph(subg2, separator2);
+
+        Assert.assertEquals(4, subgraph.getVertexNum());
+        Assert.assertEquals(2, subgraph.getFaceNum());
+        verifyVertexSet(new int[]{0, 2, 3, 4}, subgraph.getBoundary());
+
+        int[][] vIncidList = new int[][]{{2, 4}, {}, {0, 3}, {4, 2}, {0, 3}};
+        for (Vertex v : subgraph.getVertices()) {
+            checkIncidentListOfVertex(v, vIncidList[v.getID()]);
+        }
+        Vertex ff1 = (new SpecificIdRootFinder(-1)).selectRootFace(subgraph);
+        Assert.assertEquals(4, ff1.getDegree());
+        checkNewFace(ff1, new int[]{0, 4, 3, 2});
+
+        Vertex ff2 = (new SpecificIdRootFinder(-2)).selectRootFace(subgraph);
+        Assert.assertEquals(4, ff2.getDegree());
+        checkNewFace(ff2, new int[]{0, 2, 3, 4});
+    }
+
+    @Test
+    public void testSubgraph_13_14() {
+        Set<Vertex> subg1 = findVertices(g, new int[]{0, 1, 2, 3, 4});
+        Set<Vertex> separator1 = findVertices(g, new int[]{0, 2, 4});
+        SelfDualGraph subgraph1 = g.buildSubgraph(subg1, separator1);
+
+        Set<Vertex> subg2 = findVertices(subgraph1, new int[]{0, 1, 3, 4});
+        Set<Vertex> separator2 = findVertices(subgraph1, new int[]{0, 3, 4});
+        SelfDualGraph subgraph = subgraph1.buildSubgraph(subg2, separator2);
+
+        Assert.assertEquals(4, subgraph.getVertexNum());
+        Assert.assertEquals(2, subgraph.getFaceNum());
+        verifyVertexSet(new int[]{3, 0}, subgraph.getBoundary());
+
+        int[][] vIncidList = new int[][]{{1, 4}, {0, 3}, {}, {1, 4}, {0, 3}};
+        for (Vertex v : subgraph.getVertices()) {
+            checkIncidentListOfVertex(v, vIncidList[v.getID()]);
+        }
+        Vertex ff2 = (new SpecificIdRootFinder(-2)).selectRootFace(subgraph);
+        Assert.assertEquals(4, ff2.getDegree());
+        checkNewFace(ff2, new int[]{4, 3, 1, 0});
+
+        Vertex ff6 = (new SpecificIdRootFinder(6)).selectRootFace(subgraph);
+        Assert.assertEquals(4, ff6.getDegree());
+        checkNewFace(ff6, new int[]{4, 0, 1, 3});
+    }
+
+    @Test
+    public void testSubgraph_13_1() {
+        Set<Vertex> subg1 = findVertices(g, new int[]{0, 1, 2, 3, 4});
+        Set<Vertex> separator1 = findVertices(g, new int[]{0, 2, 4});
+        SelfDualGraph subgraph1 = g.buildSubgraph(subg1, separator1);
+
+        Set<Vertex> subg2 = findVertices(subgraph1, new int[]{0, 1, 3});
+        Set<Vertex> separator2 = findVertices(subgraph1, new int[]{0, 3});
+        SelfDualGraph subgraph = subgraph1.buildSubgraph(subg2, separator2);
+
+        Assert.assertEquals(3, subgraph.getVertexNum());
+        Assert.assertEquals(1, subgraph.getFaceNum());
+        verifyVertexSet(new int[]{3, 0}, subgraph.getBoundary());
+
+        int[][] vIncidList = new int[][]{{1}, {0, 3}, {}, {1}};
+        for (Vertex v : subgraph.getVertices()) {
+            checkIncidentListOfVertex(v, vIncidList[v.getID()]);
+        }
+        Vertex ff2 = (new SpecificIdRootFinder(-2)).selectRootFace(subgraph);
+        ff2.setDart(findDartByID(subgraph, 0));
+        Assert.assertEquals(4, ff2.getDegree());
+        checkNewFace(ff2, new int[]{0, 1, 3, 1});
+    }
+
     private void checkNewFace(Vertex F, int[] boundaryVertexID) {
         Assert.assertEquals(boundaryVertexID.length, F.getDegree());
         Dart d = F.getFirstDart();
@@ -118,6 +196,7 @@ public class test_SelfDualGraph_subgraph extends test_SelfDualGraph_modification
             if (j == F.getDegree()) Assert.assertTrue(false);
         }
         for (int i = 0; i < F.getDegree(); i++) {
+            System.out.println(d);
             Assert.assertEquals(F.getID(), d.getRight().getID());
             Assert.assertEquals(F.getID(), d.getReverse().getLeft().getID());
             Assert.assertEquals(boundaryVertexID[(j + i) % F.getDegree()], d.getTail().getID());
