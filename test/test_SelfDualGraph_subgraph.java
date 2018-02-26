@@ -212,6 +212,7 @@ public class test_SelfDualGraph_subgraph extends test_SelfDualGraph_modification
         for (Vertex v : boundary) Assert.assertTrue(ids.contains(v.getID()));
 
         g.addToBoundary(boundary);
+        Assert.assertEquals(ids.size(), g.getBoundarySize());
         Integer[][] neighbors = new Integer[][]{{2, 4, 5}, {}, {0, 5, -1}, {}, {0, 5}, {0, 2, 4, 5, -1, -2}};
         for (int i = 0; i < 6; i++) {
             Set<Dart> darts = g.vertexNeighborOnBoundary(findVertexByID(g.getVertices(), i));
@@ -219,6 +220,39 @@ public class test_SelfDualGraph_subgraph extends test_SelfDualGraph_modification
             Assert.assertEquals(expected.size(), darts.size());
             for (Dart d : darts) Assert.assertTrue(expected.contains(d.getHead().getID()));
         }
+    }
 
+    @Test
+    public void test_assignWeightToBoundary_useDart() {
+        Set<Integer> ids = new HashSet<>(Arrays.asList(new Integer[]{2, 3, 4, 5}));
+        Set<Vertex> boundary = g.getVerticesFromID(ids);
+        g.addToBoundary(boundary);
+        g.assignWeightToBoundary_useDart();
+        for (Vertex v : g.getVertices()) {
+            if (ids.contains(v.getID())) Assert.assertEquals(1.0, v.getWeight(), 0.0001);
+            else Assert.assertEquals(0, v.getWeight(), 0.0001);
+        }
+
+        double[] faceWeights = new double[]{5.0 / 12, 26.0 / 15, 8.0 / 15, 0.2, 4.0 / 15, 0.35, 0.5};
+        for (Vertex f : g.getFaces()) {
+            Assert.assertEquals(faceWeights[f.getID()], f.getWeight(), 0.0001);
+        }
+    }
+
+    @Test
+    public void test_assignWeightToBoundary_useVertex() {
+        Set<Integer> ids = new HashSet<>(Arrays.asList(new Integer[]{2, 3, 4, 5}));
+        Set<Vertex> boundary = g.getVerticesFromID(ids);
+        g.addToBoundary(boundary);
+        g.assignWeightToBoundary_useVertex();
+        for (Vertex v : g.getVertices()) {
+            if (ids.contains(v.getID())) Assert.assertEquals(1.0, v.getWeight(), 0.0001);
+            else Assert.assertEquals(0, v.getWeight(), 0.0001);
+        }
+
+        double[] faceWeights = new double[]{7.0 / 12, 1.25, 5.0 / 12, 1.0 / 6, 5.0 / 12, 0.5, 2.0 / 3};
+        for (Vertex f : g.getFaces()) {
+            Assert.assertEquals(faceWeights[f.getID()], f.getWeight(), 0.0001);
+        }
     }
 }

@@ -166,9 +166,11 @@ public class SelfDualGraph {
         return new HashSet<>(faces);
     }
 
+    /*
     public boolean contains(Vertex v) {
         return vertices.contains(v) || faces.contains(v);
     }
+    */
 
     /**
      * delete an undirected edge, which performs the following actions:
@@ -821,23 +823,21 @@ public class SelfDualGraph {
                 v.setWeight(1);
                 for (Dart d : v.getIncidenceList()) {
                     Vertex left = d.getLeft();
-                    left.setWeight(0.5 / v.getDegree() + left.getWeight());
-                    Vertex right = d.getRight();
-                    right.setWeight(0.5 / v.getDegree() + right.getWeight());
+                    left.setWeight(1.0 / v.getDegree() + left.getWeight());
                 }
             }
         }
     }
 
     // for debug only
+    /*
     public static void main(String[] args) throws FileNotFoundException {
-        /*
+
         SelfDualGraph g = new SelfDualGraph();
         g.buildGraph("./input_data/grids/5.txt");
         System.out.println(g.getFaceNum());
         System.out.println(g.getVertexNum());
-        */
-        System.out.println(-1 % 5);
     }
+    */
 
 }

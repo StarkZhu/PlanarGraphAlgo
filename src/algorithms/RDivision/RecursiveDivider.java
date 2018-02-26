@@ -38,6 +38,10 @@ public class RecursiveDivider extends GraphDivider {
         phaseI(g2, r);
     }
 
+    public Queue<SelfDualGraph> getSubgraphsAfterPhaseI() {
+        return subgraphs;
+    }
+
     public void phaseII(int r) {
         while (!subgraphs.isEmpty()) {
             SelfDualGraph subgraph = subgraphs.poll();
