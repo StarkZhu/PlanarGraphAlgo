@@ -204,4 +204,21 @@ public class test_SelfDualGraph_subgraph extends test_SelfDualGraph_modification
         }
         Assert.assertEquals(boundaryVertexID[j], d.getTail().getID());
     }
+
+    @Test
+    public void test_vertexNeighborOnBoundary() {
+        Set<Integer> ids = new HashSet<>(Arrays.asList(new Integer[]{0, 2, 4, 5}));
+        Set<Vertex> boundary = g.getVerticesFromID(ids);
+        for (Vertex v : boundary) Assert.assertTrue(ids.contains(v.getID()));
+
+        g.addToBoundary(boundary);
+        Integer[][] neighbors = new Integer[][]{{2, 4, 5}, {}, {0, 5, -1}, {}, {0, 5}, {0, 2, 4, 5, -1, -2}};
+        for (int i = 0; i < 6; i++) {
+            Set<Dart> darts = g.vertexNeighborOnBoundary(findVertexByID(g.getVertices(), i));
+            Set<Integer> expected = new HashSet<>(Arrays.asList(neighbors[i]));
+            Assert.assertEquals(expected.size(), darts.size());
+            for (Dart d : darts) Assert.assertTrue(expected.contains(d.getHead().getID()));
+        }
+
+    }
 }

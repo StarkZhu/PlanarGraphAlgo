@@ -44,7 +44,7 @@ public class test_Separator_FCS extends test_Separator{
         double[][] coTreeSelfWeight = new double[][] {{0, 0}, {1, 0}, {4, 0}, {5, 0}, {6, 0}, {-1, 0}, {-2, 0}, {-3, 0}};
         verifyWeightSumOfTree(trees[1], coTreeWeightSum, coTreeSelfWeight);
 
-        Set<Vertex> separator = sp.findSeparator(null, null, null);
+        Set<Vertex> separator = sp.findSeparator();
         verifyVertexSet(new int[]{5, 0, 3}, separator);
         Set<Vertex>[] subgraphs = sp.findSubgraphs();
         verifyVertexSet(new int[]{5, 0, 3, 2}, subgraphs[0]);

@@ -755,6 +755,9 @@ public class SelfDualGraph {
         return new HashSet<>(boundary);
     }
 
+    public void addToBoundary(Set<Vertex> bVs) {
+        boundary.addAll(bVs);
+    }
 
     public Set<Vertex> getVerticesFromID(Set<Integer> ids) {
         if (idToVertex == null) {
@@ -764,6 +767,66 @@ public class SelfDualGraph {
         Set<Vertex> vs = new HashSet<>();
         for (int i : ids) vs.add(idToVertex.get(i));
         return vs;
+    }
+
+    /**
+     * Find all darts of V whose head is also on boundary
+     *
+     * @param v must be on graph's boundary
+     * @return
+     */
+    public Set<Dart> vertexNeighborOnBoundary(Vertex v) {
+        Set<Dart> darts = new HashSet<>();
+        if (!boundary.contains(v)) return darts;
+
+        Dart d = v.getFirstDart();
+        if (boundary.contains(d.getHead())) darts.add(d);
+        Dart d2 = d.getSuccessor();
+        while (d2 != d) {
+            if (boundary.contains(d2.getHead())) darts.add(d2);
+            d2 = d2.getSuccessor();
+        }
+        return darts;
+    }
+
+
+    /**
+     * Split vertex weight on boundary darts, then half-half to its left/right faces
+     */
+    public void assignWeightToBoundary_useDart() {
+        for (Vertex f : getFaces()) f.setWeight(0);
+        for (Vertex v : vertices) {
+            if (!boundary.contains(v)) v.setWeight(0);
+            else {  // v is on the boundary
+                v.setWeight(1);
+                Set<Dart> bDarts = vertexNeighborOnBoundary(v);
+                for (Dart d : bDarts) {
+                    Vertex left = d.getLeft();
+                    left.setWeight(0.5 / bDarts.size() + left.getWeight());
+                    Vertex right = d.getRight();
+                    right.setWeight(0.5 / bDarts.size() + right.getWeight());
+                }
+            }
+        }
+    }
+
+    /**
+     * Split vertex weight on all neighboring faces
+     */
+    public void assignWeightToBoundary_useVertex() {
+        for (Vertex f : getFaces()) f.setWeight(0);
+        for (Vertex v : vertices) {
+            if (!boundary.contains(v)) v.setWeight(0);
+            else {  // v is on the boundary
+                v.setWeight(1);
+                for (Dart d : v.getIncidenceList()) {
+                    Vertex left = d.getLeft();
+                    left.setWeight(0.5 / v.getDegree() + left.getWeight());
+                    Vertex right = d.getRight();
+                    right.setWeight(0.5 / v.getDegree() + right.getWeight());
+                }
+            }
+        }
     }
 
     // for debug only
@@ -776,4 +839,5 @@ public class SelfDualGraph {
         */
         System.out.println(-1 % 5);
     }
+
 }

@@ -52,9 +52,9 @@ public class test_Separator_LevelS extends test_Separator{
     @Test
     public void testLevelSeparatorGivenGraph() {
         LevelSeparator sp = new LevelSeparator(g);
-        Set<Vertex> separator = sp.findSeparator(null, null, null);
-        verifyVertexSet(new int[]{4, 0, 2}, separator);
         Set<Vertex>[] subgraphs = sp.findSubgraphs();
+        Set<Vertex> separator = sp.findSeparator();
+        verifyVertexSet(new int[]{4, 0, 2}, separator);
         verifyVertexSet(new int[]{5, 2, 0, 4}, subgraphs[0]);
         verifyVertexSet(new int[]{1, 3, 2, 0, 4}, subgraphs[1]);
     }

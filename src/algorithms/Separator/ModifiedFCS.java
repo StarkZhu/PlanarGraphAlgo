@@ -21,34 +21,6 @@ public class ModifiedFCS extends FundamentalCycleSeparator {
         heuristic = lca;
     }
 
-
-
-    /*
-    @Override
-    public Tree.TreeNode leafmostHeavyVertex(Tree tree, double alpha, double totalW) {
-        Map<Vertex, Tree.TreeNode> map = tree.mapVertexToTreeNode(false);
-        Tree.TreeNode result = super.leafmostHeavyVertex(tree, alpha, totalW);
-        Dart d = result.getParentDart();
-        int cycleLen = map.get(d.getTail()).getDist() + map.get(d.getHead()).getDist();
-
-        Queue<Tree.TreeNode> visiting = new LinkedList<>();
-        visiting.add(tree.getRoot());
-        while (!visiting.isEmpty()) {
-            Tree.TreeNode n = visiting.poll();
-            if (n.getDescendantWeightSum() > alpha * totalW && n.getDescendantWeightSum() < (1 - alpha) * totalW) {
-                d = n.getParentDart();
-                int len = map.get(d.getTail()).getDist() + map.get(d.getHead()).getDist();
-                if (len < cycleLen) {
-                    cycleLen = len;
-                    result = n;
-                }
-            }
-        }
-
-        return result;
-    }
-    */
-
     @Override
     public Tree.TreeNode chooseNode(Tree.TreeNode node, Tree tree, Tree coTree, int maxDegree) {
         double alpha = 1.0 / maxDegree;
@@ -81,20 +53,7 @@ public class ModifiedFCS extends FundamentalCycleSeparator {
         return result;
     }
 
-    /**
-     * accurate cycle length by finding LCA of u & v, takes O(N) time, makes FCS O(N^2)
-     *
-     * @param tree
-     * @param node
-     * @param primalMap
-     * @return
-     */
-    private int cycleLenHeuristic(Tree tree, Tree.TreeNode node, Map<Vertex, Tree.TreeNode> primalMap) {
-        Dart d = node.getParentDart();
-        Tree.TreeNode lca = tree.leastCommonAncestor(primalMap.get(d.getTail()), primalMap.get(d.getHead()));
-        return primalMap.get(d.getTail()).getDist() + primalMap.get(d.getHead()).getDist() - 2 * lca.getDist();
-    }
-
+    /*
     public static void main(String[] args) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
         g.buildGraph("./input_data/cylinder/unsymm/1.txt");
@@ -102,4 +61,5 @@ public class ModifiedFCS extends FundamentalCycleSeparator {
         Set<Vertex> separator = sp.findSeparator(null, new SpecificIdRootFinder(32), null);
         System.out.println(separator.size());
     }
+    */
 }

@@ -53,9 +53,10 @@ public class test_Separator_LiptonTarjan extends test_Separator{
         g.flatten();
         g.triangulate();
         LiptonTarjanSeparator liptonTarjan = new LiptonTarjanSeparator(g);
-        Set<Vertex> separator = liptonTarjan.findSeparator(new SpecificIdRootFinder(0));
-        verifyVertexSet(new int[]{0, 5, 9, 14, 10, 6}, separator);
         Set<Vertex>[] subgraphs = liptonTarjan.findSubgraphs();
+        Set<Vertex> separator = liptonTarjan.findSeparator();
+        //Set<Vertex> separator = liptonTarjan.findSeparator(null, new SpecificIdRootFinder(0), null);
+        verifyVertexSet(new int[]{0, 5, 9, 14, 10, 6}, separator);
         verifyVertexSet(new int[]{0, 5, 9, 14, 10, 6, 1, 2, 3, 7, 11, 15}, subgraphs[0]);
         verifyVertexSet(new int[]{0, 5, 9, 14, 10, 6, 4, 8, 12, 13}, subgraphs[1]);
     }

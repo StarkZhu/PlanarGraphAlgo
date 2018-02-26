@@ -46,7 +46,7 @@ public class RecursiveDivider extends GraphDivider {
                 regions.add(g.getVerticesFromID(verticesToID(subgraph.getVertices())));
             } else {
                 subgraph.triangulate();
-                assignWeightToBoundary(subgraph);
+                subgraph.assignWeightToBoundary_useDart();
                 Separator sp = new SimpleCycleSeparator(subgraph);
                 Set<Vertex> separator = sp.findSeparator();
                 Set<Vertex>[] subs = sp.findSubgraphs();
@@ -64,27 +64,4 @@ public class RecursiveDivider extends GraphDivider {
         return ids;
     }
 
-    /**
-     * Due to SCS, assume boundary is a simple cycle
-     * @param graph
-     */
-    public void assignWeightToBoundary(SelfDualGraph graph) {
-        Set<Vertex> boundary = graph.getBoundary();
-        for (Vertex f : graph.getFaces()) f.setWeight(0);
-        for (Vertex v : graph.getVertices()) {
-            if (!boundary.contains(v)) v.setWeight(0);
-            else {  // v is on the boundary
-                v.setWeight(1);
-                for (Dart d : v.getIncidenceList()) {
-                    // dart is on the boundary, forms a cycle
-                    if (boundary.contains(d.getHead())) {
-                        Vertex left = d.getLeft();
-                        left.setWeight(0.25 + left.getWeight());
-                        Vertex right = d.getRight();
-                        right.setWeight(0.25 + right.getWeight());
-                    }
-                }
-            }
-        }
-    }
 }

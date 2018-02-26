@@ -5,7 +5,7 @@ import algorithms.TreeWeightAssigner.*;
 import org.junit.*;
 import selfdualgraph.*;
 
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.*;
 
 public class test_Separator_SCS {
@@ -213,13 +213,16 @@ public class test_Separator_SCS {
         // trial all roots, verify separator size and is cycle
         for (int i = 0; i < g.getVertexNum(); i++) {
             Set<Vertex> separator = scs.findSeparator(null, new SpecificIdRootFinder(i), null);
+            Set<Vertex>[] subgraphs = scs.findSubgraphs();
+            Assert.assertTrue(subgraphs[0].size() <= 2 * subgraphs[1].size());
+            Assert.assertTrue(subgraphs[1].size() <= 2 * subgraphs[0].size());
             Assert.assertTrue(separator.size() <= Math.sqrt(g.getVertexNum()) * 4);
             Vertex start = separator.iterator().next();
             Dart dart = start.getFirstDart();
             Vertex next = null;
             int steps = 0;
             while (next != start) {
-                dart = verifyVertexDegree2(dart, separator);
+                dart = verifyVertexDegree(dart, separator);
                 next = dart.getHead();
                 dart = dart.getReverse();
                 steps++;
@@ -229,13 +232,13 @@ public class test_Separator_SCS {
         }
     }
 
-    private Dart verifyVertexDegree2(Dart d, Set<Vertex> separator) {
+    // TODO: find longest cycle in boundary
+    private Dart verifyVertexDegree(Dart d, Set<Vertex> separator) {
         Assert.assertTrue(d.getTail().getDegree() > 1);
         int count = 0;
         if (separator.contains(d.getHead())) count++;
         Dart ans = null;
         Dart d2 = d.getSuccessor();
-        //while (!separator.contains(d2.getHead())) d2 = d2.getSuccessor();
         while (d2 != d) {
             if (separator.contains(d2.getHead())) {
                 count++;
