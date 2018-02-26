@@ -19,31 +19,12 @@ public class RecursiveDivider extends GraphDivider {
         return null;
     }
 
-    // TODO: which one is better? pass in Set<Vertex> or Set<Integer>
-    /*
-    private void divide(Set<Integer> subGVertexIDs, int r, Set<Integer> boundaryIDs) {
-        if (subGVertexIDs.size() <= r) {
-            gToB.put(g.getVerticesFromID(subGVertexIDs), g.getVerticesFromID(boundaryIDs));
-            return;
-        }
-        SelfDualGraph graph = g.buildSubgraph(subGVertexIDs, boundaryIDs);
-        Separator sp = new SimpleCycleSeparator(graph);
-        Set<Vertex> separator = sp.findSeparator();
-        Set<Vertex>[] subgraphs = sp.findSubgraphs();
-        Set<Vertex> boundary = graph.getVerticesFromID(boundaryIDs);
-        boundary.addAll(separator);
-        divide(verticesToID(subgraphs[0]), r, verticesToID(graph.findBoundary(subgraphs[0], boundary)));
-        divide(verticesToID(subgraphs[1]), r, verticesToID(graph.findBoundary(subgraphs[1], boundary)));
-    }
-    */
-
     private void phaseI(SelfDualGraph graph, int r) {
         if (graph.getVertexNum() <= r) {
-            //Set<Integer> subGVertexIDs = verticesToID(graph.getVertices());
-            //Set<Integer> boundaryIDs = verticesToID(boundary);
             subgraphs.add(graph);
             return;
         }
+        graph.triangulate();
         Separator sp = new SimpleCycleSeparator(graph);
         Set<Vertex> separator = sp.findSeparator();
         Set<Vertex>[] subgraphs = sp.findSubgraphs();
@@ -56,10 +37,11 @@ public class RecursiveDivider extends GraphDivider {
     private void phaseII(int r) {
         while (!subgraphs.isEmpty()) {
             SelfDualGraph subgraph = subgraphs.poll();
-            // TODO: if boundary size less than ?? (4*sqrt(r))
-            if (subgraph.getBoundarySize() <= 4 * Math.sqrt(r)) {
+            // if boundary size less than 4*sqrt(r)
+            if (subgraph.getBoundarySize() <= Math.max(4 * Math.sqrt(r), 6)) {
                 regions.add(g.getVerticesFromID(verticesToID(subgraph.getVertices())));
             } else {
+                subgraph.triangulate();
                 // TODO: assign weight to boundary vertices only
                 Separator sp = new SimpleCycleSeparator(subgraph);
                 Set<Vertex> separator = sp.findSeparator();

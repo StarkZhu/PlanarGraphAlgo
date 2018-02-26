@@ -16,7 +16,7 @@ public class SimpleCycleSeparator extends Separator {
 
     @Override
     public Set<Vertex> findSeparator() {
-        return findSeparator(null);
+        return findSeparator(null, new VertexCount());
     }
 
     @Override
@@ -24,20 +24,19 @@ public class SimpleCycleSeparator extends Separator {
         if (sts == null || sts.getClass() != BFSsolver.class) {
             System.err.printf("SimpleCycleSeparator must use default BFSsolver as SpanningTreeSolver\n");
         }
-        if (twa == null || twa.getClass() != VertexCount.class) {
-            System.err.printf("SimpleCycleSeparator must use default VertexCount as TreeWeightAssigner\n");
-        }
-        return findSeparator(rf);
+        return findSeparator(rf, twa);
     }
 
-    public Set<Vertex> findSeparator(RootFinder rf) {
+    public Set<Vertex> findSeparator(RootFinder rf, TreeWeightAssigner twa) {
         g.flatten();
         g.triangulate();
         int sqrtN = (int) Math.sqrt(g.getVertexNum());
 
         // Primal tree must be built with BFS
         SpanningTreeSolver sts = new BFSsolver();
-        TreeWeightAssigner vertexCountTWA = new VertexCount();
+        if (twa == null) {
+            twa = new VertexCount();
+        }
         //int sqrtN = (int) Math.sqrt(g.getVertexNum());
         if (rf == null) {
             rf = new MaxDegreeRootFinder();
@@ -45,8 +44,11 @@ public class SimpleCycleSeparator extends Separator {
 
         // find a balanced cycle separator (T', uv) and re-root the tree at the LCA(u, v)
         Tree[] trees = sts.buildTreeCoTree(g, rf.selectRootVertex(g), null);
+        Tree.TreeNode primalRoot = trees[0].getRoot();
+        twa.calcWeightSum(primalRoot);
+        double totalWeight = getTotalPrimalWeight(g.getVertices(), twa);
         Tree.TreeNode coTreeRoot = trees[1].getRoot();
-        vertexCountTWA.calcWeightSum(coTreeRoot);
+        twa.calcWeightSum(coTreeRoot);
         Tree.TreeNode separatorNode = leafmostHeavyVertex(coTreeRoot, 1.0 / 3, coTreeRoot.getDescendantWeightSum());
         Map<Vertex, Tree.TreeNode> primalTreeMap = trees[0].mapVertexToTreeNode(false);
         Dart uv = separatorNode.getParentDart();
@@ -70,18 +72,19 @@ public class SimpleCycleSeparator extends Separator {
         // identify vertices between level i-1 and i
         Set<Vertex>[] vertexRegions = identifyVertexRegions(outerBoundaries, root);
         // count total number of vertices inside/outside each level boundary
-        int[][] vNum_in_out = new int[h + 1][2];
+        double[][] vNum_in_out = new double[h + 1][2];
         vNum_in_out[0][0] = 0;
-        vNum_in_out[0][1] = g.getVertexNum() - 1;
-        vNum_in_out[h][0] = g.getVertexNum() - 3;
+        vNum_in_out[0][1] = totalWeight - getTotalPrimalWeight(outerBoundaries.get(0), twa);
+        vNum_in_out[h][0] = totalWeight - getTotalPrimalWeight(outerBoundaries.get(h), twa);
         vNum_in_out[h][1] = 0;
         for (int i = 1; i < h; i++) {
-            vNum_in_out[i][0] = vNum_in_out[i - 1][0] + outerBoundaries.get(i - 1).size() + vertexRegions[i].size();
-            vNum_in_out[i][1] = g.getVertexNum() - vNum_in_out[i][0] - outerBoundaries.get(i).size();
+            vNum_in_out[i][0] = vNum_in_out[i - 1][0] + getTotalPrimalWeight(outerBoundaries.get(i - 1), twa)
+                    + getTotalPrimalWeight(vertexRegions[i], twa);
+            vNum_in_out[i][1] = totalWeight - vNum_in_out[i][0] - getTotalPrimalWeight(outerBoundaries.get(i), twa);
             // check if any level boundary is small and balanced, use it as separator
             if (outerBoundaries.get(i).size() < 4 * sqrtN
-                    && vNum_in_out[i][0] < g.getVertexNum() / 2
-                    && vNum_in_out[i][1] < g.getVertexNum() / 2) {
+                    && vNum_in_out[i][0] < totalWeight / 2
+                    && vNum_in_out[i][1] < totalWeight / 2) {
                 buildSubgraphs(root.getData(), outerBoundaries.get(i));
                 return separator;
             }
@@ -90,7 +93,7 @@ public class SimpleCycleSeparator extends Separator {
         // look for m: out most level such that inside_m < V/2, outside_m+1 < V/2
         int m = h - 1;
         for (; m >= 0; m--) {
-            if (vNum_in_out[m + 1][1] < g.getVertexNum() / 2 && vNum_in_out[m][0] < g.getVertexNum() / 2)
+            if (vNum_in_out[m + 1][1] < totalWeight / 2 && vNum_in_out[m][0] < totalWeight / 2)
                 break;
         }
         int a = m, z = m + 1;
@@ -126,13 +129,13 @@ public class SimpleCycleSeparator extends Separator {
         C.removeAll(boundary);
 
         // case analysis for regions
-        if (D.size() > g.getVertexNum() / 3) {
+        if (getTotalPrimalWeight(D, twa) > totalWeight / 3) {
             buildSubgraphs(phi, outerBoundaries.get(z));
-        } else if (A.size() > g.getVertexNum() / 3) {
+        } else if (getTotalPrimalWeight(A, twa) > totalWeight / 3) {
             buildSubgraphs(root.getData(), outerBoundaries.get(a));
-        } else if (B.size() > g.getVertexNum() / 3) {
+        } else if (getTotalPrimalWeight(B, twa) > totalWeight / 3) {
             buildSubgraphs(B.iterator().next(), boundary);
-        } else if (C.size() > g.getVertexNum() / 3) {
+        } else if (getTotalPrimalWeight(C, twa) > totalWeight / 3) {
             buildSubgraphs(C.iterator().next(), boundary);
         } else {
             buildSubgraphs(B.iterator().next(), boundary);
@@ -144,6 +147,16 @@ public class SimpleCycleSeparator extends Separator {
         }
 
         return separator;
+    }
+
+    private double getTotalPrimalWeight(Set<Vertex> vertices, TreeWeightAssigner twa) {
+        if (twa.getClass() == VertexCount.class) {
+            return vertices.size();
+        } else {    // VertexWeightAssigner
+            double total = 0;
+            for (Vertex v : vertices) total += v.getWeight();
+            return total;
+        }
     }
 
     public void rebuildBFStrees(SpanningTreeSolver sts, Tree[] trees, Tree.TreeNode separatorNode, Map<Vertex, Tree.TreeNode> primalTreeMap) {

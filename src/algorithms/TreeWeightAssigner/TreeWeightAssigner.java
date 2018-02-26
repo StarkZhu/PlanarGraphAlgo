@@ -12,17 +12,6 @@ public abstract class TreeWeightAssigner {
      */
     public abstract double getWeight(Tree.TreeNode node);
 
-    /*
-    public double calcWeightSum(Tree.TreeNode root) {
-        if (root == null) return 0;
-        double weightSum = getWeight(root);
-        for (Tree.TreeNode child : root.getChildren()) {
-            weightSum += calcWeightSum(child);
-        }
-        root.setDescendantWeightSum(weightSum);
-        return weightSum;
-    }
-    */
 
     public double calcWeightSum(Tree.TreeNode root) {
         if (root == null) return 0;
