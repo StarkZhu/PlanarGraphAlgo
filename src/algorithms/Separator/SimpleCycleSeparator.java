@@ -22,7 +22,7 @@ public class SimpleCycleSeparator extends Separator {
     @Override
     public Set<Vertex> findSeparator(SpanningTreeSolver sts, RootFinder rf, TreeWeightAssigner twa) {
         if (sts == null || sts.getClass() != BFSsolver.class) {
-            System.err.printf("SimpleCycleSeparator must use default BFSsolver as SpanningTreeSolver\n");
+            //System.err.printf("SimpleCycleSeparator must use default BFSsolver as SpanningTreeSolver\n");
         }
         return findSeparator(rf, twa);
     }
