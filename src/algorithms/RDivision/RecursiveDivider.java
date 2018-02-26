@@ -5,6 +5,10 @@ import selfdualgraph.*;
 
 import java.util.*;
 
+/**
+ * O(NlogN) r-division
+ * Implementation uses SCS
+ */
 public class RecursiveDivider extends GraphDivider {
     private Queue<SelfDualGraph> subgraphs;
 
@@ -19,7 +23,7 @@ public class RecursiveDivider extends GraphDivider {
         return null;
     }
 
-    private void phaseI(SelfDualGraph graph, int r) {
+    public void phaseI(SelfDualGraph graph, int r) {
         if (graph.getVertexNum() <= r) {
             subgraphs.add(graph);
             return;
@@ -34,7 +38,7 @@ public class RecursiveDivider extends GraphDivider {
         phaseI(g2, r);
     }
 
-    private void phaseII(int r) {
+    public void phaseII(int r) {
         while (!subgraphs.isEmpty()) {
             SelfDualGraph subgraph = subgraphs.poll();
             // if boundary size less than 4*sqrt(r)
@@ -42,7 +46,7 @@ public class RecursiveDivider extends GraphDivider {
                 regions.add(g.getVerticesFromID(verticesToID(subgraph.getVertices())));
             } else {
                 subgraph.triangulate();
-                // TODO: assign weight to boundary vertices only
+                assignWeightToBoundary(subgraph);
                 Separator sp = new SimpleCycleSeparator(subgraph);
                 Set<Vertex> separator = sp.findSeparator();
                 Set<Vertex>[] subs = sp.findSubgraphs();
@@ -58,5 +62,29 @@ public class RecursiveDivider extends GraphDivider {
         Set<Integer> ids = new HashSet<>();
         for (Vertex v : vertices) ids.add(v.getID());
         return ids;
+    }
+
+    /**
+     * Due to SCS, assume boundary is a simple cycle
+     * @param graph
+     */
+    public void assignWeightToBoundary(SelfDualGraph graph) {
+        Set<Vertex> boundary = graph.getBoundary();
+        for (Vertex f : graph.getFaces()) f.setWeight(0);
+        for (Vertex v : graph.getVertices()) {
+            if (!boundary.contains(v)) v.setWeight(0);
+            else {  // v is on the boundary
+                v.setWeight(1);
+                for (Dart d : v.getIncidenceList()) {
+                    // dart is on the boundary, forms a cycle
+                    if (boundary.contains(d.getHead())) {
+                        Vertex left = d.getLeft();
+                        left.setWeight(0.25 + left.getWeight());
+                        Vertex right = d.getRight();
+                        right.setWeight(0.25 + right.getWeight());
+                    }
+                }
+            }
+        }
     }
 }

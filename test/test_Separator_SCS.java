@@ -167,7 +167,7 @@ public class test_Separator_SCS {
             verify_set(regions[i], vertexRegions[i]);
         }
 
-        Set<Vertex> separator = scs.findSeparator(null, new SpecificIdRootFinder(6), null);
+        Set<Vertex> separator = scs.findSeparator(null, new SpecificIdRootFinder(6), new VertexWeight());
         verify_set(new int[]{0, 2, 5, 6}, separator);
     }
 
@@ -204,4 +204,6 @@ public class test_Separator_SCS {
             Assert.assertTrue(set.contains(v.getID()));
         }
     }
+
+    // TODO: large data test, verify separator is a cycle
 }
