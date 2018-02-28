@@ -710,6 +710,11 @@ public class SelfDualGraph {
                     f.incrementDegree();
                     d2 = d2.getNext();
                 }
+                // assign min-ID dart to be firstDart, for testing purpose
+                Dart first = f.getFirstDart();
+                for (Dart d : f.getIncidenceList()) if (first.getID() < 0 ||
+                        (d.getID() >= 0 && d.getID() < first.getID())) first = d;
+                f.setDart(first);
             }
         }
         return subgraph;
@@ -730,6 +735,7 @@ public class SelfDualGraph {
         Set<Vertex> boundary = new HashSet<>();
         Queue<Vertex> q = new LinkedList<>();
         q.add(src);
+        if (this.boundary.contains(src)) boundary.add(src);
         src.setVisited(true);
         while (!q.isEmpty()) {
             Vertex v = q.poll();

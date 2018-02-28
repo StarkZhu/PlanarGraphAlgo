@@ -38,6 +38,17 @@ public class RecursiveDivider extends GraphDivider {
         phaseI(g2, r);
     }
 
+    /*
+    public void testNewFace(SelfDualGraph graph) {
+        for (Vertex f : graph.getFaces()) {
+            if (f.getDegree() > 3) {
+                System.out.println(f);
+                for (Dart d : f.getIncidenceList()) System.out.println(d);
+            }
+        }
+    }
+    */
+
     public Queue<SelfDualGraph> getSubgraphsAfterPhaseI() {
         return subgraphs;
     }

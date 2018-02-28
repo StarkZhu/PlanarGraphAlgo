@@ -196,7 +196,6 @@ public class test_SelfDualGraph_subgraph extends test_SelfDualGraph_modification
             if (j == F.getDegree()) Assert.assertTrue(false);
         }
         for (int i = 0; i < F.getDegree(); i++) {
-            System.out.println(d);
             Assert.assertEquals(F.getID(), d.getRight().getID());
             Assert.assertEquals(F.getID(), d.getReverse().getLeft().getID());
             Assert.assertEquals(boundaryVertexID[(j + i) % F.getDegree()], d.getTail().getID());

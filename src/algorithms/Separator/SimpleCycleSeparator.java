@@ -303,7 +303,6 @@ public class SimpleCycleSeparator extends Separator {
                 while (d != nextD) {
                     Vertex next = d.getHead();
                     if (outerBoundaries.get(i).contains(next)) {
-
                         if (next != startV) {
                             throw new RuntimeException("Closing vertex is not startV");
                         }

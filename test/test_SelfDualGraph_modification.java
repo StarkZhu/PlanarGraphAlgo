@@ -32,7 +32,7 @@ public class test_SelfDualGraph_modification {
             }
         }
         //Assert.assertTrue(String.format("Graph does NOT contain dart with ID = %d", dartID), false);
-        System.out.printf("Graph does NOT contain dart with ID = %d\n", dartID);
+        //System.out.printf("Graph does NOT contain dart with ID = %d\n", dartID);
         return null;
     }
 
@@ -40,7 +40,7 @@ public class test_SelfDualGraph_modification {
         for (Vertex v : vertices) {
             if (v.getID() == id) return v;
         }
-        System.out.printf("Graph does NOT contain Vertex with ID = %d\n", id);
+        //System.out.printf("Graph does NOT contain Vertex with ID = %d\n", id);
         return null;
     }
 
