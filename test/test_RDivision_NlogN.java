@@ -176,4 +176,40 @@ public class test_RDivision_NlogN {
         }
     }
 
+    @Test
+    public void test_9x7_r15() {
+        SelfDualGraph g = readGraph("./test/benchmark_img_4x4.txt");
+        //SelfDualGraph g = readGraph("./input_data/random/3.txt");
+        RecursiveDivider rd = new RecursiveDivider(g);
+
+        long time0 = System.currentTimeMillis();
+        Set<Set<Vertex>> regions = rd.rDivision(15);
+        long time1 = System.currentTimeMillis();
+        System.out.printf("Time: [%dms]\n", time1 - time0);
+
+        Set<Vertex> vertices = g.getVertices();
+        Set<Vertex> visited = new HashSet<>();
+        Set<Vertex> boundaries = new HashSet<>();
+        // check vertex num
+        for (Set<Vertex> region : regions) {
+            Assert.assertTrue(region.size() <= 15);
+            for (Vertex v : region) {
+                Assert.assertTrue(vertices.contains(v));
+                if (visited.contains(v)) boundaries.add(v);
+                Assert.assertEquals(1, v.getWeight(), 0.001);
+                visited.add(v);
+            }
+        }
+        Assert.assertEquals(g.getVertexNum(), visited.size());
+
+        // check boundary size for each region
+        for (Set<Vertex> region : regions) {
+            int boundarySize = 0;
+            for (Vertex v : region) {
+                if (boundaries.contains(v)) boundarySize++;
+            }
+            Assert.assertTrue(boundarySize <= 15);
+        }
+    }
+
 }

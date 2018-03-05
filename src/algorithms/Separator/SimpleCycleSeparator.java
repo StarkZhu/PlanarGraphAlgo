@@ -228,31 +228,38 @@ public class SimpleCycleSeparator extends Separator {
         Set<Vertex>[] VertexRegions = new Set[outerBoundaries.size()];
         VertexRegions[0] = new HashSet<>();
         int totalVNum = 0;
-        for (int i = 1; i < outerBoundaries.size(); i++) {
-            VertexRegions[i] = new HashSet<>();
+        for (int i = 1; i <= outerBoundaries.size(); i++) {
+            if (i < outerBoundaries.size()) VertexRegions[i] = new HashSet<>();
             Queue<Vertex> q = new LinkedList<>();
             q.addAll(outerBoundaries.get(i - 1));
-            totalVNum += q.size();
             while (!q.isEmpty()) {
                 Vertex curr = q.poll();
                 for (Dart d : curr.getIncidenceList()) {
                     Vertex neighbor = d.getHead();
                     if (!neighbor.isVisited()) {
                         neighbor.setVisited(true);
-                        if (!outerBoundaries.get(i).contains(neighbor)) {
+                        if (i == outerBoundaries.size()) {
+                            q.add(neighbor);
+                            VertexRegions[i - 1].add(neighbor);
+                        } else if (!outerBoundaries.get(i).contains(neighbor)) {
                             q.add(neighbor);
                             VertexRegions[i].add(neighbor);
                         }
                     }
                 }
             }
-            totalVNum += VertexRegions[i].size();
         }
-        totalVNum += outerBoundaries.get(outerBoundaries.size() - 1).size();
+        for (int i = 0; i < VertexRegions.length; i++) {
+            totalVNum += VertexRegions[i].size();
+            totalVNum += outerBoundaries.get(i).size();
+        }
 
         if (totalVNum != g.getVertexNum()) {
+            System.out.println(totalVNum);
+            System.out.println(g.getVertexNum());
             throw new RuntimeException("Vertex number is not equal.");
         }
+
         return VertexRegions;
     }
 

@@ -20,7 +20,9 @@ public class RecursiveDivider extends GraphDivider {
 
     @Override
     public Set<Set<Vertex>> rDivision(int r) {
-        return null;
+        phaseI(g, r);
+        phaseII(r);
+        return regions;
     }
 
     public void phaseI(SelfDualGraph graph, int r) {
@@ -37,17 +39,6 @@ public class RecursiveDivider extends GraphDivider {
         phaseI(g1, r);
         phaseI(g2, r);
     }
-
-    /*
-    public void testNewFace(SelfDualGraph graph) {
-        for (Vertex f : graph.getFaces()) {
-            if (f.getDegree() > 3) {
-                System.out.println(f);
-                for (Dart d : f.getIncidenceList()) System.out.println(d);
-            }
-        }
-    }
-    */
 
     public Queue<SelfDualGraph> getSubgraphsAfterPhaseI() {
         return subgraphs;
