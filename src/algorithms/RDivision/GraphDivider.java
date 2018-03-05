@@ -17,4 +17,8 @@ public abstract class GraphDivider {
 
     public abstract Set<Set<Vertex>> rDivision(int r);
 
+    public Set<Set<Vertex>> getRegions() {
+        return regions;
+    }
+
 }

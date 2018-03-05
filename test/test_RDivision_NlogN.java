@@ -30,10 +30,14 @@ public class test_RDivision_NlogN {
     }
 
     public void verifyVerticeID(SelfDualGraph graph, int[] ids) {
+        verifyVerticeID(graph.getVertices(), ids);
+    }
+
+    public void verifyVerticeID(Set<Vertex> vertices, int[] ids) {
         Set<Integer> IDs = new HashSet<>();
         for (int i : ids) IDs.add(i);
-        Assert.assertEquals(IDs.size(), graph.getVertexNum());
-        for (Vertex v : graph.getVertices()) {
+        Assert.assertEquals(IDs.size(), vertices.size());
+        for (Vertex v : vertices) {
             Assert.assertTrue(IDs.contains(v.getID()));
         }
     }
@@ -54,8 +58,9 @@ public class test_RDivision_NlogN {
     public void test_phaseI_r14() {
         SelfDualGraph g = readGraph("./test/benchmark_img_4x4.txt");
         RecursiveDivider rd = new RecursiveDivider(g);
-        rd.phaseI(g, 14);
 
+        // phase I
+        rd.phaseI(g, 14);
         Queue<SelfDualGraph> subgraphs = rd.getSubgraphsAfterPhaseI();
         Assert.assertEquals(2, subgraphs.size());
         while (!subgraphs.isEmpty()) {
@@ -74,8 +79,9 @@ public class test_RDivision_NlogN {
         }
     }
 
+
     @Test
-    public void test_phaseII_r10() {
+    public void test_phaseI_r10() {
         SelfDualGraph g = readGraph("./test/benchmark_img_4x4.txt");
         RecursiveDivider rd = new RecursiveDivider(g);
         rd.phaseI(g, 10);
@@ -113,4 +119,61 @@ public class test_RDivision_NlogN {
             for (Vertex v : nonBV) Assert.assertTrue(vIDs.contains(v.getID()));
         }
     }
+
+    @Test
+    public void test_phaseII_r14() {
+        SelfDualGraph g = readGraph("./test/benchmark_img_4x4.txt");
+        RecursiveDivider rd = new RecursiveDivider(g);
+        rd.phaseI(g, 14);
+
+        // phase II, r=14
+        rd.phaseII(14);
+        Set<Set<Vertex>> regions = rd.getRegions();
+        Assert.assertEquals(2, regions.size());
+        RootFinder rf = new SpecificIdRootFinder(3);
+        Vertex v3 = rf.selectRootVertex(g);
+        for (Set<Vertex> region : regions) {
+            if (region.contains(v3)) {
+                verifyVerticeID(region, new int[]{0, 3, 12, 1, 2, 4, 5, 7, 8, 11, 13, 14, 15});
+            } else {
+                verifyVerticeID(region, new int[]{6, 9, 10, 1, 2, 4, 5, 7, 8, 11, 13, 14, 15});
+            }
+        }
+    }
+
+    @Test
+    public void test_phaseII_r6() {
+        SelfDualGraph g = readGraph("./test/benchmark_img_4x4.txt");
+        RecursiveDivider rd = new RecursiveDivider(g);
+        rd.phaseI(g, 14);
+
+        // phase II, r=14
+        rd.phaseII(6);
+        List<Set<Vertex>> regions = new ArrayList<>(rd.getRegions());
+        Assert.assertEquals(5, regions.size());
+
+        Collections.sort(regions, new Comparator<Set<Vertex>>() {
+            @Override
+            public int compare(Set<Vertex> o1, Set<Vertex> o2) {
+                if (o1.size() != o2.size()) return o1.size() - o2.size();
+                int v1 = 0;
+                for (Vertex v : o1) v1 += v.getID();
+                int v2 = 0;
+                for (Vertex v : o2) v2 += v.getID();
+                return v1 - v2;
+            }
+        });
+
+        int[][] subGVertices = new int[][]{
+                {1, 2, 4, 5, 6, 7, 11},
+                {2, 4, 8, 11, 13, 14, 15},
+                {0, 1, 2, 3, 7, 11, 14, 15},
+                {0, 1, 4, 5, 8, 12, 13, 14},
+                {4, 5, 6, 8, 9, 10, 11, 13, 14, 15}};
+
+        for (int i = 0; i < 5; i++) {
+            verifyVerticeID(regions.get(i), subGVertices[i]);
+        }
+    }
+
 }

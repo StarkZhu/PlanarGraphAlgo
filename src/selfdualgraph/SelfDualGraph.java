@@ -802,7 +802,7 @@ public class SelfDualGraph {
      * Split vertex weight on boundary darts, then half-half to its left/right faces
      */
     public void assignWeightToBoundary_useDart() {
-        for (Vertex f : getFaces()) f.setWeight(0);
+        for (Vertex f : faces) f.setWeight(0);
         for (Vertex v : vertices) {
             if (!boundary.contains(v)) v.setWeight(0);
             else {  // v is on the boundary
