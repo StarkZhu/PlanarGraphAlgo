@@ -13,6 +13,11 @@ public class FredDivider extends GraphDivider {
         super(g);
     }
 
+    /**
+     * generate a rho-clustering, each of which is a vertex-disjoint connected piece with O(rho) vertices
+     * @param rho cluster size
+     * @return mapping from original vertex to its cluster
+     */
     public Map<Vertex, Set<Vertex>> rhoClustering(int rho) {
         Map<Vertex, Set<Vertex>> vertexToCluster = new HashMap<>();
         SpanningTreeSolver sts = new BFSsolver();
@@ -52,8 +57,29 @@ public class FredDivider extends GraphDivider {
         return vertexToCluster;
     }
 
-    public Set<Set<Vertex>> rDivision(int r) {
+    public SelfDualGraph contractedGraph(Set<Set<Vertex>> clusters) {
+        Set<Vertex> subg = g.getVertices();
+        SelfDualGraph contractedG = g.buildSubgraph(subg, new HashSet<>());
+        for (Set<Vertex> cluster : clusters) {
+            for (Vertex v : cluster) {
+                for (Dart d : v.getIncidenceList()) {
+                    if (d.getTail() == d.getHead()) {
+                    }
+                }
+            }
+        }
+        return contractedG;
+    }
 
+    public Set<Set<Vertex>> rDivision(int r) {
+        // rho-clustering, rho = sqrt(r)
+        Map<Vertex, Set<Vertex>> vertexToCluster = rhoClustering((int) Math.sqrt(r));
+
+        // contract each cluster into 1 single node, make new graph with ((n/sqrt(r)) vertices
+
+        // recursive division on new graph
+        // expend each piece
+        // O(log(r)) levels of recursive division on each piece
         return null;
     }
 }

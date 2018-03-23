@@ -622,32 +622,13 @@ public class SelfDualGraph {
         }
     }
 
-    /**
-     * build subgraph by copy-construct all vertices, darts and faces
-     * incidence list of vertices may be changed to exclude vertices not in subgraph
-     *
-     * @param subgraphV all vertices are object of this graph
-     * @param separator
-     * @return
-     */
-    public SelfDualGraph buildSubgraph(Set<Vertex> subgraphV, Set<Vertex> separator) {
-        Set<Vertex> tmp = new HashSet<>(subgraphV);
-        tmp.removeAll(separator);
-        Set<Vertex> subB = separator;
-        if (tmp.size() > 0) {
-            Vertex src = tmp.iterator().next();
-            subB = findBoundary(src, subgraphV, separator);
-        }
-
+    public SelfDualGraph cloneSubgraph(Map<Vertex, Vertex> vMap, Map<Dart, Dart> dMap, Set<Vertex> subB) {
+        Set<Vertex> subgraphV = vMap.keySet();
         SelfDualGraph subgraph = new SelfDualGraph();
-        // map old Vertice, Darts, Faces to new graph
-        Map<Vertex, Vertex> vMap = new HashMap<>();
         Map<Vertex, Vertex> fMap = new HashMap<>();
-        Map<Dart, Dart> dMap = new HashMap<>();
         for (Vertex v : subgraphV) {
-            Vertex v2 = new Vertex(v);
+            Vertex v2 = vMap.get(v);
             subgraph.vertices.add(v2);
-            vMap.put(v, v2);
             for (Dart d : v.getIncidenceList()) {
                 if (subgraphV.contains(d.getHead())) dMap.put(d, new Dart(d));
             }
@@ -698,6 +679,40 @@ public class SelfDualGraph {
             d2.setLeft(fMap.getOrDefault(d.getLeft(), null));
             d2.setRight(fMap.getOrDefault(d.getRight(), null));
         }
+
+        return subgraph;
+    }
+
+    /**
+     * build subgraph by copy-construct all vertices, darts and faces
+     * incidence list of vertices may be changed to exclude vertices not in subgraph
+     *
+     * @param subgraphV all vertices are object of this graph
+     * @param separator
+     * @return
+     */
+    public SelfDualGraph buildSubgraph(Set<Vertex> subgraphV, Set<Vertex> separator) {
+        Set<Vertex> tmp = new HashSet<>(subgraphV);
+        tmp.removeAll(separator);
+        Set<Vertex> subB = separator;
+        if (tmp.size() > 0) {
+            Vertex src = tmp.iterator().next();
+            subB = findBoundary(src, subgraphV, separator);
+        }
+
+        // map old Vertice, Darts to new graph
+        Map<Vertex, Vertex> vMap = new HashMap<>();
+        Map<Dart, Dart> dMap = new HashMap<>();
+        for (Vertex v : subgraphV) {
+            Vertex v2 = new Vertex(v);
+            vMap.put(v, v2);
+            for (Dart d : v.getIncidenceList()) {
+                if (subgraphV.contains(d.getHead())) dMap.put(d, new Dart(d));
+            }
+        }
+
+        SelfDualGraph subgraph = cloneSubgraph(vMap, dMap, subB);
+
         // examine all boundary darts and create boundary faces
         for (Dart d2 : dMap.values()) {
             if (d2.getRight() == null) {
@@ -712,8 +727,9 @@ public class SelfDualGraph {
                 }
                 // assign min-ID dart to be firstDart, for testing purpose
                 Dart first = f.getFirstDart();
-                for (Dart d : f.getIncidenceList()) if (first.getID() < 0 ||
-                        (d.getID() >= 0 && d.getID() < first.getID())) first = d;
+                for (Dart d : f.getIncidenceList())
+                    if (first.getID() < 0 ||
+                            (d.getID() >= 0 && d.getID() < first.getID())) first = d;
                 f.setDart(first);
             }
         }
