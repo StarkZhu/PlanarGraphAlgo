@@ -232,7 +232,7 @@ public class SelfDualGraph {
      *
      * @param d
      */
-    private void deleteLoop(Dart d) {
+    public void deleteLoop(Dart d) {
         Vertex faceToKeep, faceToDelete;
         if (d.getLeft().getDegree() == 1) {
             faceToDelete = d.getLeft();
@@ -244,12 +244,13 @@ public class SelfDualGraph {
         faces.remove(faceToDelete);
         // TODO: fix bug
         Dart dart = d.getLeft() == faceToDelete ? d : d.getReverse();
-        dart.getPrev().setNext(dart.getNext());
-        dart.getNext().setPrev(dart.getPrev());
-        dart.getPredecessor().setSuccessor(dart.getReverse().getSuccessor());
-        dart.getReverse().getSuccessor().setPredecessor(dart.getPredecessor());
+        if (faceToDelete.getDegree() == 1) {
+            deleteDegree1Loop(dart);
+        } else {
+            deleteDegreeNLoop(dart);
+        }
 
-        faceToKeep.incrementDegree(-1);
+        faceToKeep.incrementDegree(faceToDelete.getDegree() - 2);
         dart.getTail().incrementDegree(-2);
         // edge case: both left(d) and right(d) has degree 1 before deletion
         if (faceToKeep.getDegree() == 0) {
@@ -264,6 +265,34 @@ public class SelfDualGraph {
         } else if (v.getFirstDart() == d || v.getFirstDart() == d.getReverse()) {
             v.setDart(dart.getPredecessor());
         }
+    }
+
+    /**
+     * Case: self-loop contains a degree-1 face
+     * @param dart
+     */
+    private void deleteDegree1Loop(Dart dart) {
+        dart.getPrev().setNext(dart.getNext());
+        dart.getNext().setPrev(dart.getPrev());
+        dart.getPredecessor().setSuccessor(dart.getReverse().getSuccessor());
+        dart.getReverse().getSuccessor().setPredecessor(dart.getPredecessor());
+    }
+
+    /**
+     * Case: self-loop contains a degree-N face (N > 1)
+     * @param dart
+     */
+    private void deleteDegreeNLoop(Dart dart) {
+        // TODO: to be tested
+        dart.getPrev().setNext(dart.getReverse().getNext());
+        dart.getNext().setPrev(dart.getReverse().getPrev());
+        dart.getPredecessor().setSuccessor(dart.getSuccessor());
+        dart.getSuccessor().setPredecessor(dart.getPredecessor());
+
+        dart.getReverse().getPrev().setNext(dart.getNext());
+        dart.getReverse().getNext().setPrev(dart.getPrev());
+        dart.getReverse().getPredecessor().setSuccessor(dart.getReverse().getSuccessor());
+        dart.getReverse().getSuccessor().setPredecessor(dart.getReverse().getPredecessor());
     }
 
     /**
@@ -416,7 +445,7 @@ public class SelfDualGraph {
         }
     }
 
-    protected void deleteVertexSelfLoop(Vertex v) {
+    public void deleteVertexSelfLoop(Vertex v) {
         Dart start = v.getFirstDart();
         while (start.getHead() == v) start = start.getSuccessor();
         Set<Dart> toDelete = new HashSet<>();

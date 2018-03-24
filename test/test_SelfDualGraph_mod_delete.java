@@ -4,7 +4,7 @@ import selfdualgraph.*;
 
 public class test_SelfDualGraph_mod_delete extends test_SelfDualGraph_modification{
     @Test
-    public void testDeleteLoop() {
+    public void testDeleteLoop1() {
         Dart dart = findDartByID(g, 20);
         g.deleteEdge(dart);
         Assert.assertEquals(null, findDartByID(g, 20));
@@ -36,6 +36,46 @@ public class test_SelfDualGraph_mod_delete extends test_SelfDualGraph_modificati
         // check incident list of V
         int[] incidentVertexID = new int[]{4, 0, 2, 2};
         checkIncidentListOfVertex(V, incidentVertexID);
+    }
+
+    @Test
+    public void testDeleteLoopN() {
+        g.deleteVertexSelfLoop(findVertexByID(g.getVertices(), 5));
+        for (int i : new int[]{9, 13, 3}) {
+            Dart dart = findDartByID(g, i);
+            g.contractEdge(dart);
+        }
+        Vertex v0 = findVertexByID(g.getVertices(), 0);
+        Assert.assertEquals(9, v0.getDegree());
+        int[] expectedDid=new int[]{0, 7, 19, 17, 15, 14, 16, 18, 10};
+        int i = 0;
+        for (Dart d : v0.getIncidenceList()){
+            Assert.assertEquals(expectedDid[i++], d.getID());
+        }
+
+        g.deleteLoop(findDartByID(g, 19));
+        Assert.assertEquals(7, v0.getDegree());
+        expectedDid=new int[]{0, 7, 17, 15, 14, 16, 10};
+        i = 0;
+        for (Dart d : v0.getIncidenceList()){
+            Assert.assertEquals(expectedDid[i++], d.getID());
+        }
+
+        g.deleteLoop(findDartByID(g, 17));
+        Assert.assertEquals(5, v0.getDegree());
+        expectedDid=new int[]{0, 7, 15, 14, 10};
+        i = 0;
+        for (Dart d : v0.getIncidenceList()){
+            Assert.assertEquals(expectedDid[i++], d.getID());
+        }
+
+        g.deleteLoop(findDartByID(g, 15));
+        Assert.assertEquals(3, v0.getDegree());
+        expectedDid=new int[]{0, 7, 10};
+        i = 0;
+        for (Dart d : v0.getIncidenceList()){
+            Assert.assertEquals(expectedDid[i++], d.getID());
+        }
     }
 
     @Test
