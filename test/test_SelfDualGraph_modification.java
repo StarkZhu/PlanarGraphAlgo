@@ -44,6 +44,16 @@ public class test_SelfDualGraph_modification {
         return null;
     }
 
+    protected Set<Vertex> findVertexSetByID(Set<Vertex> vertices, int[] ids) {
+        Set<Integer> targets = new HashSet<>();
+        Set<Vertex> ans = new HashSet<>();
+        for (int i : ids) targets.add(i);
+        for (Vertex v : vertices) {
+            if (targets.contains(v.getID())) ans.add(v);
+        }
+        return ans;
+    }
+
     protected void checkIncidentListOfFace(Vertex F, int[] boundaryVertexID) {
         Assert.assertEquals(boundaryVertexID.length, F.getDegree());
         Dart d = F.getFirstDart();

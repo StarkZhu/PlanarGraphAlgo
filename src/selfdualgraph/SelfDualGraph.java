@@ -242,6 +242,7 @@ public class SelfDualGraph {
             faceToKeep = d.getLeft();
         }
         faces.remove(faceToDelete);
+        // TODO: fix bug
         Dart dart = d.getLeft() == faceToDelete ? d : d.getReverse();
         dart.getPrev().setNext(dart.getNext());
         dart.getNext().setPrev(dart.getPrev());
@@ -273,13 +274,13 @@ public class SelfDualGraph {
      *
      * @param d: user should make sure d is NOT be a self-loop, otherwise the contract operation is not well defined
      */
-    public void contractEdge(Dart d) {
+    public Vertex contractEdge(Dart d) {
         if (d.getHead() == d.getTail()) {
+            System.out.println(d);
             throw new RuntimeException("Contraction is not well defined on a self-loop dart!");
         }
         if (d.getLeft() == d.getRight()) {
-            contractBridge(d);
-            return;
+            return contractBridge(d);
         }
         // delete the vertex with less degree
         Vertex vertexToKeep, vertexToDelete;
@@ -322,6 +323,8 @@ public class SelfDualGraph {
         d.getReverse().getNext().setPrev(d.getReverse().getPrev());
         d.getReverse().getPredecessor().setSuccessor(d.getSuccessor());
         d.getReverse().getSuccessor().setPredecessor(d.getPredecessor());
+
+        return vertexToDelete;
     }
 
     /**
@@ -329,7 +332,7 @@ public class SelfDualGraph {
      *
      * @param d
      */
-    private void contractBridge(Dart d) {
+    private Vertex contractBridge(Dart d) {
         Vertex vertexToKeep, vertexToDelete;
         if (d.getTail().getDegree() == 1) {
             vertexToDelete = d.getTail();
@@ -362,6 +365,8 @@ public class SelfDualGraph {
         } else if (f.getFirstDart() == d || f.getFirstDart() == d.getReverse()) {
             f.setDart(dart.getPrev());  //??
         }
+
+        return vertexToDelete;
     }
 
     /**
@@ -371,15 +376,7 @@ public class SelfDualGraph {
     public void flatten() {
         // delete all self-loop first
         for (Vertex v : vertices) {
-            Set<Dart> toDelete = new HashSet<>();
-            for (Dart d : v.getIncidenceList()) {
-                if (d.getTail() == d.getHead() && !toDelete.contains(d.getReverse())) {
-                    toDelete.add(d);
-                }
-            }
-            for (Dart d : toDelete) {
-                deleteLoop(d);
-            }
+            deleteVertexSelfLoop(v);
         }
         // delete all parallel darts
         for (Vertex v : vertices) {
@@ -417,6 +414,21 @@ public class SelfDualGraph {
                 deleteEdge(d_delete);
             }
         }
+    }
+
+    protected void deleteVertexSelfLoop(Vertex v) {
+        Dart start = v.getFirstDart();
+        while (start.getHead() == v) start = start.getSuccessor();
+        Set<Dart> toDelete = new HashSet<>();
+        for (Dart d : v.getIncidenceList()) {
+            if (d.getTail() == d.getHead() && !toDelete.contains(d.getReverse())) {
+                toDelete.add(d);
+            }
+        }
+        for (Dart d : toDelete) {
+            deleteLoop(d);
+        }
+        v.setDart(start);
     }
 
     /**
@@ -622,6 +634,14 @@ public class SelfDualGraph {
         }
     }
 
+    /**
+     * clone a part of subgraph
+     *
+     * @param vMap mapping from old vertices to new vertices
+     * @param dMap mapping from old darts to new darts
+     * @param subB subgraph's boundary
+     * @return
+     */
     public SelfDualGraph cloneSubgraph(Map<Vertex, Vertex> vMap, Map<Dart, Dart> dMap, Set<Vertex> subB) {
         Set<Vertex> subgraphV = vMap.keySet();
         SelfDualGraph subgraph = new SelfDualGraph();
@@ -744,6 +764,14 @@ public class SelfDualGraph {
         return true;
     }
 
+    /**
+     * use BFS to detect boundary of a subgraph
+     *
+     * @param src       starting vertex outside of the target subgraph
+     * @param subgraph
+     * @param separator
+     * @return
+     */
     public Set<Vertex> findBoundary(Vertex src, Set<Vertex> subgraph, Set<Vertex> separator) {
         if (src == null) throw new RuntimeException("Source vertex is NULL");
         if (separator.contains(src)) throw new RuntimeException("Source vertex is on the boundary.");
@@ -849,6 +877,32 @@ public class SelfDualGraph {
                 }
             }
         }
+    }
+
+    /**
+     * merge a set of connected vertices (piece) into 1 single vertex
+     * user must guarantee the given piece is connected
+     *
+     * @param piece
+     */
+    public void mergeConnectedPiece(Set<Vertex> piece) {
+        Set<Vertex> toHandle = new HashSet<>(piece);
+        while (toHandle.size() > 1) {
+            Vertex v = toHandle.iterator().next();
+            deleteVertexSelfLoop(v);
+            for (Dart d : v.getIncidenceList()) {
+                if (toHandle.contains(d.getHead()) && d.getHead() != v) {
+                    System.out.println(d);
+                    Vertex vv = this.contractEdge(d);
+                    toHandle.remove(vv);
+                    if (vv == v) break;
+                }
+            }
+        }
+        Vertex v = toHandle.iterator().next();
+        System.out.println(v);
+        System.out.println(v.getDegree());
+        deleteVertexSelfLoop(v);
     }
 
     // for debug only

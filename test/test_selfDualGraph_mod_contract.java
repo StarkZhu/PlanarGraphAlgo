@@ -1,8 +1,10 @@
 import org.junit.*;
 import selfdualgraph.*;
 
+import java.util.*;
 
-public class test_selfDualGraph_mode_contract extends test_SelfDualGraph_modification{
+
+public class test_selfDualGraph_mod_contract extends test_SelfDualGraph_modification {
 
     @Test
     public void testContractFirstEdgeOfVertex() {
@@ -171,5 +173,63 @@ public class test_selfDualGraph_mode_contract extends test_SelfDualGraph_modific
         // check incident list of V
         int[] incidentVertexID = new int[]{4, 2};
         checkIncidentListOfVertex(V, incidentVertexID);
+    }
+
+    @Test
+    public void testMergeConnectedPiece0() {
+        Set<Vertex> piece = findVertexSetByID(g.getVertices(), new int[]{0, 2, 3, 4, 5});
+        g.mergeConnectedPiece(piece);
+        Assert.assertEquals(2, g.getVertexNum());
+        Assert.assertEquals(2, g.getFaceNum());
+        Vertex v1 = findVertexByID(g.getVertices(), 1);
+        Assert.assertEquals(2, v1.getDegree());
+        Vertex v = v1.getFirstDart().getHead();
+        System.out.println("---");
+        System.out.println(v);
+        Assert.assertEquals(2, v.getDegree());
+        for (Dart d: v.getIncidenceList()) {
+            System.out.println(d);
+            Assert.assertEquals(1, d.getHead().getID());
+        }
+    }
+
+    @Test
+    public void testMergeConnectedPiece1() {
+        Set<Vertex> piece = findVertexSetByID(g.getVertices(), new int[]{0, 2, 4, 5});
+        g.mergeConnectedPiece(piece);
+        g.flatten();
+        Assert.assertEquals(3, g.getVertexNum());
+        Assert.assertEquals(2, g.getFaceNum());
+        Vertex v1 = findVertexByID(g.getVertices(), 1);
+        Assert.assertEquals(2, v1.getDegree());
+        Vertex v3 = findVertexByID(g.getVertices(), 3);
+        Assert.assertEquals(2, v3.getDegree());
+    }
+    @Test
+    public void testMergeConnectedPiece2() {
+        Set<Vertex> piece = findVertexSetByID(g.getVertices(), new int[]{2, 3, 4, 5});
+        g.mergeConnectedPiece(piece);
+        g.flatten();
+        Assert.assertEquals(3, g.getVertexNum());
+        Assert.assertEquals(2, g.getFaceNum());
+        Vertex v1 = findVertexByID(g.getVertices(), 1);
+        Assert.assertEquals(2, v1.getDegree());
+        Vertex v0 = findVertexByID(g.getVertices(), 0);
+        Assert.assertEquals(2, v0.getDegree());
+    }
+
+    @Test
+    public void testMergeConnectedPiece3() {
+        Set<Vertex> piece = findVertexSetByID(g.getVertices(), new int[]{0, 2, 5});
+        g.mergeConnectedPiece(piece);
+        g.flatten();
+        Assert.assertEquals(4, g.getVertexNum());
+        Assert.assertEquals(3, g.getFaceNum());
+        Vertex v1 = findVertexByID(g.getVertices(), 1);
+        Assert.assertEquals(2, v1.getDegree());
+        Vertex v3 = findVertexByID(g.getVertices(), 3);
+        Assert.assertEquals(3, v3.getDegree());
+        Vertex v4 = findVertexByID(g.getVertices(), 4);
+        Assert.assertEquals(2, v4.getDegree());
     }
 }

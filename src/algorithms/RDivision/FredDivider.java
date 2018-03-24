@@ -15,6 +15,7 @@ public class FredDivider extends GraphDivider {
 
     /**
      * generate a rho-clustering, each of which is a vertex-disjoint connected piece with O(rho) vertices
+     *
      * @param rho cluster size
      * @return mapping from original vertex to its cluster
      */
@@ -58,20 +59,30 @@ public class FredDivider extends GraphDivider {
     }
 
     public SelfDualGraph contractedGraph(Set<Set<Vertex>> clusters) {
-        Set<Vertex> subg = g.getVertices();
-        SelfDualGraph contractedG = g.buildSubgraph(subg, new HashSet<>());
-        for (Set<Vertex> cluster : clusters) {
-            for (Vertex v : cluster) {
-                for (Dart d : v.getIncidenceList()) {
-                    if (d.getTail() == d.getHead()) {
-                    }
-                }
+        Set<Vertex> subgraphV = g.getVertices();
+        // map old Vertice, Darts to new graph
+        Map<Vertex, Vertex> vMap = new HashMap<>();
+        Map<Dart, Dart> dMap = new HashMap<>();
+        for (Vertex v : subgraphV) {
+            Vertex v2 = new Vertex(v);
+            vMap.put(v, v2);
+            for (Dart d : v.getIncidenceList()) {
+                if (subgraphV.contains(d.getHead())) dMap.put(d, new Dart(d));
             }
         }
+
+        SelfDualGraph contractedG = g.cloneSubgraph(vMap, dMap, g.getBoundary());
+        for (Set<Vertex> cluster : clusters) {
+            contractedG.mergeConnectedPiece(cluster);
+        }
+        contractedG.flatten();
+        contractedG.triangulate();
         return contractedG;
     }
 
     public Set<Set<Vertex>> rDivision(int r) {
+        g.flatten();
+        g.triangulate();
         // rho-clustering, rho = sqrt(r)
         Map<Vertex, Set<Vertex>> vertexToCluster = rhoClustering((int) Math.sqrt(r));
 
