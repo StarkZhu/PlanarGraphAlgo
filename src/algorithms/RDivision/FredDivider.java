@@ -73,7 +73,9 @@ public class FredDivider extends GraphDivider {
 
         SelfDualGraph contractedG = g.cloneSubgraph(vMap, dMap, g.getBoundary());
         for (Set<Vertex> cluster : clusters) {
-            contractedG.mergeConnectedPiece(cluster);
+            Set<Vertex> clonedCluster = new HashSet<>();
+            for (Vertex v : cluster) clonedCluster.add(vMap.get(v));
+            contractedG.mergeConnectedPiece(clonedCluster);
         }
         contractedG.flatten();
         contractedG.triangulate();

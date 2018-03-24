@@ -40,7 +40,7 @@ public class test_Separator_LiptonTarjan extends test_Separator{
         verifyVertexSet(new int[]{0, 3, 5, 2}, subgraphs[0]);
         verifyVertexSet(new int[]{0, 3, 5, 1, 4}, subgraphs[1]);
 
-        separator = liptonTarjan.findSeparator(new SpecificIdRootFinder(5));
+        separator = liptonTarjan.findSeparator(null, new SpecificIdRootFinder(5), null);
         verifyVertexSet(new int[]{0, 3, 5, 1}, separator);
         subgraphs = liptonTarjan.findSubgraphs();
         verifyVertexSet(new int[]{0, 3, 5, 1, 2}, subgraphs[0]);

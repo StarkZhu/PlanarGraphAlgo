@@ -242,7 +242,6 @@ public class SelfDualGraph {
             faceToKeep = d.getLeft();
         }
         faces.remove(faceToDelete);
-        // TODO: fix bug
         Dart dart = d.getLeft() == faceToDelete ? d : d.getReverse();
         if (faceToDelete.getDegree() == 1) {
             deleteDegree1Loop(dart);
@@ -283,7 +282,6 @@ public class SelfDualGraph {
      * @param dart
      */
     private void deleteDegreeNLoop(Dart dart) {
-        // TODO: to be tested
         dart.getPrev().setNext(dart.getReverse().getNext());
         dart.getNext().setPrev(dart.getReverse().getPrev());
         dart.getPredecessor().setSuccessor(dart.getSuccessor());
@@ -420,13 +418,15 @@ public class SelfDualGraph {
                     d = succ;
                     continue;
                 }
-                // TODO: fix bug for self-loop
                 int tmp = 0;
                 while (succ.getHead() == d.getHead() && succ != start) {
+                    // TODO: possible bug here, may have been fixed
+                    /*
                     tmp++;
                     if (tmp >= 10000) {
                         System.out.println("bad");
                     }
+                    */
                     if (succ.getWeight() >= d.getWeight()) {
                         toDelete.add(succ);
                         succ = succ.getSuccessor();

@@ -2,20 +2,9 @@ import algorithms.RootFinder.SpecificIdRootFinder;
 import org.junit.*;
 import selfdualgraph.*;
 
-import java.io.FileNotFoundException;
 import java.util.*;
 
 public class test_SelfDualGraph_subgraph extends test_SelfDualGraph_modification {
-
-    protected Set<Vertex> findVertices(SelfDualGraph graph, int[] IDs) {
-        Set<Vertex> vertices = new HashSet<>();
-        Set<Integer> vIDs = new HashSet<>();
-        for (int i : IDs) vIDs.add(i);
-        for (Vertex v : graph.getVertices()) {
-            if (vIDs.contains(v.getID())) vertices.add(v);
-        }
-        return vertices;
-    }
 
     public void verifyVertexSet(int[] expectedVerticies, Set<Vertex> vertices) {
         Assert.assertEquals(expectedVerticies.length, vertices.size());
@@ -28,8 +17,8 @@ public class test_SelfDualGraph_subgraph extends test_SelfDualGraph_modification
 
     @Test
     public void testFindBoundary_1() {
-        Set<Vertex> subg = findVertices(g, new int[]{0, 1, 2, 3, 4});
-        Set<Vertex> boundary = findVertices(g, new int[]{0, 2, 3, 4, 5});
+        Set<Vertex> subg = findVertexSetByIDs(g.getVertices(), new int[]{0, 1, 2, 3, 4});
+        Set<Vertex> boundary = findVertexSetByIDs(g.getVertices(), new int[]{0, 2, 3, 4, 5});
         Vertex src = (new SpecificIdRootFinder(1)).selectRootVertex(g);
         Set<Vertex> ans = g.findBoundary(src, subg, boundary);
         verifyVertexSet(new int[]{0, 3}, ans);
@@ -37,8 +26,8 @@ public class test_SelfDualGraph_subgraph extends test_SelfDualGraph_modification
 
     @Test
     public void testFindBoundary_5() {
-        Set<Vertex> subg = findVertices(g, new int[]{0, 2, 3, 4, 5});
-        Set<Vertex> boundary = findVertices(g, new int[]{0, 2, 3, 4});
+        Set<Vertex> subg = findVertexSetByIDs(g.getVertices(), new int[]{0, 2, 3, 4, 5});
+        Set<Vertex> boundary = findVertexSetByIDs(g.getVertices(), new int[]{0, 2, 3, 4});
         Vertex src = (new SpecificIdRootFinder(5)).selectRootVertex(g);
         Set<Vertex> ans = g.findBoundary(src, subg, boundary);
         verifyVertexSet(new int[]{0, 2, 4}, ans);
@@ -88,8 +77,8 @@ public class test_SelfDualGraph_subgraph extends test_SelfDualGraph_modification
 
     @Test
     public void testSubgraph_13() {
-        Set<Vertex> subg = findVertices(g, new int[]{0, 1, 2, 3, 4});
-        Set<Vertex> separator = findVertices(g, new int[]{0, 2, 4});
+        Set<Vertex> subg = findVertexSetByIDs(g.getVertices(), new int[]{0, 1, 2, 3, 4});
+        Set<Vertex> separator = findVertexSetByIDs(g.getVertices(), new int[]{0, 2, 4});
 
         SelfDualGraph subgraph = g.buildSubgraph(subg, separator);
         Assert.assertEquals(5, subgraph.getVertexNum());
@@ -111,12 +100,12 @@ public class test_SelfDualGraph_subgraph extends test_SelfDualGraph_modification
 
     @Test
     public void testSubgraph_13_2() {
-        Set<Vertex> subg1 = findVertices(g, new int[]{0, 1, 2, 3, 4});
-        Set<Vertex> separator1 = findVertices(g, new int[]{0, 2, 4});
+        Set<Vertex> subg1 = findVertexSetByIDs(g.getVertices(), new int[]{0, 1, 2, 3, 4});
+        Set<Vertex> separator1 = findVertexSetByIDs(g.getVertices(), new int[]{0, 2, 4});
         SelfDualGraph subgraph1 = g.buildSubgraph(subg1, separator1);
 
-        Set<Vertex> subg2 = findVertices(subgraph1, new int[]{0, 2, 3, 4});
-        Set<Vertex> separator2 = findVertices(subgraph1, new int[]{0, 2, 3, 4}); // {0, 3}
+        Set<Vertex> subg2 = findVertexSetByIDs(subgraph1.getVertices(), new int[]{0, 2, 3, 4});
+        Set<Vertex> separator2 = findVertexSetByIDs(subgraph1.getVertices(), new int[]{0, 2, 3, 4}); // {0, 3}
         SelfDualGraph subgraph = subgraph1.buildSubgraph(subg2, separator2);
 
         Assert.assertEquals(4, subgraph.getVertexNum());
@@ -138,12 +127,12 @@ public class test_SelfDualGraph_subgraph extends test_SelfDualGraph_modification
 
     @Test
     public void testSubgraph_13_14() {
-        Set<Vertex> subg1 = findVertices(g, new int[]{0, 1, 2, 3, 4});
-        Set<Vertex> separator1 = findVertices(g, new int[]{0, 2, 4});
+        Set<Vertex> subg1 = findVertexSetByIDs(g.getVertices(), new int[]{0, 1, 2, 3, 4});
+        Set<Vertex> separator1 = findVertexSetByIDs(g.getVertices(), new int[]{0, 2, 4});
         SelfDualGraph subgraph1 = g.buildSubgraph(subg1, separator1);
 
-        Set<Vertex> subg2 = findVertices(subgraph1, new int[]{0, 1, 3, 4});
-        Set<Vertex> separator2 = findVertices(subgraph1, new int[]{0, 3, 4});
+        Set<Vertex> subg2 = findVertexSetByIDs(subgraph1.getVertices(), new int[]{0, 1, 3, 4});
+        Set<Vertex> separator2 = findVertexSetByIDs(subgraph1.getVertices(), new int[]{0, 3, 4});
         SelfDualGraph subgraph = subgraph1.buildSubgraph(subg2, separator2);
 
         Assert.assertEquals(4, subgraph.getVertexNum());
@@ -165,12 +154,12 @@ public class test_SelfDualGraph_subgraph extends test_SelfDualGraph_modification
 
     @Test
     public void testSubgraph_13_1() {
-        Set<Vertex> subg1 = findVertices(g, new int[]{0, 1, 2, 3, 4});
-        Set<Vertex> separator1 = findVertices(g, new int[]{0, 2, 4});
+        Set<Vertex> subg1 = findVertexSetByIDs(g.getVertices(), new int[]{0, 1, 2, 3, 4});
+        Set<Vertex> separator1 = findVertexSetByIDs(g.getVertices(), new int[]{0, 2, 4});
         SelfDualGraph subgraph1 = g.buildSubgraph(subg1, separator1);
 
-        Set<Vertex> subg2 = findVertices(subgraph1, new int[]{0, 1, 3});
-        Set<Vertex> separator2 = findVertices(subgraph1, new int[]{0, 3});
+        Set<Vertex> subg2 = findVertexSetByIDs(subgraph1.getVertices(), new int[]{0, 1, 3});
+        Set<Vertex> separator2 = findVertexSetByIDs(subgraph1.getVertices(), new int[]{0, 3});
         SelfDualGraph subgraph = subgraph1.buildSubgraph(subg2, separator2);
 
         Assert.assertEquals(3, subgraph.getVertexNum());

@@ -382,6 +382,7 @@ public class SimpleCycleSeparator extends Separator {
         return subgraphs;
     }
 
+    /*
     public static void main(String[] args) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
         g.buildGraph("./input_data/grids/1.txt");
@@ -389,4 +390,5 @@ public class SimpleCycleSeparator extends Separator {
         Set<Vertex> separator = sp.findSeparator(null, new SpecificIdRootFinder(5), null);
         System.out.println(separator);
     }
+    */
 }

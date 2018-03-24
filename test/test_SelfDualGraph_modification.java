@@ -44,12 +44,12 @@ public class test_SelfDualGraph_modification {
         return null;
     }
 
-    protected Set<Vertex> findVertexSetByID(Set<Vertex> vertices, int[] ids) {
-        Set<Integer> targets = new HashSet<>();
+    protected Set<Vertex> findVertexSetByIDs(Set<Vertex> vertices, int[] IDs) {
         Set<Vertex> ans = new HashSet<>();
-        for (int i : ids) targets.add(i);
+        Set<Integer> vIDs = new HashSet<>();
+        for (int i : IDs) vIDs.add(i);
         for (Vertex v : vertices) {
-            if (targets.contains(v.getID())) ans.add(v);
+            if (vIDs.contains(v.getID())) ans.add(v);
         }
         return ans;
     }
