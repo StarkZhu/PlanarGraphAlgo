@@ -184,11 +184,8 @@ public class test_selfDualGraph_mod_contract extends test_SelfDualGraph_modifica
         Vertex v1 = findVertexByID(g.getVertices(), 1);
         Assert.assertEquals(2, v1.getDegree());
         Vertex v = v1.getFirstDart().getHead();
-        System.out.println("---");
-        System.out.println(v);
         Assert.assertEquals(2, v.getDegree());
         for (Dart d: v.getIncidenceList()) {
-            System.out.println(d);
             Assert.assertEquals(1, d.getHead().getID());
         }
     }

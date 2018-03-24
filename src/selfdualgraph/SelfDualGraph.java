@@ -923,7 +923,6 @@ public class SelfDualGraph {
             deleteVertexSelfLoop(v);
             for (Dart d : v.getIncidenceList()) {
                 if (toHandle.contains(d.getHead()) && d.getHead() != v) {
-                    //System.out.println(d);
                     Vertex vv = this.contractEdge(d);
                     toHandle.remove(vv);
                     if (vv == v) break;
@@ -931,8 +930,6 @@ public class SelfDualGraph {
             }
         }
         Vertex v = toHandle.iterator().next();
-        //System.out.println(v);
-        //System.out.println(v.getDegree());
         deleteVertexSelfLoop(v);
     }
 

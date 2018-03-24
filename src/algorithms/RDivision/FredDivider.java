@@ -58,6 +58,12 @@ public class FredDivider extends GraphDivider {
         return vertexToCluster;
     }
 
+    /**
+     * Create a new graph, clone original graph, for each vertex set merge them to be a single vertex in new graph
+     * To enforce processing order, pass in TreeSet<Vertex> for each cluster
+     * @param clusters
+     * @return
+     */
     public SelfDualGraph contractedGraph(Set<Set<Vertex>> clusters) {
         Set<Vertex> subgraphV = g.getVertices();
         // map old Vertice, Darts to new graph
@@ -74,6 +80,7 @@ public class FredDivider extends GraphDivider {
         SelfDualGraph contractedG = g.cloneSubgraph(vMap, dMap, g.getBoundary());
         for (Set<Vertex> cluster : clusters) {
             List<Vertex> clonedCluster = new LinkedList<>();
+            // processing order is ensured if pass-in vertex set is TreeSet
             for (Vertex v : cluster) clonedCluster.add(vMap.get(v));
             contractedG.mergeConnectedPiece(clonedCluster);
         }
