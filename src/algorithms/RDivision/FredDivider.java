@@ -7,7 +7,7 @@ import selfdualgraph.*;
 import java.util.*;
 
 public class FredDivider extends GraphDivider {
-
+    private Map<Vertex, Set<Vertex>> contractedVertexToVSet;
 
     public FredDivider(SelfDualGraph g) {
         super(g);
@@ -77,29 +77,70 @@ public class FredDivider extends GraphDivider {
             }
         }
 
+        contractedVertexToVSet = new HashMap<>();
         SelfDualGraph contractedG = g.cloneSubgraph(vMap, dMap, g.getBoundary());
         for (Set<Vertex> cluster : clusters) {
             List<Vertex> clonedCluster = new LinkedList<>();
             // processing order is ensured if pass-in vertex set is TreeSet
-            for (Vertex v : cluster) clonedCluster.add(vMap.get(v));
-            contractedG.mergeConnectedPiece(clonedCluster);
+            for (Vertex v : cluster) clonedCluster.add(vMap.get(v));    // original vertex -> cloned vertex
+            Vertex vc = contractedG.mergeConnectedPiece(clonedCluster);
+            contractedVertexToVSet.put(vc, cluster);
         }
         contractedG.flatten();
         contractedG.triangulate();
         return contractedG;
     }
 
+    /**
+     * expand a region of contracted vertices back to original vertices
+     * @param contractedRegion
+     * @return
+     */
+    public SelfDualGraph expandRegion(Set<Vertex> contractedRegion){
+        Set<Vertex> expanded = new HashSet<>();
+        for (Vertex v : contractedRegion) {
+            expanded.addAll(contractedVertexToVSet.get(v));
+        }
+        // find boundary of subgraph
+        Set<Vertex> boundary = new HashSet<>();
+        for (Vertex v : expanded) {
+            for (Dart d : v.getIncidenceList()) {
+                if (!expanded.contains(d.getHead())) {
+                    boundary.add(v);
+                    break;
+                }
+            }
+        }
+        SelfDualGraph subgraph = g.buildSubgraph(expanded, boundary);
+        return subgraph;
+    }
+
+    @Override
     public Set<Set<Vertex>> rDivision(int r) {
         g.flatten();
         g.triangulate();
         // rho-clustering, rho = sqrt(r)
-        Map<Vertex, Set<Vertex>> vertexToCluster = rhoClustering((int) Math.sqrt(r));
+        int rho = (int) Math.sqrt(r);
+        Map<Vertex, Set<Vertex>> vertexToCluster = rhoClustering(rho);
 
         // contract each cluster into 1 single node, make new graph with ((n/sqrt(r)) vertices
+        SelfDualGraph contracted = contractedGraph(new HashSet<>(vertexToCluster.values()));
 
         // recursive division on new graph
+        RecursiveDivider rd = new RecursiveDivider(contracted);
+        Set<Set<Vertex>> contractedRegions = rd.rDivision(r);
+
         // expend each piece
-        // O(log(r)) levels of recursive division on each piece
+        for (Set<Vertex> region : contractedRegions) {
+            SelfDualGraph expandedSubgraph = expandRegion(region);
+            // O(log(r)) levels of recursive division on each piece
+            rd = new RecursiveDivider(expandedSubgraph);
+            Set<Set<Vertex>> subgraphRegions = rd.rDivision(r);
+            for (Set<Vertex> subRegion : subgraphRegions) {
+                regions.add(g.getVerticesFromID(verticesToID(subRegion)));
+            }
+        }
+
         return null;
     }
 }

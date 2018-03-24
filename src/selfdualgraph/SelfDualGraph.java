@@ -914,7 +914,7 @@ public class SelfDualGraph {
      *
      * @param piece
      */
-    public void mergeConnectedPiece(List<Vertex> piece) {
+    public Vertex mergeConnectedPiece(List<Vertex> piece) {
         Set<Vertex> toHandle = new HashSet<>(piece);
         Iterator<Vertex> vIt = piece.iterator();
         while (toHandle.size() > 1) {
@@ -931,6 +931,7 @@ public class SelfDualGraph {
         }
         Vertex v = toHandle.iterator().next();
         deleteVertexSelfLoop(v);
+        return v;
     }
 
     // for debug only

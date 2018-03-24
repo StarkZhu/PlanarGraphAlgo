@@ -110,4 +110,37 @@ public class test_RDivision_NlogR {
             verifyVertexIncidenceList(vOrbit[i], vertices.get(i));
         }
     }
+
+    @Test
+    public void test_expandRegion() {
+        SelfDualGraph g = readGraph("./test/benchmark_img_4x4.txt");
+        Set<Set<Vertex>> clusters = new HashSet<>();
+        int[][] clusterID = new int[][]{{0, 1, 4, 5}, {2, 3, 6, 7}, {8, 9, 12, 13}, {10, 11, 14, 15}};
+        for (int[] ids : clusterID) {
+            clusters.add(findVertexSetByID(g.getVertices(), ids));
+        }
+        FredDivider rd = new FredDivider(g);
+
+        SelfDualGraph contracted = rd.contractedGraph(clusters);
+        List<Vertex> vertices = new ArrayList<>(contracted.getVertices());
+        Collections.sort(vertices, new Comparator<Vertex>() {
+            @Override
+            public int compare(Vertex o1, Vertex o2) {
+                return o1.getID() - o2.getID();
+            }
+        });
+
+        for (int i = 0; i < vertices.size(); i++) {
+            Set<Vertex> region = new HashSet<>();
+            region.add(vertices.get(i));
+            SelfDualGraph subgraph = rd.expandRegion(region);
+            Assert.assertEquals(4, subgraph.getVertexNum());
+            Assert.assertEquals(3, subgraph.getFaceNum());
+            Set<Integer> vIDs = new HashSet<>();
+            for (int j : clusterID[i]) vIDs.add(j);
+            for (Vertex v : subgraph.getVertices()) {
+                Assert.assertTrue(vIDs.contains(v.getID()));
+            }
+        }
+    }
 }

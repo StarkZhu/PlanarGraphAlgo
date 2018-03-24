@@ -66,11 +66,6 @@ public class RecursiveDivider extends GraphDivider {
         }
     }
 
-    private Set<Integer> verticesToID(Set<Vertex> vertices) {
-        Set<Integer> ids = new HashSet<>();
-        for (Vertex v : vertices) ids.add(v.getID());
-        return ids;
-    }
 
     /*
     public static void main(String[] args) throws FileNotFoundException {
