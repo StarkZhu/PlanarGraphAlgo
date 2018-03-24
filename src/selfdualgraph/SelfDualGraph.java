@@ -914,14 +914,16 @@ public class SelfDualGraph {
      *
      * @param piece
      */
-    public void mergeConnectedPiece(Set<Vertex> piece) {
+    public void mergeConnectedPiece(List<Vertex> piece) {
         Set<Vertex> toHandle = new HashSet<>(piece);
+        Iterator<Vertex> vIt = piece.iterator();
         while (toHandle.size() > 1) {
-            Vertex v = toHandle.iterator().next();
+            Vertex v = vIt.next();
+            if (!toHandle.contains(v)) continue;
             deleteVertexSelfLoop(v);
             for (Dart d : v.getIncidenceList()) {
                 if (toHandle.contains(d.getHead()) && d.getHead() != v) {
-                    System.out.println(d);
+                    //System.out.println(d);
                     Vertex vv = this.contractEdge(d);
                     toHandle.remove(vv);
                     if (vv == v) break;
@@ -929,8 +931,8 @@ public class SelfDualGraph {
             }
         }
         Vertex v = toHandle.iterator().next();
-        System.out.println(v);
-        System.out.println(v.getDegree());
+        //System.out.println(v);
+        //System.out.println(v.getDegree());
         deleteVertexSelfLoop(v);
     }
 

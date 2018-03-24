@@ -72,6 +72,7 @@ public class RecursiveDivider extends GraphDivider {
         return ids;
     }
 
+    /*
     public static void main(String[] args) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
         g.buildGraph("./input_data/random/4.txt");
@@ -96,4 +97,5 @@ public class RecursiveDivider extends GraphDivider {
         time1 = System.currentTimeMillis();
         System.out.printf("Sorting Time: [%dms]\n", time1 - time0);
     }
+    */
 }

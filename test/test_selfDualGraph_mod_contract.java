@@ -178,7 +178,7 @@ public class test_selfDualGraph_mod_contract extends test_SelfDualGraph_modifica
     @Test
     public void testMergeConnectedPiece0() {
         Set<Vertex> piece = findVertexSetByIDs(g.getVertices(), new int[]{0, 2, 3, 4, 5});
-        g.mergeConnectedPiece(piece);
+        g.mergeConnectedPiece(new LinkedList<>(piece));
         Assert.assertEquals(2, g.getVertexNum());
         Assert.assertEquals(2, g.getFaceNum());
         Vertex v1 = findVertexByID(g.getVertices(), 1);
@@ -196,7 +196,7 @@ public class test_selfDualGraph_mod_contract extends test_SelfDualGraph_modifica
     @Test
     public void testMergeConnectedPiece1() {
         Set<Vertex> piece = findVertexSetByIDs(g.getVertices(), new int[]{0, 2, 4, 5});
-        g.mergeConnectedPiece(piece);
+        g.mergeConnectedPiece(new LinkedList<>(piece));
         g.flatten();
         Assert.assertEquals(3, g.getVertexNum());
         Assert.assertEquals(2, g.getFaceNum());
@@ -208,7 +208,7 @@ public class test_selfDualGraph_mod_contract extends test_SelfDualGraph_modifica
     @Test
     public void testMergeConnectedPiece2() {
         Set<Vertex> piece = findVertexSetByIDs(g.getVertices(), new int[]{2, 3, 4, 5});
-        g.mergeConnectedPiece(piece);
+        g.mergeConnectedPiece(new LinkedList<>(piece));
         g.flatten();
         Assert.assertEquals(3, g.getVertexNum());
         Assert.assertEquals(2, g.getFaceNum());
@@ -221,7 +221,7 @@ public class test_selfDualGraph_mod_contract extends test_SelfDualGraph_modifica
     @Test
     public void testMergeConnectedPiece3() {
         Set<Vertex> piece = findVertexSetByIDs(g.getVertices(), new int[]{0, 2, 5});
-        g.mergeConnectedPiece(piece);
+        g.mergeConnectedPiece(new LinkedList<>(piece));
         g.flatten();
         Assert.assertEquals(4, g.getVertexNum());
         Assert.assertEquals(3, g.getFaceNum());

@@ -27,12 +27,27 @@ public class test_RDivision_NlogR {
 
     protected Set<Vertex> findVertexSetByID(Set<Vertex> vertices, int[] ids) {
         Set<Integer> targets = new HashSet<>();
-        Set<Vertex> ans = new HashSet<>();
+        Set<Vertex> ans = new TreeSet<>();
         for (int i : ids) targets.add(i);
         for (Vertex v : vertices) {
             if (targets.contains(v.getID())) ans.add(v);
         }
         return ans;
+    }
+
+    protected void verifyVertexIncidenceList(int[] orbit, Vertex v) {
+        Assert.assertEquals(orbit.length, v.getDegree());
+        int i = 0;
+        while (i < orbit.length && orbit[i] != v.getFirstDart().getHead().getID()) i++;
+        if (i == orbit.length) {
+            Assert.assertTrue(false);
+        }
+        Dart d = v.getFirstDart();
+        for (int j = 0; j < orbit.length; j++) {
+            Assert.assertEquals(orbit[(i + j) % orbit.length], d.getHead().getID());
+            d = d.getSuccessor();
+        }
+        Assert.assertEquals(orbit[i], d.getHead().getID());
     }
 
     @Test
@@ -83,16 +98,16 @@ public class test_RDivision_NlogR {
         SelfDualGraph contracted = rd.contractedGraph(clusters);
         Assert.assertEquals(4, contracted.getVertexNum());
         Assert.assertEquals(4, contracted.getFaceNum());
-        List<Vertex> vertices = new LinkedList<>(g.getVertices());
+        List<Vertex> vertices = new ArrayList<>(contracted.getVertices());
         Collections.sort(vertices, new Comparator<Vertex>() {
             @Override
             public int compare(Vertex o1, Vertex o2) {
                 return o1.getID() - o2.getID();
             }
         });
-        int[] vDegree = new int[]{};
-        for (Vertex v : vertices) {
-            // TODO:  add tests
+        int[][] vOrbit = new int[][]{{6, 10, 8, 10}, {0, 10}, {0, 10}, {0, 8, 0, 6}};
+        for (int i = 0; i < vertices.size(); i++) {
+            verifyVertexIncidenceList(vOrbit[i], vertices.get(i));
         }
     }
 }
