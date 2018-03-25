@@ -177,7 +177,7 @@ public class test_RDivision_NlogN {
     }
 
     @Test
-    public void test_9x7_r15() {
+    public void test_9x7_r20() {
         SelfDualGraph g = readGraph("./test/benchmark_img_4x4.txt");
         //SelfDualGraph g = readGraph("./input_data/random/5.txt");
         RecursiveDivider rd = new RecursiveDivider(g);
@@ -188,6 +188,10 @@ public class test_RDivision_NlogN {
         long time1 = System.currentTimeMillis();
         System.out.printf("Time: [%dms]\n", time1 - time0);
 
+        checkRDivisionResult(g, r, regions);
+    }
+
+    protected void checkRDivisionResult(SelfDualGraph g, int r, Set<Set<Vertex>> regions) {
         Set<Vertex> vertices = g.getVertices();
         Set<Vertex> visited = new HashSet<>();
         Set<Vertex> boundaries = new HashSet<>();

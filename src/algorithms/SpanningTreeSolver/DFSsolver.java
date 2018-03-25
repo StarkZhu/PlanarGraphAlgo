@@ -10,6 +10,7 @@ import java.util.*;
 public class DFSsolver extends SpanningTreeSolver{
     @Override
     public void buildTreeFromRoot(Tree.TreeNode root) {
+        // TODO: change to iterative implementation
         Vertex vertex = root.getData();
         vertex.setVisited(true);
         for (Dart d : vertex.getIncidenceList()) {

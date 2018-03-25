@@ -19,6 +19,7 @@ public class FredDivider extends GraphDivider {
      * @param rho cluster size
      * @return mapping from original vertex to its cluster
      */
+    /*
     public Map<Vertex, Set<Vertex>> rhoClustering(int rho) {
         Map<Vertex, Set<Vertex>> vertexToCluster = new HashMap<>();
         SpanningTreeSolver sts = new BFSsolver();
@@ -53,6 +54,41 @@ public class FredDivider extends GraphDivider {
             }
             if (vSet.size() >= rho) {
                 for (Vertex vv : vSet) vertexToCluster.put(vv, vSet);
+            }
+        }
+        return vertexToCluster;
+    }
+    */
+
+    public Map<Vertex, Set<Vertex>> rhoClustering(int rho) {
+        Map<Vertex, Set<Vertex>> vertexToCluster = new HashMap<>();
+        SpanningTreeSolver sts = new DFSsolver();
+        RootFinder rf = new MinDegreeRootFinder();
+        Tree[] trees = sts.buildTreeCoTree(g, rf.selectRootVertex(g), null);
+
+        Stack<Tree.TreeNode> stack = new Stack<>();
+        stack.push(trees[0].getRoot());
+        while (!stack.isEmpty()) {
+            Tree.TreeNode node = stack.pop();
+            Vertex v = node.getData();
+            if (vertexToCluster.get(v) == null) {   // first visit
+                Set<Vertex> set = new HashSet<>();
+                set.add(v);
+                vertexToCluster.put(v, set);
+                if (node.getChildren().size() > 0) {
+                    stack.push(node);
+                    for (Tree.TreeNode child : node.getChildren()) stack.push(child);
+                }
+                continue;
+            }
+            Set<Vertex> descendantSet = vertexToCluster.get(v);
+            for (Tree.TreeNode child : node.getChildren()) {
+                Set<Vertex> childSet = vertexToCluster.get(child.getData());
+                if (childSet.size() >= rho) continue;   // already clustered
+                descendantSet.addAll(childSet);
+            }
+            if (descendantSet.size() >= rho) {
+                for (Vertex vv : descendantSet) vertexToCluster.put(vv, descendantSet);
             }
         }
         return vertexToCluster;
@@ -115,6 +151,23 @@ public class FredDivider extends GraphDivider {
         return subgraph;
     }
 
+    public Set<Set<Vertex>> filterBoundaryVertices(Set<Set<Vertex>> regions) {
+        Set<Vertex> visited = new HashSet<>();
+        for (Set<Vertex> region : regions) visited.addAll(region);
+        Set<Set<Vertex>> filteredRegions = new HashSet<>();
+        for (Set<Vertex> region : regions) {
+            Set<Vertex> filtered = new HashSet<>();
+            for (Vertex v: region) {
+                if (visited.contains(v)) {
+                    filtered.add(v);
+                    visited.remove(v);
+                }
+            }
+            if (filtered.size() > 0) filteredRegions.add(filtered);
+        }
+        return filteredRegions;
+    }
+
     @Override
     public Set<Set<Vertex>> rDivision(int r) {
         g.flatten();
@@ -129,6 +182,7 @@ public class FredDivider extends GraphDivider {
         // recursive division on new graph
         RecursiveDivider rd = new RecursiveDivider(contracted);
         Set<Set<Vertex>> contractedRegions = rd.rDivision(r);
+        contractedRegions = filterBoundaryVertices(contractedRegions);
 
         // expend each piece
         for (Set<Vertex> region : contractedRegions) {
@@ -136,11 +190,11 @@ public class FredDivider extends GraphDivider {
             // O(log(r)) levels of recursive division on each piece
             rd = new RecursiveDivider(expandedSubgraph);
             Set<Set<Vertex>> subgraphRegions = rd.rDivision(r);
+            subgraphRegions = filterBoundaryVertices(subgraphRegions);
             for (Set<Vertex> subRegion : subgraphRegions) {
                 regions.add(g.getVerticesFromID(verticesToID(subRegion)));
             }
         }
-
-        return null;
+        return regions;
     }
 }
