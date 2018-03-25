@@ -16,14 +16,23 @@ public class DFSsolver extends SpanningTreeSolver{
         // TODO: change to iterative implementation
         Vertex vertex = root.getData();
         vertex.setVisited(true);
-        for (Dart d : vertex.getIncidenceList()) {
-            Vertex v = d.getHead();
-            if (!d.isVisited() && !v.isVisited()) {
-                Tree.TreeNode child = new Tree.TreeNode(v, root, d);
-                root.addChild(child);
-                d.setVisited(true);
-                d.getReverse().setVisited(true);
-                buildTreeFromRoot(child);
+        Stack<Tree.TreeNode> stack = new Stack<>();
+        stack.push(root);
+        while (!stack.isEmpty()) {
+            Tree.TreeNode node = stack.pop();
+            vertex = node.getData();
+            for (Dart d : vertex.getIncidenceList()) {
+                Vertex v = d.getHead();
+                if (!d.isVisited() && !v.isVisited()) {
+                    Tree.TreeNode child = new Tree.TreeNode(v, node, d);
+                    node.addChild(child);
+                    v.setVisited(true);
+                    d.setVisited(true);
+                    d.getReverse().setVisited(true);
+                    stack.push(node);
+                    stack.push(child);
+                    break;
+                }
             }
         }
     }
@@ -35,7 +44,7 @@ public class DFSsolver extends SpanningTreeSolver{
 
     public static void main(String[] args) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
-        g.buildGraph("./input_data/grids/5.txt");
+        g.buildGraph("./input_data/grids/4.txt");
         SpanningTreeSolver sts = new DFSsolver();
         RootFinder rf = new MinDegreeRootFinder();
         Tree[] trees = sts.buildTreeCoTree(g, rf.selectRootVertex(g), null);

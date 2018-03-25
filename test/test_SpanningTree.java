@@ -33,8 +33,8 @@ public class test_SpanningTree {
         String coTreeBenchmark = "F<0>\n  F<4>\n    F<5>\n      F<6>\n  F<1>\n    F<2>\n    F<3>\n";
         SpanningTreeSolver dfs = new DFSsolver();
         Tree[] trees = dfs.buildTreeCoTree(g, treeRootVertex, coTreeRootVertex);
-        Assert.assertEquals(trees[0].toString(), treeBenchmark);
-        Assert.assertEquals(trees[1].toString(), coTreeBenchmark);
+        Assert.assertEquals(treeBenchmark, trees[0].toString());
+        Assert.assertEquals(coTreeBenchmark, trees[1].toString());
     }
 
     @Test
@@ -62,8 +62,8 @@ public class test_SpanningTree {
         String coTreeBenchmark = "F<0>\n  F<1>\n    F<2>\n      F<4>\n    F<3>\n    F<5>\n    F<6>\n";
         SpanningTreeSolver bfs = new BFSsolver();
         Tree[] trees = bfs.buildTreeCoTree(g, treeRootVertex, coTreeRootVertex);
-        Assert.assertEquals(trees[0].toString(), treeBenchmark);
-        Assert.assertEquals(trees[1].toString(), coTreeBenchmark);
+        Assert.assertEquals(treeBenchmark, trees[0].toString());
+        Assert.assertEquals(coTreeBenchmark, trees[1].toString());
     }
 
     @Test
@@ -72,8 +72,8 @@ public class test_SpanningTree {
         String coTreeBenchmark = "F<0>\n  F<4>\n  F<6>\n    F<5>\n    F<1>\n      F<2>\n      F<3>\n";
         SpanningTreeSolver prim = new Primsolver();
         Tree[] trees = prim.buildTreeCoTree(g, treeRootVertex, coTreeRootVertex);
-        Assert.assertEquals(trees[0].toString(), treeBenchmark);
-        Assert.assertEquals(trees[1].toString(), coTreeBenchmark);
+        Assert.assertEquals(treeBenchmark, trees[0].toString());
+        Assert.assertEquals(coTreeBenchmark, trees[1].toString());
     }
 
     @Test
@@ -87,18 +87,18 @@ public class test_SpanningTree {
         Set<Vertex> unchanged = getVertices(new int[]{0, 1, 2});
         bfs.pruneTree(trees[0].getRoot(), unchanged);
         String prunedTree = "V<0>\n  V<1>\n  V<2>\n";
-        Assert.assertEquals(trees[0].toString(), prunedTree);
+        Assert.assertEquals(prunedTree, trees[0].toString());
 
         Map<Vertex, Tree.TreeNode> boundary = trees[0].mapVertexToTreeNode(false);
         for (Vertex v : new HashSet<>(boundary.keySet())) {
             if (!unchanged.contains(v)) boundary.remove(v);
         }
         bfs.rebuildTreeFromRoot(trees[0].getRoot(), boundary);
-        Assert.assertEquals(trees[0].toString(), treeBenchmark);
+        Assert.assertEquals(treeBenchmark, trees[0].toString());
 
         trees[1] = new Tree(trees[1].getRoot().getData());
         bfs.buildCoTree(trees[1].getRoot());
-        Assert.assertEquals(trees[1].toString(), coTreeBenchmark);
+        Assert.assertEquals(coTreeBenchmark, trees[1].toString());
     }
 
     @Test
@@ -116,8 +116,8 @@ public class test_SpanningTree {
         bfs.pruneTree(trees[0].getRoot(), unchanged);
 
         bfs.rebuildTreeCoTree(trees, g, unchanged, boundary);
-        Assert.assertEquals(trees[0].toString(), treeBenchmark);
-        Assert.assertEquals(trees[1].toString(), coTreeBenchmark);
+        Assert.assertEquals(treeBenchmark, trees[0].toString());
+        Assert.assertEquals(coTreeBenchmark, trees[1].toString());
     }
 
     private Set<Vertex> getVertices(int[] ids) {
