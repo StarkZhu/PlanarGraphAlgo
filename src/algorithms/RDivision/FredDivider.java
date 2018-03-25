@@ -151,6 +151,11 @@ public class FredDivider extends GraphDivider {
         return subgraph;
     }
 
+    /**
+     * assign boundary vertices to exactly 1 region, no overlapping between any 2 regions
+     * @param regions
+     * @return
+     */
     public Set<Set<Vertex>> filterBoundaryVertices(Set<Set<Vertex>> regions) {
         Set<Vertex> visited = new HashSet<>();
         for (Set<Vertex> region : regions) visited.addAll(region);

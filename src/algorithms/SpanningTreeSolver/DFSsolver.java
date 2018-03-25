@@ -1,7 +1,10 @@
 package algorithms.SpanningTreeSolver;
 
+import algorithms.RootFinder.MinDegreeRootFinder;
+import algorithms.RootFinder.RootFinder;
 import selfdualgraph.*;
 
+import java.io.FileNotFoundException;
 import java.util.*;
 
 /**
@@ -28,5 +31,14 @@ public class DFSsolver extends SpanningTreeSolver{
     @Override
     public void rebuildTreeFromRoot(Tree.TreeNode root, Map<Vertex, Tree.TreeNode> boundary) {
         throw new RuntimeException("Function not implemented");
+    }
+
+    public static void main(String[] args) throws FileNotFoundException {
+        SelfDualGraph g = new SelfDualGraph();
+        g.buildGraph("./input_data/grids/5.txt");
+        SpanningTreeSolver sts = new DFSsolver();
+        RootFinder rf = new MinDegreeRootFinder();
+        Tree[] trees = sts.buildTreeCoTree(g, rf.selectRootVertex(g), null);
+        System.out.println(trees[0].getRoot().getData());
     }
 }

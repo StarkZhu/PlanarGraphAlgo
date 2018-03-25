@@ -249,7 +249,13 @@ public class SelfDualGraph {
             deleteDegreeNLoop(dart);
         }
 
+        // adjust faceToKeep degree, all darts incidental to faceToDelete points to faceToKeep
         faceToKeep.incrementDegree(faceToDelete.getDegree() - 2);
+        for (Dart dd : faceToDelete.getIncidenceList()) {
+            dd.setRight(faceToKeep);
+            dd.getReverse().setLeft(faceToKeep);
+        }
+
         dart.getTail().incrementDegree(-2);
         // edge case: both left(d) and right(d) has degree 1 before deletion
         if (faceToKeep.getDegree() == 0) {
@@ -919,6 +925,7 @@ public class SelfDualGraph {
         Iterator<Vertex> vIt = piece.iterator();
         while (toHandle.size() > 1) {
             Vertex v = vIt.next();
+            System.out.println(v);
             if (!toHandle.contains(v)) continue;
             deleteVertexSelfLoop(v);
             for (Dart d : v.getIncidenceList()) {
@@ -931,6 +938,7 @@ public class SelfDualGraph {
         }
         Vertex v = toHandle.iterator().next();
         deleteVertexSelfLoop(v);
+        System.out.println("Exit mergeConnectedPiece");
         return v;
     }
 

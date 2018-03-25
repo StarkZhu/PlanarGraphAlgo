@@ -145,6 +145,6 @@ public class test_RDivision_NlogR extends test_RDivision_NlogN {
         System.out.printf("Time: [%dms]\n", time1 - time0);
 
         checkRDivisionResult(g, r, regions);
-        // TODO: more specific test
+        // TODO: more specific test, something wrong
     }
 }
