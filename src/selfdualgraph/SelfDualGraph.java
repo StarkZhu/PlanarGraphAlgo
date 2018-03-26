@@ -923,8 +923,9 @@ public class SelfDualGraph {
     public Vertex mergeConnectedPiece(List<Vertex> piece) {
         Set<Vertex> toHandle = new HashSet<>(piece);
         Iterator<Vertex> vIt = piece.iterator();
+        Vertex v;
         while (toHandle.size() > 1) {
-            Vertex v = vIt.next();
+            v = vIt.next();
             if (!toHandle.contains(v)) continue;
             deleteVertexSelfLoop(v);
             for (Dart d : v.getIncidenceList()) {
@@ -935,7 +936,7 @@ public class SelfDualGraph {
                 }
             }
         }
-        Vertex v = toHandle.iterator().next();
+        v = toHandle.iterator().next();
         deleteVertexSelfLoop(v);
         return v;
     }

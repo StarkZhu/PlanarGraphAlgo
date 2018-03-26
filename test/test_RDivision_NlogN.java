@@ -151,18 +151,7 @@ public class test_RDivision_NlogN {
         rd.phaseII(6);
         List<Set<Vertex>> regions = new ArrayList<>(rd.getRegions());
         Assert.assertEquals(5, regions.size());
-
-        Collections.sort(regions, new Comparator<Set<Vertex>>() {
-            @Override
-            public int compare(Set<Vertex> o1, Set<Vertex> o2) {
-                if (o1.size() != o2.size()) return o1.size() - o2.size();
-                int v1 = 0;
-                for (Vertex v : o1) v1 += v.getID();
-                int v2 = 0;
-                for (Vertex v : o2) v2 += v.getID();
-                return v1 - v2;
-            }
-        });
+        sortRegions(regions);
 
         int[][] subGVertices = new int[][]{
                 {1, 2, 4, 5, 6, 7, 11},
@@ -176,9 +165,23 @@ public class test_RDivision_NlogN {
         }
     }
 
+    protected void sortRegions(List<Set<Vertex>> regions) {
+        Collections.sort(regions, new Comparator<Set<Vertex>>() {
+            @Override
+            public int compare(Set<Vertex> o1, Set<Vertex> o2) {
+                if (o1.size() != o2.size()) return o1.size() - o2.size();
+                int v1 = 0;
+                for (Vertex v : o1) v1 += v.getID();
+                int v2 = 0;
+                for (Vertex v : o2) v2 += v.getID();
+                return v1 - v2;
+            }
+        });
+    }
+
     @Test
     public void test_9x7_r20() {
-        SelfDualGraph g = readGraph("./test/benchmark_img_4x4.txt");
+        SelfDualGraph g = readGraph("./test/grid_9x7.txt");
         //SelfDualGraph g = readGraph("./input_data/random/5.txt");
         RecursiveDivider rd = new RecursiveDivider(g);
 
@@ -191,7 +194,7 @@ public class test_RDivision_NlogN {
         checkRDivisionResult(g, r, regions);
     }
 
-    protected void checkRDivisionResult(SelfDualGraph g, int r, Set<Set<Vertex>> regions) {
+    protected int checkRDivisionResult(SelfDualGraph g, int r, Set<Set<Vertex>> regions) {
         Set<Vertex> vertices = g.getVertices();
         Set<Vertex> visited = new HashSet<>();
         Set<Vertex> boundaries = new HashSet<>();
@@ -215,6 +218,7 @@ public class test_RDivision_NlogN {
             }
             Assert.assertTrue(boundarySize <= 4 * Math.sqrt(r));
         }
+        return boundaries.size();
     }
 
 }

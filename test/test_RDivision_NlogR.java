@@ -76,6 +76,26 @@ public class test_RDivision_NlogR extends test_RDivision_NlogN {
     }
 
     @Test
+    public void test_rhoClustering_9x7() {
+        SelfDualGraph g = readGraph("./test/grid_9x7.txt");
+        FredDivider rd = new FredDivider(g);
+        Map<Vertex, Set<Vertex>> vertexToCluster = rd.rhoClustering(20);
+        Assert.assertEquals(g.getVertexNum(), vertexToCluster.size());
+
+        Set<Vertex> visited = new HashSet<>();
+        List<Vertex> overlap = new LinkedList<>();
+        for (Set<Vertex> set : new HashSet<>(vertexToCluster.values())) {
+            for (Vertex v : set) {
+                if (!visited.contains(v)) visited.add(v);
+                else overlap.add(v);
+            }
+        }
+        System.out.println(overlap);
+        Assert.assertEquals(0, overlap.size());
+        Assert.assertEquals(g.getVertexNum(), visited.size());
+    }
+
+    @Test
     public void test_contractedGraph() {
         SelfDualGraph g = readGraph("./test/benchmark_img_4x4.txt");
         Set<Set<Vertex>> clusters = new HashSet<>();
@@ -143,8 +163,28 @@ public class test_RDivision_NlogR extends test_RDivision_NlogN {
         Set<Set<Vertex>> regions = fd.rDivision(r);
         long time1 = System.currentTimeMillis();
         System.out.printf("Time: [%dms]\n", time1 - time0);
+        int boundarySize = checkRDivisionResult(g, r, regions);
+        Assert.assertEquals(0, boundarySize);
 
-        checkRDivisionResult(g, r, regions);
-        // TODO: more specific test, something wrong
+        r = 16;
+        fd = new FredDivider(g);
+        regions = fd.rDivision(r);
+        Assert.assertEquals(1, regions.size());
+        Assert.assertEquals(16, regions.iterator().next().size());
+    }
+
+    @Test
+    public void test_9x7_r20() {
+        SelfDualGraph g = readGraph("./test/grid_9x7.txt");
+        FredDivider fd = new FredDivider(g);
+
+        int r = 20;
+        long time0 = System.currentTimeMillis();
+        Set<Set<Vertex>> regions = fd.rDivision(r);
+        long time1 = System.currentTimeMillis();
+        System.out.printf("Time: [%dms]\n", time1 - time0);
+
+        int boundarySize = checkRDivisionResult(g, r, regions);
+        Assert.assertEquals(0, boundarySize);
     }
 }

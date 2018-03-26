@@ -68,9 +68,10 @@ public class FredDivider extends GraphDivider {
 
         Stack<Tree.TreeNode> stack = new Stack<>();
         stack.push(trees[0].getRoot());
+        Vertex v = null;
         while (!stack.isEmpty()) {
             Tree.TreeNode node = stack.pop();
-            Vertex v = node.getData();
+            v = node.getData();
             if (vertexToCluster.get(v) == null) {   // first visit
                 Set<Vertex> set = new HashSet<>();
                 set.add(v);
@@ -91,6 +92,8 @@ public class FredDivider extends GraphDivider {
                 for (Vertex vv : descendantSet) vertexToCluster.put(vv, descendantSet);
             }
         }
+        Set<Vertex> descendantSet = vertexToCluster.get(v);
+        for (Vertex vv : descendantSet) vertexToCluster.put(vv, descendantSet);
         return vertexToCluster;
     }
 
