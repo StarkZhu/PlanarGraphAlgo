@@ -33,11 +33,52 @@ public class RecursiveDivider extends GraphDivider {
             return;
         }
         graph.triangulate();
+
+
+        if (graph.getVertexNum() == 823) {
+            int visitedV = 0, visitedF = 0, visitedD = 0, totalD = 0;
+            for (Vertex f : graph.getFaces()) if (f.isVisited()) visitedF++;
+            for (Vertex v : graph.getVertices()) {
+                if (v.isVisited()) visitedV++;
+                for (Dart d : v.getIncidenceList()) {
+                    if (d.isVisited()) visitedD++;
+                    totalD++;
+                }
+            }
+            System.out.println(" ");
+        }
+
+
         Separator sp = new SimpleCycleSeparator(graph);
         Set<Vertex> separator = sp.findSeparator();
         Set<Vertex>[] subgraphs = sp.findSubgraphs();
         SelfDualGraph g1 = graph.buildSubgraph(subgraphs[0], separator);
+
+        int visitedV1 = 0, visitedF1 = 0, visitedD1 = 0, totalD1 = 0;
+        for (Vertex f : g1.getFaces()) if (f.isVisited()) visitedF1++;
+        for (Vertex v : g1.getVertices()) {
+            if (v.isVisited()) visitedV1++;
+            for (Dart d : v.getIncidenceList()) {
+                if (d.isVisited()) visitedD1++;
+                totalD1++;
+            }
+        }
+
         SelfDualGraph g2 = graph.buildSubgraph(subgraphs[1], separator);
+
+
+        int visitedV2 = 0, visitedF2 = 0, visitedD2 = 0, totalD2 = 0;
+        for (Vertex f : g2.getFaces()) if (f.isVisited()) visitedF2++;
+        for (Vertex v : g2.getVertices()) {
+            if (v.isVisited()) visitedV2++;
+            for (Dart d : v.getIncidenceList()) {
+                if (d.isVisited()) visitedD2++;
+                totalD2++;
+            }
+        }
+        System.out.println(" ");
+
+
         phaseI(g1, r);
         phaseI(g2, r);
     }
@@ -67,30 +108,17 @@ public class RecursiveDivider extends GraphDivider {
     }
 
 
-    /*
     public static void main(String[] args) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
-        g.buildGraph("./input_data/random/4.txt");
-        long time0 = System.currentTimeMillis();
-        long count = 0;
-        for (Vertex v1 : g.getVertices()) {
-            for (Vertex v2 : g.getVertices())
-                count++;
-        }
-        long time1 = System.currentTimeMillis();
-        System.out.printf("N^2 Counting Time: [%dms]\n", time1 - time0);
-        System.out.println(count);
+        g.buildGraph("./input_data/random/3.txt");
 
-        time0 = System.currentTimeMillis();
-        List<Vertex> list = new LinkedList<>(g.getVertices());
-        Collections.sort(list, new Comparator<Vertex>() {
-            @Override
-            public int compare(Vertex o1, Vertex o2) {
-                return o1.getID() - o2.getID();
-            }
-        });
-        time1 = System.currentTimeMillis();
-        System.out.printf("Sorting Time: [%dms]\n", time1 - time0);
+        RecursiveDivider rd = new RecursiveDivider(g);
+        int r = (int) (Math.log(g.getVertexNum()) / Math.log(2));
+        System.out.printf("r = %d\n", r);
+        long time0 = System.currentTimeMillis();
+        Set<Set<Vertex>> regions = rd.rDivision(r);
+        long time1 = System.currentTimeMillis();
+        System.out.printf("Time: [%dms]\n", time1 - time0);
     }
-    */
+
 }

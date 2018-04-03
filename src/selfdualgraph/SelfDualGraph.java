@@ -747,13 +747,7 @@ public class SelfDualGraph {
      * @return
      */
     public SelfDualGraph buildSubgraph(Set<Vertex> subgraphV, Set<Vertex> separator) {
-        Set<Vertex> tmp = new HashSet<>(subgraphV);
-        tmp.removeAll(separator);
-        Set<Vertex> subB = separator;
-        if (tmp.size() > 0) {
-            Vertex src = tmp.iterator().next();
-            subB = findBoundary(src, subgraphV, separator);
-        }
+        Set<Vertex> subB = findBoundary(subgraphV, separator);
 
         // map old Vertice, Darts to new graph
         Map<Vertex, Vertex> vMap = new HashMap<>();
@@ -802,31 +796,27 @@ public class SelfDualGraph {
     /**
      * use BFS to detect boundary of a subgraph
      *
-     * @param src       starting vertex outside of the target subgraph
      * @param subgraph
      * @param separator
      * @return
      */
-    public Set<Vertex> findBoundary(Vertex src, Set<Vertex> subgraph, Set<Vertex> separator) {
-        if (src == null) throw new RuntimeException("Source vertex is NULL");
-        if (separator.contains(src)) throw new RuntimeException("Source vertex is on the boundary.");
+    public Set<Vertex> findBoundary(Set<Vertex> subgraph, Set<Vertex> separator) {
         for (Vertex v : subgraph) v.setVisited(false);
         Set<Vertex> boundary = new HashSet<>();
-        Queue<Vertex> q = new LinkedList<>();
-        q.add(src);
-        if (this.boundary.contains(src)) boundary.add(src);
-        src.setVisited(true);
-        while (!q.isEmpty()) {
-            Vertex v = q.poll();
-            for (Dart d : v.getIncidenceList()) {
-                Vertex u = d.getHead();
-                if (!u.isVisited()) {
-                    u.setVisited(true);
-                    if (separator.contains(u)) {
-                        boundary.add(u);
-                    } else {
+        for (Vertex vv : subgraph) {
+            if (vv.isVisited()) continue;
+            Queue<Vertex> q = new LinkedList<>();
+            q.add(vv);
+            vv.setVisited(true);
+            while (!q.isEmpty()) {
+                Vertex v = q.poll();
+                if (this.boundary.contains(v)) boundary.add(v);
+                for (Dart d : v.getIncidenceList()) {
+                    Vertex u = d.getHead();
+                    if (!subgraph.contains(u)) boundary.add(v);
+                    else if (!u.isVisited()) {
+                        u.setVisited(true);
                         q.add(u);
-                        if (this.boundary.contains(u)) boundary.add(u);
                     }
                 }
             }

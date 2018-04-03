@@ -4,6 +4,7 @@ import algorithms.RootFinder.*;
 import algorithms.SpanningTreeSolver.*;
 import selfdualgraph.*;
 
+import java.io.*;
 import java.util.*;
 
 public class FredDivider extends GraphDivider {
@@ -59,7 +60,6 @@ public class FredDivider extends GraphDivider {
         return vertexToCluster;
     }
     */
-
     public Map<Vertex, Set<Vertex>> rhoClustering(int rho) {
         Map<Vertex, Set<Vertex>> vertexToCluster = new HashMap<>();
         SpanningTreeSolver sts = new DFSsolver();
@@ -100,6 +100,7 @@ public class FredDivider extends GraphDivider {
     /**
      * Create a new graph, clone original graph, for each vertex set merge them to be a single vertex in new graph
      * To enforce processing order, pass in TreeSet<Vertex> for each cluster
+     *
      * @param clusters
      * @return
      */
@@ -132,10 +133,11 @@ public class FredDivider extends GraphDivider {
 
     /**
      * expand a region of contracted vertices back to original vertices
+     *
      * @param contractedRegion
      * @return
      */
-    public SelfDualGraph expandRegion(Set<Vertex> contractedRegion){
+    public SelfDualGraph expandRegion(Set<Vertex> contractedRegion) {
         Set<Vertex> expanded = new HashSet<>();
         for (Vertex v : contractedRegion) {
             expanded.addAll(contractedVertexToVSet.get(v));
@@ -156,6 +158,7 @@ public class FredDivider extends GraphDivider {
 
     /**
      * assign boundary vertices to exactly 1 region, no overlapping between any 2 regions
+     *
      * @param regions
      * @return
      */
@@ -165,7 +168,7 @@ public class FredDivider extends GraphDivider {
         Set<Set<Vertex>> filteredRegions = new HashSet<>();
         for (Set<Vertex> region : regions) {
             Set<Vertex> filtered = new HashSet<>();
-            for (Vertex v: region) {
+            for (Vertex v : region) {
                 if (visited.contains(v)) {
                     filtered.add(v);
                     visited.remove(v);
@@ -173,7 +176,43 @@ public class FredDivider extends GraphDivider {
             }
             if (filtered.size() > 0) filteredRegions.add(filtered);
         }
-        return filteredRegions;
+        Set<Set<Vertex>> connectedRegions = new HashSet<>();
+        for (Set<Vertex> region : filteredRegions) {
+            connectedRegions.addAll(identifyConnectedComponent(region));
+        }
+        return connectedRegions;
+    }
+
+    /**
+     * use BFS to identify connected components in a region, each component forms a sub-region
+     * @param region
+     * @return
+     */
+    private Set<Set<Vertex>> identifyConnectedComponent(Set<Vertex> region) {
+        Set<Set<Vertex>> disconnectedComponent = new HashSet<>();
+        Set<Vertex> visited = new HashSet<>();
+        for (Vertex v : region) {
+            if (visited.contains(v)) continue;
+            Set<Vertex> connectedComponent = new HashSet<>();
+            Queue<Vertex> q = new LinkedList<>();
+            q.add(v);
+            visited.add(v);
+            connectedComponent.add(v);
+            while (!q.isEmpty()) {
+                Vertex vv = q.poll();
+                for (Dart d : vv.getIncidenceList()) {
+                    Vertex n = d.getHead();
+                    if (visited.contains(n) || !region.contains(n)) continue;
+                    q.add(n);
+                    visited.add(n);
+                    connectedComponent.add(n);
+                }
+            }
+            disconnectedComponent.add(connectedComponent);
+        }
+        if (disconnectedComponent.size() > 1)
+            System.out.printf("A region contains %d connected components\n", disconnectedComponent.size());
+        return disconnectedComponent;
     }
 
     @Override
@@ -192,9 +231,32 @@ public class FredDivider extends GraphDivider {
         Set<Set<Vertex>> contractedRegions = rd.rDivision(r);
         contractedRegions = filterBoundaryVertices(contractedRegions);
 
+
         // expend each piece
         for (Set<Vertex> region : contractedRegions) {
             SelfDualGraph expandedSubgraph = expandRegion(region);
+
+            /*
+            if (expandedSubgraph.getVertexNum() == 15) {
+                try {
+                    expandedSubgraph.saveToFile("./test/bug_graph_0.txt");
+                } catch (FileNotFoundException e) {
+                    System.out.println(e);
+                }
+
+                int visitedV = 0, visitedF = 0, visitedD = 0, totalD = 0;
+                for (Vertex f : expandedSubgraph.getFaces()) if (f.isVisited()) visitedF++;
+                for (Vertex v : expandedSubgraph.getVertices()) {
+                    if (v.isVisited()) visitedV++;
+                    for (Dart d : v.getIncidenceList()) {
+                        if (d.isVisited()) visitedD++;
+                        totalD++;
+                    }
+                }
+                System.out.println(" ");
+            }
+            */
+
             // O(log(r)) levels of recursive division on each piece
             rd = new RecursiveDivider(expandedSubgraph);
             Set<Set<Vertex>> subgraphRegions = rd.rDivision(r);
@@ -204,5 +266,19 @@ public class FredDivider extends GraphDivider {
             }
         }
         return regions;
+    }
+
+    public static void main(String[] args) throws FileNotFoundException {
+        SelfDualGraph g = new SelfDualGraph();
+        g.buildGraph("./input_data/random/3.txt");
+
+        FredDivider fd = new FredDivider(g);
+        //int r = Math.max(10, (int) (Math.log(g.getVertexNum()) / Math.log(2)));
+        int r = 12;
+        System.out.printf("r = %d\n", r);
+        long time0 = System.currentTimeMillis();
+        Set<Set<Vertex>> regions = fd.rDivision(r);
+        long time1 = System.currentTimeMillis();
+        System.out.printf("Time: [%dms]\n", time1 - time0);
     }
 }

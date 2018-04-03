@@ -19,18 +19,16 @@ public class test_SelfDualGraph_subgraph extends test_SelfDualGraph_modification
     public void testFindBoundary_1() {
         Set<Vertex> subg = findVertexSetByIDs(g.getVertices(), new int[]{0, 1, 2, 3, 4});
         Set<Vertex> boundary = findVertexSetByIDs(g.getVertices(), new int[]{0, 2, 3, 4, 5});
-        Vertex src = (new SpecificIdRootFinder(1)).selectRootVertex(g);
-        Set<Vertex> ans = g.findBoundary(src, subg, boundary);
-        verifyVertexSet(new int[]{0, 3}, ans);
+        Set<Vertex> ans = g.findBoundary(subg, boundary);
+        verifyVertexSet(new int[]{0, 2, 4}, ans);
     }
 
     @Test
     public void testFindBoundary_5() {
         Set<Vertex> subg = findVertexSetByIDs(g.getVertices(), new int[]{0, 2, 3, 4, 5});
         Set<Vertex> boundary = findVertexSetByIDs(g.getVertices(), new int[]{0, 2, 3, 4});
-        Vertex src = (new SpecificIdRootFinder(5)).selectRootVertex(g);
-        Set<Vertex> ans = g.findBoundary(src, subg, boundary);
-        verifyVertexSet(new int[]{0, 2, 4}, ans);
+        Set<Vertex> ans = g.findBoundary(subg, boundary);
+        verifyVertexSet(new int[]{0, 3}, ans);
     }
 
     @Test
@@ -137,7 +135,7 @@ public class test_SelfDualGraph_subgraph extends test_SelfDualGraph_modification
 
         Assert.assertEquals(4, subgraph.getVertexNum());
         Assert.assertEquals(2, subgraph.getFaceNum());
-        verifyVertexSet(new int[]{3, 0}, subgraph.getBoundary());
+        verifyVertexSet(new int[]{3, 0, 4}, subgraph.getBoundary());
 
         int[][] vIncidList = new int[][]{{1, 4}, {0, 3}, {}, {1, 4}, {0, 3}};
         for (Vertex v : subgraph.getVertices()) {

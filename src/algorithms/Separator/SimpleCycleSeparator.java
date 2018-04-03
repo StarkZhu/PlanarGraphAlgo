@@ -44,6 +44,22 @@ public class SimpleCycleSeparator extends Separator {
 
         // find a balanced cycle separator (T', uv) and re-root the tree at the LCA(u, v)
         Tree[] trees = sts.buildTreeCoTree(g, rf.selectRootVertex(g), null);
+
+        /*
+        int visitedV = 0, visitedF = 0, visitedD = 0, totalD = 0;
+        for (Vertex f : g.getFaces()) if (f.isVisited()) visitedF++;
+        for (Vertex v : g.getVertices()) {
+            if (v.isVisited()) visitedV++;
+            for (Dart d : v.getIncidenceList()) {
+                if (d.isVisited()) visitedD++;
+                totalD++;
+            }
+        }
+        System.out.printf("%d vs %d\n", g.getVertexNum(), visitedV);
+        System.out.printf("%d vs %d\n", g.getFaceNum(), visitedF);
+        System.out.printf("%d vs %d\n", totalD, visitedD);
+        */
+
         Tree.TreeNode primalRoot = trees[0].getRoot();
         twa.calcWeightSum(primalRoot);
         double totalWeight = getTotalPrimalWeight(g.getVertices(), twa);
@@ -58,6 +74,16 @@ public class SimpleCycleSeparator extends Separator {
         // rebuild BFS tree and coTree
         rebuildBFStrees(sts, trees, separatorNode, primalTreeMap);
         primalTreeMap = trees[0].mapVertexToTreeNode(false);
+
+        /*
+        if (primalTreeMap.size() != g.getVertexNum()) {
+            List<Vertex> problem = new LinkedList<>();
+            for (Vertex v : g.getVertices()) {
+                if (!primalTreeMap.containsKey(v)) problem.add(v);
+            }
+            System.out.println(problem);
+        }
+        */
 
         // calculate distance of every vertex and group them by distance to root
         trees[0].updateDistToRoot();
@@ -85,7 +111,9 @@ public class SimpleCycleSeparator extends Separator {
             if (outerBoundaries.get(i).size() < 4 * sqrtN
                     && vNum_in_out[i][0] < totalWeight / 2
                     && vNum_in_out[i][1] < totalWeight / 2) {
-                buildSubgraphs(root.getData(), outerBoundaries.get(i));
+                Set<Vertex> fromRoot = new HashSet<>();
+                fromRoot.add(root.getData());
+                buildSubgraphs(fromRoot, outerBoundaries.get(i));
                 return separator;
             }
         }
@@ -130,20 +158,17 @@ public class SimpleCycleSeparator extends Separator {
 
         // case analysis for regions
         if (getTotalPrimalWeight(D, twa) > totalWeight / 3) {
-            buildSubgraphs(phi, outerBoundaries.get(z));
+            buildSubgraphs(D, outerBoundaries.get(z));
         } else if (getTotalPrimalWeight(A, twa) > totalWeight / 3) {
-            buildSubgraphs(root.getData(), outerBoundaries.get(a));
+            buildSubgraphs(A, outerBoundaries.get(a));
         } else if (getTotalPrimalWeight(B, twa) > totalWeight / 3) {
-            buildSubgraphs(B.iterator().next(), boundary);
+            buildSubgraphs(B, boundary);
         } else if (getTotalPrimalWeight(C, twa) > totalWeight / 3) {
-            buildSubgraphs(C.iterator().next(), boundary);
+            buildSubgraphs(C, boundary);
         } else {
-            buildSubgraphs(B.iterator().next(), boundary);
-            Set<Vertex> tmp = subgraphs[0];
-            tmp.addAll(A);
-            tmp.addAll(outerBoundaries.get(a));
-            C.addAll(D);
-            buildSubgraphs(C.iterator().next(), tmp);
+            Set<Vertex> AB = new HashSet<>(A);
+            AB.addAll(B);
+            buildSubgraphs(AB, boundary);
         }
 
         return separator;
@@ -180,32 +205,35 @@ public class SimpleCycleSeparator extends Separator {
     }
 
     /**
-     * give a source vertex not belonging to boundary, use BFS to identify the subgraph enclosed by boundary
+     * give vertex set of a region, use BFS to identify the subgraph enclosed by boundary
+     * note: removal of boundary vertices may disconnect the region
      *
-     * @param src
+     * @param region
      * @param boundary
      */
-    private void buildSubgraphs(Vertex src, Set<Vertex> boundary) {
-        if (boundary.contains(src)) throw new RuntimeException("Source vertex is on the boundary.");
-        for (Vertex v : g.getVertices()) v.setVisited(false);
-        Queue<Vertex> q = new LinkedList<>();
+    private void buildSubgraphs(Set<Vertex> region, Set<Vertex> boundary) {
+        g.resetAllToUnvisited();
         separator = new HashSet<>();
         subgraphs = new Set[2];
         subgraphs[0] = new HashSet<>();
-        subgraphs[0].add(src);
-        q.add(src);
-        src.setVisited(true);
-        while (!q.isEmpty()) {
-            Vertex v = q.poll();
-            for (Dart d : v.getIncidenceList()) {
-                Vertex u = d.getHead();
-                if (!u.isVisited()) {
-                    u.setVisited(true);
-                    subgraphs[0].add(u);
-                    if (boundary.contains(u)) {
-                        separator.add(u);
-                    } else {
-                        q.add(u);
+        for (Vertex vv : region) {
+            if (vv.isVisited()) continue;
+            Queue<Vertex> q = new LinkedList<>();
+            subgraphs[0].add(vv);
+            q.add(vv);
+            vv.setVisited(true);
+            while (!q.isEmpty()) {
+                Vertex v = q.poll();
+                for (Dart d : v.getIncidenceList()) {
+                    Vertex u = d.getHead();
+                    if (!u.isVisited()) {
+                        u.setVisited(true);
+                        subgraphs[0].add(u);
+                        if (boundary.contains(u)) {
+                            separator.add(u);
+                        } else {
+                            q.add(u);
+                        }
                     }
                 }
             }
@@ -254,6 +282,14 @@ public class SimpleCycleSeparator extends Separator {
             totalVNum += outerBoundaries.get(i).size();
         }
 
+        // handle the possible overlap on out-most 2 levels
+        int size = outerBoundaries.size();
+        if (size > 1) {
+            Set<Vertex> intersection = new HashSet<>(outerBoundaries.get(size - 1));
+            intersection.retainAll(outerBoundaries.get(size - 2));
+            totalVNum -= intersection.size();
+        }
+        // error checking
         if (totalVNum != g.getVertexNum()) {
             System.out.println(totalVNum);
             System.out.println(g.getVertexNum());
@@ -328,8 +364,15 @@ public class SimpleCycleSeparator extends Separator {
         }
 
         // identify 1 face incidental to (uv) to be the outer face
+        // whether or not forcing outermost boundary to have 3 vertices should NOT matter
         outerBoundaries.add(new HashSet<>());
         Vertex other = uv.getNext().getHead();
+        /*
+        outerBoundaries.get(h).add(other);
+        outerBoundaries.get(h).add(uv.getHead());
+        outerBoundaries.get(h).add(uv.getTail());
+        */
+        // avoid overlapping, all boundaries are vertex disjoint
         if (primalTreeMap.get(other).getDist() == h) outerBoundaries.get(h).add(other);
         if (primalTreeMap.get(uv.getHead()).getDist() == h) outerBoundaries.get(h).add(uv.getHead());
         if (primalTreeMap.get(uv.getTail()).getDist() == h) outerBoundaries.get(h).add(uv.getTail());
