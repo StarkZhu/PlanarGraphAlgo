@@ -44,25 +44,6 @@ public class SimpleCycleSeparator extends Separator {
 
         // find a balanced cycle separator (T', uv) and re-root the tree at the LCA(u, v)
         Tree[] trees = sts.buildTreeCoTree(g, rf.selectRootVertex(g), null);
-
-        /*
-        int visitedV = 0, visitedF = 0, visitedD = 0, totalD = 0;
-        for (Vertex f : g.getFaces()) if (f.isVisited()) visitedF++;
-        for (Vertex v : g.getVertices()) {
-            if (v.isVisited()) visitedV++;
-            for (Dart d : v.getIncidenceList()) {
-                if (d.isVisited()) visitedD++;
-                totalD++;
-            }
-        }
-        System.out.printf("%d vs %d\n", g.getVertexNum(), visitedV);
-        System.out.printf("%d vs %d\n", g.getFaceNum(), visitedF);
-        System.out.printf("%d vs %d\n", totalD, visitedD);
-        if (g.getVertexNum() != visitedV) {
-            System.out.println(" ");
-        }
-        */
-
         Tree.TreeNode primalRoot = trees[0].getRoot();
         twa.calcWeightSum(primalRoot);
         double totalWeight = getTotalPrimalWeight(g.getVertices(), twa);
@@ -72,7 +53,7 @@ public class SimpleCycleSeparator extends Separator {
         Map<Vertex, Tree.TreeNode> primalTreeMap = trees[0].mapVertexToTreeNode(false);
         Dart uv = separatorNode.getParentDart();
         if (uv == null) {
-            System.out.println("uv is null, bad!");
+            throw new RuntimeException("uv is null");
         }
         Tree.TreeNode root = trees[0].leastCommonAncestor(primalTreeMap.get(uv.getTail()), primalTreeMap.get(uv.getHead()));
         trees[0].reRoot(root);
@@ -80,16 +61,6 @@ public class SimpleCycleSeparator extends Separator {
         // rebuild BFS tree and coTree
         rebuildBFStrees(sts, trees, separatorNode, primalTreeMap);
         primalTreeMap = trees[0].mapVertexToTreeNode(false);
-
-        /*
-        if (primalTreeMap.size() != g.getVertexNum()) {
-            List<Vertex> problem = new LinkedList<>();
-            for (Vertex v : g.getVertices()) {
-                if (!primalTreeMap.containsKey(v)) problem.add(v);
-            }
-            System.out.println(problem);
-        }
-        */
 
         // calculate distance of every vertex and group them by distance to root
         trees[0].updateDistToRoot();
@@ -373,11 +344,7 @@ public class SimpleCycleSeparator extends Separator {
         // whether or not forcing outermost boundary to have 3 vertices should NOT matter
         outerBoundaries.add(new HashSet<>());
         Vertex other = uv.getNext().getHead();
-        /*
-        outerBoundaries.get(h).add(other);
-        outerBoundaries.get(h).add(uv.getHead());
-        outerBoundaries.get(h).add(uv.getTail());
-        */
+
         // avoid overlapping, all boundaries are vertex disjoint
         if (primalTreeMap.get(other).getDist() == h) outerBoundaries.get(h).add(other);
         if (primalTreeMap.get(uv.getHead()).getDist() == h) outerBoundaries.get(h).add(uv.getHead());

@@ -68,16 +68,11 @@ public class FredDivider extends GraphDivider {
      */
     public SelfDualGraph contractedGraph(Set<Set<Vertex>> clusters) {
         Set<Vertex> subgraphV = g.getVertices();
-        // map old Vertice, Darts to new graph
+        // map old vertices to new graph
         Map<Vertex, Vertex> vMap = new HashMap<>();
-        //Map<Dart, Dart> dMap = new HashMap<>();
         for (Vertex v : subgraphV) {
             Vertex v2 = new Vertex(v);
             vMap.put(v, v2);
-            /*
-            for (Dart d : v.getIncidenceList()) {
-                if (subgraphV.contains(d.getHead())) dMap.put(d, new Dart(d));
-            }*/
         }
 
         contractedVertexToVSet = new HashMap<>();
@@ -87,10 +82,8 @@ public class FredDivider extends GraphDivider {
             // processing order is ensured if pass-in vertex set is TreeSet
             for (Vertex v : cluster) clonedCluster.add(vMap.get(v));    // original vertex -> cloned vertex
             Vertex vc = contractedG.mergeConnectedPiece(clonedCluster);
-            // TODO after merge group for V458, D2642 / D2644 left/right still consistent: F166
             contractedVertexToVSet.put(vc, cluster);
         }
-        // TODO before flatten, D2642.right becomes F296
         contractedG.flatten();
         contractedG.triangulate();
         return contractedG;
@@ -174,7 +167,7 @@ public class FredDivider extends GraphDivider {
         }
         if (disconnectedComponent.size() > 1) {
             disconnectedComponentsNum += disconnectedComponent.size();
-            System.out.printf("A region contains %d connected components\n", disconnectedComponent.size());
+            //System.out.printf("A region contains %d connected components\n", disconnectedComponent.size());
         }
         return disconnectedComponent;
     }

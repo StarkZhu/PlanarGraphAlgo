@@ -13,8 +13,6 @@ import java.util.*;
  * Each dual-vertex (face) F, stores an incidence list of dart d, whose right is F
  */
 
-// TODO : change V's list to head(d) == V, be consistent with original definition
-
 public class SelfDualGraph {
     private Set<Vertex> vertices;
     private Set<Vertex> faces;
@@ -246,9 +244,6 @@ public class SelfDualGraph {
         if (faceToDelete.getDegree() == 1) {
             deleteDegree1Loop(dart);
         } else {
-            if (dart.getID() == 620) {
-                System.out.println(" ");
-            }
             for (Dart dd : faceToDelete.getIncidenceList()) {
                 dd.setRight(faceToKeep);
                 dd.getReverse().setLeft(faceToKeep);
@@ -316,7 +311,6 @@ public class SelfDualGraph {
      */
     public Vertex contractEdge(Dart d) {
         if (d.getHead() == d.getTail()) {
-            System.out.println(d);
             throw new RuntimeException("Contraction is not well defined on a self-loop dart!");
         }
         if (d.getLeft() == d.getRight()) {
@@ -421,9 +415,6 @@ public class SelfDualGraph {
         // delete all parallel darts
         for (Vertex v : vertices) {
             if (v.getDegree() < 2) continue;
-            if (v.getID() == 109 || v.getID() == 458) {
-                System.out.println(" ");
-            }
             Set<Dart> toDelete = new HashSet<>();
             Dart d = v.getFirstDart();
             Dart start = d;
@@ -434,15 +425,7 @@ public class SelfDualGraph {
                     d = succ;
                     continue;
                 }
-                int tmp = 0;
                 while (succ.getHead() == d.getHead() && succ != start) {
-                    // TODO: possible bug here, may have been fixed
-                    /*
-                    tmp++;
-                    if (tmp >= 10000) {
-                        System.out.println("bad");
-                    }
-                    */
                     if (succ.getWeight() >= d.getWeight()) {
                         toDelete.add(succ);
                         succ = succ.getSuccessor();
@@ -456,9 +439,6 @@ public class SelfDualGraph {
                 d = succ;
             }
             for (Dart d_delete : toDelete) {
-                if (d_delete.getID() == 2644) {
-                    System.out.println(" ");
-                }
                 deleteEdge(d_delete);
             }
         }
@@ -958,10 +938,11 @@ public class SelfDualGraph {
         Iterator<Vertex> vIt = piece.iterator();
         Vertex v;
         while (toHandle.size() > 1) {
-            v = vIt.next();
-            if (v.getID() == 109 || v.getID() == 25 || v.getID() == 267 || v.getID() == 479) {
-                System.out.println(" ");
+            if (!vIt.hasNext()) {
+                piece = new LinkedList<>(toHandle);
+                vIt = piece.iterator();
             }
+            v = vIt.next();
             if (!toHandle.contains(v)) continue;
             deleteVertexSelfLoop(v);
             for (Dart d : v.getIncidenceList()) {
@@ -974,6 +955,9 @@ public class SelfDualGraph {
                     if (vv == v) break;
                 }
             }
+        }
+        if (toHandle.size() > 1) {
+            throw new RuntimeException("More than 1 vertices left after contraction");
         }
         v = toHandle.iterator().next();
         deleteVertexSelfLoop(v);
