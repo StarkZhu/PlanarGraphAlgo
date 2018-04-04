@@ -87,9 +87,10 @@ public class FredDivider extends GraphDivider {
             // processing order is ensured if pass-in vertex set is TreeSet
             for (Vertex v : cluster) clonedCluster.add(vMap.get(v));    // original vertex -> cloned vertex
             Vertex vc = contractedG.mergeConnectedPiece(clonedCluster);
-            // TODO after merge group for V458, D2642 / D2644 left/right not consistent
+            // TODO after merge group for V458, D2642 / D2644 left/right still consistent: F166
             contractedVertexToVSet.put(vc, cluster);
         }
+        // TODO before flatten, D2642.right becomes F296
         contractedG.flatten();
         contractedG.triangulate();
         return contractedG;

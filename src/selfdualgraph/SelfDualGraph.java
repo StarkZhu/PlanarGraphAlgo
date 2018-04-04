@@ -246,6 +246,13 @@ public class SelfDualGraph {
         if (faceToDelete.getDegree() == 1) {
             deleteDegree1Loop(dart);
         } else {
+            if (dart.getID() == 620) {
+                System.out.println(" ");
+            }
+            for (Dart dd : faceToDelete.getIncidenceList()) {
+                dd.setRight(faceToKeep);
+                dd.getReverse().setLeft(faceToKeep);
+            }
             deleteDegreeNLoop(dart);
         }
 
@@ -952,6 +959,9 @@ public class SelfDualGraph {
         Vertex v;
         while (toHandle.size() > 1) {
             v = vIt.next();
+            if (v.getID() == 109 || v.getID() == 25 || v.getID() == 267 || v.getID() == 479) {
+                System.out.println(" ");
+            }
             if (!toHandle.contains(v)) continue;
             deleteVertexSelfLoop(v);
             for (Dart d : v.getIncidenceList()) {
