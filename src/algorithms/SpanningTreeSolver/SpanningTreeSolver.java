@@ -40,6 +40,39 @@ public abstract class SpanningTreeSolver {
         treeAndcoTree[0] = new Tree(vertex);
         buildTreeFromRoot(treeAndcoTree[0].getRoot());
 
+        /*
+        treeAndcoTree[0].detectCycle();
+        int unvisitedF = 0;
+        int visitedD = 0;
+        Set<Dart> unvisitedD_f = new HashSet<>();
+        for (Vertex f : g.getFaces()) {
+            if (!f.isVisited()) unvisitedF++;
+            for (Dart d : f.getIncidenceList()) {
+                if (!d.isVisited()) {
+                    if (unvisitedD_f.contains(d)) {
+                        System.out.println(d);
+                    }
+                    unvisitedD_f.add(d);
+                }
+                else visitedD++;
+            }
+        }
+        System.out.printf("unvisited: %d F, %d D\n", unvisitedF, unvisitedD_f.size());
+        System.out.printf("visited %d D\n", visitedD);
+
+        Set<Dart> unvisitedD_v = new HashSet<>();
+        visitedD = 0;
+        for (Vertex v : g.getVertices()) {
+            for (Dart d : v.getIncidenceList()) {
+                if (!d.isVisited()) unvisitedD_v.add(d);
+                else visitedD++;
+            }
+        }
+        System.out.printf("from V: unvisited %d D, visited %d D\n", unvisitedD_v.size(), visitedD);
+        unvisitedD_f.removeAll(unvisitedD_v);
+        //for (Dart d : unvisitedD_f) System.out.println(d);
+        */
+
         if (face == null) {
             Tree.TreeNode primalRoot = treeAndcoTree[0].getRoot();
             if (primalRoot.getChildren().size() < 1) {

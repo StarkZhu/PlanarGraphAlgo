@@ -34,26 +34,11 @@ public class RecursiveDivider extends GraphDivider {
         }
         graph.triangulate();
 
-
-        if (graph.getVertexNum() == 823) {
-            int visitedV = 0, visitedF = 0, visitedD = 0, totalD = 0;
-            for (Vertex f : graph.getFaces()) if (f.isVisited()) visitedF++;
-            for (Vertex v : graph.getVertices()) {
-                if (v.isVisited()) visitedV++;
-                for (Dart d : v.getIncidenceList()) {
-                    if (d.isVisited()) visitedD++;
-                    totalD++;
-                }
-            }
-            System.out.println(" ");
-        }
-
-
         Separator sp = new SimpleCycleSeparator(graph);
-        Set<Vertex> separator = sp.findSeparator();
         Set<Vertex>[] subgraphs = sp.findSubgraphs();
-        SelfDualGraph g1 = graph.buildSubgraph(subgraphs[0], separator);
+        SelfDualGraph g1 = graph.buildSubgraph(subgraphs[0]);
 
+        /*
         int visitedV1 = 0, visitedF1 = 0, visitedD1 = 0, totalD1 = 0;
         for (Vertex f : g1.getFaces()) if (f.isVisited()) visitedF1++;
         for (Vertex v : g1.getVertices()) {
@@ -63,10 +48,12 @@ public class RecursiveDivider extends GraphDivider {
                 totalD1++;
             }
         }
+        System.out.printf("Graph:[V %d, F %d, D %d]\n", g1.getVertexNum(), g1.getFaceNum(), totalD1);
+        */
 
-        SelfDualGraph g2 = graph.buildSubgraph(subgraphs[1], separator);
+        SelfDualGraph g2 = graph.buildSubgraph(subgraphs[1]);
 
-
+        /*
         int visitedV2 = 0, visitedF2 = 0, visitedD2 = 0, totalD2 = 0;
         for (Vertex f : g2.getFaces()) if (f.isVisited()) visitedF2++;
         for (Vertex v : g2.getVertices()) {
@@ -77,7 +64,7 @@ public class RecursiveDivider extends GraphDivider {
             }
         }
         System.out.println(" ");
-
+        */
 
         phaseI(g1, r);
         phaseI(g2, r);
@@ -99,8 +86,8 @@ public class RecursiveDivider extends GraphDivider {
                 Separator sp = new SimpleCycleSeparator(subgraph);
                 Set<Vertex> separator = sp.findSeparator();
                 Set<Vertex>[] subs = sp.findSubgraphs();
-                SelfDualGraph g1 = subgraph.buildSubgraph(subs[0], separator);
-                SelfDualGraph g2 = subgraph.buildSubgraph(subs[1], separator);
+                SelfDualGraph g1 = subgraph.buildSubgraph(subs[0]);
+                SelfDualGraph g2 = subgraph.buildSubgraph(subs[1]);
                 subgraphs.add(g1);
                 subgraphs.add(g2);
             }

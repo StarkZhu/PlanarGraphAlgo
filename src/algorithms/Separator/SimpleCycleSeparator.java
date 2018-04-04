@@ -58,6 +58,9 @@ public class SimpleCycleSeparator extends Separator {
         System.out.printf("%d vs %d\n", g.getVertexNum(), visitedV);
         System.out.printf("%d vs %d\n", g.getFaceNum(), visitedF);
         System.out.printf("%d vs %d\n", totalD, visitedD);
+        if (g.getVertexNum() != visitedV) {
+            System.out.println(" ");
+        }
         */
 
         Tree.TreeNode primalRoot = trees[0].getRoot();
@@ -68,6 +71,9 @@ public class SimpleCycleSeparator extends Separator {
         Tree.TreeNode separatorNode = leafmostHeavyVertex(coTreeRoot, 1.0 / 3, coTreeRoot.getDescendantWeightSum());
         Map<Vertex, Tree.TreeNode> primalTreeMap = trees[0].mapVertexToTreeNode(false);
         Dart uv = separatorNode.getParentDart();
+        if (uv == null) {
+            System.out.println("uv is null, bad!");
+        }
         Tree.TreeNode root = trees[0].leastCommonAncestor(primalTreeMap.get(uv.getTail()), primalTreeMap.get(uv.getHead()));
         trees[0].reRoot(root);
 

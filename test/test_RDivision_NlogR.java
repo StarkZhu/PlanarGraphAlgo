@@ -142,7 +142,7 @@ public class test_RDivision_NlogR extends test_RDivision_NlogN {
         for (int i = 0; i < vertices.size(); i++) {
             Set<Vertex> region = new HashSet<>();
             region.add(vertices.get(i));
-            SelfDualGraph subgraph = rd.expandRegion(region);
+            SelfDualGraph subgraph = (rd.expandRegion(region)).iterator().next();
             Assert.assertEquals(4, subgraph.getVertexNum());
             Assert.assertEquals(3, subgraph.getFaceNum());
             Assert.assertEquals(4, subgraph.getBoundarySize());

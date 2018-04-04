@@ -169,6 +169,38 @@ public class Tree {
         }
     }
 
+    /**
+     * for dubegging purpose, traverse a tree to check no cycle exists
+     * @return a dart causing the cycle in the given tree if found, null otherwise
+     */
+    public Dart detectCycle() {
+        Set<Vertex> visitedV = new HashSet<>();
+        Set<Dart> visitedD = new HashSet<>();
+        Queue<TreeNode> q = new LinkedList<>();
+        q.add(root);
+        visitedV.add(root.getData());
+        while (!q.isEmpty()) {
+            TreeNode n = q.poll();
+            Vertex v = n.getData();
+            for (TreeNode child : n.getChildren()) {
+                Dart d = child.getParentDart();
+                if (d.getTail() != v)
+                    throw new RuntimeException("Parent dart not pointing to parent vertex");
+                if (visitedD.contains(d) || visitedV.contains(child.getData())) {
+                    //throw new RuntimeException("Dart or Vertex already visited");
+                    return d;
+                }
+                visitedD.add(d);
+                visitedV.add(child.getData());
+                q.add(child);
+            }
+        }
+        System.out.printf("%d V, %d D\n", visitedV.size(), visitedD.size());
+        if (visitedV.size() != visitedD.size()+1)
+            throw new RuntimeException("E+1=N is not satisfied");
+        return null;
+    }
+
     public static class TreeNode {
         private Vertex data;
         private double descendantWeightSum;

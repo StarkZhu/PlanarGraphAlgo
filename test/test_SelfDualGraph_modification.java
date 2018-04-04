@@ -240,4 +240,9 @@ public class test_SelfDualGraph_modification {
             }
         }
     }
+
+    @Test
+    public void testAdjustFirstDart() {
+
+    }
 }
