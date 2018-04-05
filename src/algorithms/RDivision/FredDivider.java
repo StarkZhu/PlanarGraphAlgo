@@ -7,6 +7,23 @@ import selfdualgraph.*;
 import java.io.*;
 import java.util.*;
 
+/**
+ * Algorithm:
+ * given r
+ * rho-cluster: N -> N'=N/sqrt(r)
+ * contract: O(N)
+ * r-division: O(N'logN')
+ * expand: O(N)
+ * size per expanded region: r^1.5
+ * r-division on each: O(rlogr)
+ * total time T: O(NlogN/sqrt(r) + Nlogr)
+ *
+ * T = O(NloglogN) < O(NlogN) if r >= (logN)^2
+ *
+ * to divide contracted G into more than 1 region: N' >= r -> N >= r^1.5
+ * => N >= (logN)^3
+ * => N ~
+ */
 public class FredDivider extends GraphDivider {
     private Map<Vertex, Set<Vertex>> contractedVertexToVSet;
     public static int disconnectedComponentsNum;
@@ -265,7 +282,7 @@ public class FredDivider extends GraphDivider {
         System.out.printf("Total Time: [%dms]\n", time1 - time2);
 
         /*
-        |V| = 500k:
+        |V| = 500k: r = (logN)^3
         FD ~ 140s
         RD ~ 100s
 
