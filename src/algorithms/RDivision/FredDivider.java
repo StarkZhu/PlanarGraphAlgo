@@ -190,9 +190,9 @@ public class FredDivider extends GraphDivider {
         contractedRegions = filterBoundaryVertices(contractedRegions);
 
         // expend each piece
+        int i = 0;
         for (Set<Vertex> region : contractedRegions) {
             Set<SelfDualGraph> expandedSubgraphs = expandRegion(region);
-
             // O(log(r)) levels of recursive division on each piece
             for (SelfDualGraph expandedSubgraph: expandedSubgraphs) {
                 rd = new RecursiveDivider(expandedSubgraph);
@@ -208,17 +208,68 @@ public class FredDivider extends GraphDivider {
 
     public static void main(String[] args) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
-        g.buildGraph("./input_data/random/2.txt");
+        g.buildGraph("./input_data/random/5.txt");
 
         FredDivider fd = new FredDivider(g);
-        int r = Math.max(10, (int) (Math.log(g.getVertexNum()) / Math.log(2)));
-        //int r = 12;
+        int r = Math.max(10, (int) (Math.pow(Math.log(g.getVertexNum()) / Math.log(2), 3)));
         System.out.printf("r = %d\n", r);
+        System.out.println("-- FD --");
         long time0 = System.currentTimeMillis();
-        Set<Set<Vertex>> regions = fd.rDivision(r);
+        Set<Set<Vertex>> regions = new HashSet<>();
+        regions = fd.rDivision(r);
         System.out.println(regions.size());
         System.out.println(disconnectedComponentsNum);
         long time1 = System.currentTimeMillis();
         System.out.printf("Time: [%dms]\n", time1 - time0);
+        // TODO: examine implementation details for good time complexity
+
+        RecursiveDivider rd;
+
+        int rho = (int) Math.sqrt(r);
+        long time2 = System.currentTimeMillis();
+        Map<Vertex, Set<Vertex>> vertexToCluster = fd.rhoClustering(rho);
+        System.out.println("clustering done");
+        SelfDualGraph contracted = fd.contractedGraph(new HashSet<>(vertexToCluster.values()));
+        rd = new RecursiveDivider(contracted);
+        Set<Set<Vertex>> contractedRegions = rd.rDivision(r);
+        contractedRegions = fd.filterBoundaryVertices(contractedRegions);
+        System.out.println("contraction done");
+        Set<SelfDualGraph> expandedSubgraphs = fd.expandRegion(contractedRegions.iterator().next());
+        System.out.println("expansion done");
+
+        System.out.println("-- RD --");
+        System.out.printf("r = %d\n", r);
+        time0 = System.currentTimeMillis();
+        rd = new RecursiveDivider(g);
+        regions = rd.rDivision(r);
+        time1 = System.currentTimeMillis();
+        System.out.println(regions.size());
+        System.out.printf("Time: [%dms]\n", time1 - time0);
+
+        System.out.println("-- FD steps --");
+
+        time0 = System.currentTimeMillis();
+        SelfDualGraph expandedSubgraph = expandedSubgraphs.iterator().next();
+        rd = new RecursiveDivider(expandedSubgraph);
+        Set<Set<Vertex>> subgraphRegions = rd.rDivision(r);
+        System.out.println("division done");
+        time1 = System.currentTimeMillis();
+        System.out.printf("Time: [%dms]\n", time1 - time0);
+        subgraphRegions = fd.filterBoundaryVertices(subgraphRegions);
+        regions = new HashSet<>();
+        for (Set<Vertex> subRegion : subgraphRegions) {
+            regions.add(g.getVerticesFromID(fd.verticesToID(subRegion)));
+        }
+        System.out.println(regions.size());
+        time1 = System.currentTimeMillis();
+        System.out.printf("Total Time: [%dms]\n", time1 - time2);
+
+        /*
+        |V| = 500k:
+        FD ~ 140s
+        RD ~ 100s
+
+        FD Overhead: rho-cluster -> contract -> expand ~40s
+         */
     }
 }

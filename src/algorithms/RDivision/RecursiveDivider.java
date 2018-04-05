@@ -70,10 +70,10 @@ public class RecursiveDivider extends GraphDivider {
 
     public static void main(String[] args) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
-        g.buildGraph("./input_data/random/2.txt");
+        g.buildGraph("./input_data/random/5.txt");
 
         RecursiveDivider rd = new RecursiveDivider(g);
-        int r = (int) (Math.log(g.getVertexNum()) / Math.log(2));
+        int r = Math.max(10, (int) (Math.pow(Math.log(g.getVertexNum()) / Math.log(2), 3)));
         System.out.printf("r = %d\n", r);
         long time0 = System.currentTimeMillis();
         Set<Set<Vertex>> regions = rd.rDivision(r);

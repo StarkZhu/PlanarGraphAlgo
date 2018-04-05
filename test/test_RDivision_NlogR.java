@@ -90,7 +90,6 @@ public class test_RDivision_NlogR extends test_RDivision_NlogN {
                 else overlap.add(v);
             }
         }
-        System.out.println(overlap);
         Assert.assertEquals(0, overlap.size());
         Assert.assertEquals(g.getVertexNum(), visited.size());
     }
