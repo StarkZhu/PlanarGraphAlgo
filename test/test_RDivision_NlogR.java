@@ -154,6 +154,48 @@ public class test_RDivision_NlogR extends test_RDivision_NlogN {
     }
 
     @Test
+    public void test_contract_expand() {
+        SelfDualGraph g = readGraph("./input_data/test_large_rnd.txt");
+        FredDivider fd = new FredDivider(g);
+        int rho = (int) Math.sqrt(g.getVertexNum());
+        Map<Vertex, Set<Vertex>> vertexToCluster = fd.rhoClustering(rho);
+        SelfDualGraph contracted = fd.contractedGraph(new HashSet<>(vertexToCluster.values()));
+        Set<SelfDualGraph> expandedSubgraphs = fd.expandRegion(contracted.getVertices());
+        Assert.assertEquals(1, expandedSubgraphs.size());
+        SelfDualGraph expandedG = expandedSubgraphs.iterator().next();
+
+        Assert.assertEquals(g.getVertexNum(), expandedG.getVertexNum());
+        Assert.assertEquals(g.getFaceNum(), expandedG.getFaceNum());
+        List<Vertex> v0 = new ArrayList<>(g.getVertices());
+        List<Vertex> v1 = new ArrayList<>(expandedG.getVertices());
+        Collections.sort(v0);
+        Collections.sort(v1);
+        for (int i=0; i<v0.size(); i++) {
+            Vertex vv0 = v0.get(i);
+            Vertex vv1 = v1.get(i);
+            Assert.assertEquals(vv0.getID(), vv1.getID());
+            Assert.assertEquals(vv0.getDegree(), vv1.getDegree());
+            List<Dart> list0 = vv0.getIncidenceList();
+            List<Dart> list1 = vv1.getIncidenceList();
+            Iterator<Dart> it0 = list0.iterator();
+            Iterator<Dart> it1 = list1.iterator();
+            while (it0.hasNext()) {
+                Dart d0 = it0.next();
+                Dart d1 = it1.next();
+                Assert.assertEquals(d0.getID(), d1.getID());
+                Assert.assertEquals(d0.getHead().getID(), d1.getHead().getID());
+                Assert.assertEquals(d0.getReverse().getID(), d1.getReverse().getID());
+                Assert.assertEquals(d0.getRight().getID(), d1.getRight().getID());
+                Assert.assertEquals(d0.getLeft().getID(), d1.getLeft().getID());
+                Assert.assertEquals(d0.getNext().getID(), d1.getNext().getID());
+                Assert.assertEquals(d0.getPrev().getID(), d1.getPrev().getID());
+                Assert.assertEquals(d0.getPredecessor().getID(), d1.getPredecessor().getID());
+                Assert.assertEquals(d0.getNext().getID(), d1.getNext().getID());
+            }
+        }
+    }
+
+    @Test
     public void test_rDivision_4x4() {
         SelfDualGraph g = readGraph("./test/benchmark_img_4x4.txt");
         int r = 6;

@@ -531,9 +531,6 @@ public class SelfDualGraph {
         Set<Vertex> oldFaces = new HashSet<>(faces);
         for (Vertex face : oldFaces) {
             if (face.getDegree() <= 3) continue;
-            if (face.getID() == 296) {
-                System.out.println(" ");
-            }
             adjustFirstDartOfFace(face);
             Dart tail = face.getFirstDart();
             Dart head = tail.getNext().getNext();
@@ -946,9 +943,6 @@ public class SelfDualGraph {
             if (!toHandle.contains(v)) continue;
             deleteVertexSelfLoop(v);
             for (Dart d : v.getIncidenceList()) {
-                if (d.getID() == 2643 || d.getID() == 2714) {
-                    System.out.println(" ");
-                }
                 if (toHandle.contains(d.getHead()) && d.getHead() != v) {
                     Vertex vv = this.contractEdge(d);
                     toHandle.remove(vv);

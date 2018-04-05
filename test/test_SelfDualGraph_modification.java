@@ -241,8 +241,39 @@ public class test_SelfDualGraph_modification {
         }
     }
 
-    @Test
-    public void testAdjustFirstDart() {
+    public SelfDualGraph readGraph(String fileName) {
+        SelfDualGraph g = new SelfDualGraph();
+        try {
+            g.buildGraph(fileName);
+        } catch (FileNotFoundException e) {
+            Assert.assertTrue(false);
+        }
+        Dart.uniqueID = 0;
+        Vertex.uniqueID = 0;
+        return g;
+    }
 
+    @Test
+    public void test_deleteNLoop_triangulate() {
+        SelfDualGraph g = readGraph("./input_data/test_graph_1.txt");
+        Dart d = findDartByID(g, 5);
+        g.deleteEdge(d);
+        Assert.assertEquals(3, g.getVertexNum());
+        Assert.assertEquals(3, g.getFaceNum());
+        Vertex f = findVertexByID(g.getFaces(), 2);
+        Assert.assertEquals(4, f.getDegree());
+        checkIncidentListOfFace(f, new int[]{0, 1, 0, 2});
+
+        g.triangulate();
+        Assert.assertEquals(3, g.getVertexNum());
+        Assert.assertEquals(4, g.getFaceNum());
+        Assert.assertEquals(9, f.getFirstDart().getID());
+        Assert.assertEquals(3, f.getDegree());
+        checkIncidentListOfFace(f, new int[]{2, 0, 1});
+
+        Vertex f1 = findVertexByID(g.getFaces(), -1);
+        Assert.assertEquals(1, f1.getFirstDart().getID());
+        Assert.assertEquals(3, f1.getDegree());
+        checkIncidentListOfFace(f1, new int[]{1, 0, 2});
     }
 }
