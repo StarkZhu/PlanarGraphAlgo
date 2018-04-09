@@ -1,0 +1,101 @@
+package algorithms.SSSP;
+
+import selfdualgraph.*;
+
+import java.util.*;
+
+/**
+ * Assume:
+ * graph is connected, otherwise some vertices have distance Double.MAX_VALUE
+ * edges are symmetric, d.weight == d.reverse.weight
+ */
+public class Dijkstra {
+    protected SelfDualGraph g;
+    protected Set<Vertex> vertices;
+    protected Vertex src;
+    protected Map<Vertex, Vertex> vPathPrev;
+
+    public Dijkstra(SelfDualGraph graph) {
+        g = graph;
+        vertices = g.getVertices();
+    }
+
+    /**
+     * find shortest path from src to all other vertices
+     * @param src
+     */
+    public void findSSSP(Vertex src) {
+        if (!vertices.contains(src)) {
+            throw new RuntimeException("Source vertex not in graph");
+        }
+        this.src = src;
+        for (Vertex v : vertices) {
+            v.setVisited(false);
+            v.setDistance(Double.MAX_VALUE);
+        }
+        // TODO: implement a PQ that supports decrease-key
+        PriorityQueue<Vertex> pq = new PriorityQueue<>(new Comparator<Vertex>() {
+            @Override
+            public int compare(Vertex o1, Vertex o2) {
+                if (o1.getDistance() - o2.getDistance() < 0) {
+                    return -1;
+                } else if (o1.getDistance() - o2.getDistance() > 0) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        });
+        vPathPrev = new HashMap<>();
+        src.setDistance(0);
+        pq.add(src);
+        while (!pq.isEmpty()) {
+            Vertex v = pq.poll();
+            if (v.isVisited()) continue;
+            v.setVisited(true);
+            for (Dart d : v.getIncidenceList()) {
+                Vertex vv = d.getHead();
+                if (vv.isVisited()) continue;
+                if (v.getDistance() + d.getWeight() < vv.getDistance()) {
+                    vv.setDistance(v.getDistance() + d.getWeight());
+                    pq.add(vv);
+                    vPathPrev.put(vv, v);
+                }
+            }
+        }
+    }
+
+    /**
+     * find distance value from src to dest
+     * @param src
+     * @param dest
+     * @return
+     */
+    public double distFromTo(Vertex src, Vertex dest) {
+        if (src != this.src) findSSSP(src);
+        if (!vertices.contains(dest)) {
+            throw new RuntimeException("Destination vertex not in graph");
+        }
+        return dest.getDistance();
+    }
+
+    /**
+     * build shortest path from src to dest
+     * @param src
+     * @param dest
+     * @return
+     */
+    public List<Vertex> getPath(Vertex src, Vertex dest) {
+        if (src != this.src) findSSSP(src);
+        LinkedList<Vertex> path = new LinkedList<>();
+
+        // build path from dest to src
+        Vertex v = dest;
+        while (v != src) {
+            path.addFirst(v);
+            v = vPathPrev.get(v);
+        }
+        path.addFirst(v);
+        return path;
+    }
+}

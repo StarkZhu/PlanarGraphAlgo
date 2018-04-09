@@ -18,7 +18,7 @@ public class Vertex implements Comparable<Vertex>{
     public final String type;
     private int ID;
     private float coordX, coordY;
-    private double weight;
+    private double weight, distance;
     private boolean visited;
     private int degree;
     private Dart dart;  // points to an arbitrary dart with tail(d) = current vertex
@@ -32,6 +32,7 @@ public class Vertex implements Comparable<Vertex>{
         visited = false;
         degree = 0;
         dart = null;
+        distance = Double.MAX_VALUE;
     }
 
     public Vertex (Vertex other) {
@@ -43,11 +44,20 @@ public class Vertex implements Comparable<Vertex>{
         visited = false;
         degree = 0;
         dart = null;
+        this.distance = other.distance;
     }
 
     @Override
     public int compareTo(Vertex other) {
         return this.ID - other.ID;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double d) {
+        distance = d;
     }
 
     public int getID() {
