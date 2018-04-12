@@ -228,7 +228,31 @@ public class FredDivider extends GraphDivider {
         g.buildGraph("./input_data/random/5.txt");
 
         FredDivider fd = new FredDivider(g);
-        int r = Math.max(10, (int) (Math.pow(Math.log(g.getVertexNum()) / Math.log(2), 3)));
+        int[] rs = new int[]{4000, 160000, 40000, 8000, 2000, 400, 20};
+        for (int r : rs) {
+            System.out.printf("r = %d\n", r);
+            long time0 = System.currentTimeMillis(), time1, time2, time3;
+            int rho = (int) Math.sqrt(r);
+            Map<Vertex, Set<Vertex>> vertexToCluster = fd.rhoClustering(rho);
+            time1 = System.currentTimeMillis();
+            System.out.printf("clustering done [%dms]\n", time1 - time0);
+            SelfDualGraph contracted = fd.contractedGraph(new HashSet<>(vertexToCluster.values()));
+            RecursiveDivider rd = new RecursiveDivider(contracted);
+            Set<Set<Vertex>> contractedRegions = rd.rDivision(r);
+            contractedRegions = fd.filterBoundaryVertices(contractedRegions);
+            time2 = System.currentTimeMillis();
+            System.out.printf("contraction done [%dms]\n", time2 - time1);
+            for (Set<Vertex> region : contractedRegions) {
+                Set<SelfDualGraph> expandedSubgraphs = fd.expandRegion(region);
+            }
+            time3 = System.currentTimeMillis();
+            System.out.printf("expansion done [%dms]\n", time3 - time2);
+            System.out.printf("Total Time: [%dms]\n", time3 - time0);
+            System.out.println("------");
+        }
+        /*
+        FredDivider fd = new FredDivider(g);
+        int r = Math.max(10, (int) (Math.pow(Math.log(g.getVertexNum()) / Math.log(2), 2)));
         System.out.printf("r = %d\n", r);
         System.out.println("-- FD --");
         long time0 = System.currentTimeMillis();
@@ -238,6 +262,7 @@ public class FredDivider extends GraphDivider {
         System.out.println(disconnectedComponentsNum);
         long time1 = System.currentTimeMillis();
         System.out.printf("Time: [%dms]\n", time1 - time0);
+
         // TODO: examine implementation details for good time complexity
 
         RecursiveDivider rd;
@@ -280,6 +305,7 @@ public class FredDivider extends GraphDivider {
         System.out.println(regions.size());
         time1 = System.currentTimeMillis();
         System.out.printf("Total Time: [%dms]\n", time1 - time2);
+        */
 
         /*
         |V| = 500k: r = (logN)^3
