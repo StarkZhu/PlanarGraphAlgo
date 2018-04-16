@@ -22,10 +22,14 @@ public abstract class GraphDivider {
     }
 
 
-    protected Set<Integer> verticesToID(Set<Vertex> vertices) {
+    public Set<Integer> verticesToID(Set<Vertex> vertices) {
         Set<Integer> ids = new HashSet<>();
         for (Vertex v : vertices) ids.add(v.getID());
         return ids;
+    }
+
+    public void setGraph(SelfDualGraph graph) {
+        g = graph;
     }
 
 }
