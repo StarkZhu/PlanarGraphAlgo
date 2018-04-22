@@ -16,6 +16,10 @@ public class Dijkstra extends SSSP{
         super(graph);
     }
 
+    public Dijkstra(SelfDualGraph graph, int dist_measure) {
+        super(graph, dist_measure);
+    }
+
     @Override
     public void findSSSP(Vertex src) {
         if (!vertices.contains(src)) {
@@ -49,8 +53,8 @@ public class Dijkstra extends SSSP{
             for (Dart d : v.getIncidenceList()) {
                 Vertex vv = d.getHead();
                 if (vv.isVisited()) continue;
-                if (v.getDistance() + d.getWeight() < vv.getDistance()) {
-                    vv.setDistance(v.getDistance() + d.getWeight());
+                if (v.getDistance() + getDartDist(d) < vv.getDistance()) {
+                    vv.setDistance(v.getDistance() + getDartDist(d));
                     pq.add(vv);
                     vPathPrev.put(vv, v);
                 }

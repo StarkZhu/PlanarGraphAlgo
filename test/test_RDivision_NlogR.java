@@ -40,12 +40,12 @@ public class test_RDivision_NlogR extends test_RDivision_NlogN {
         Assert.assertEquals(orbit[i], d.getHead().getID());
     }
 
-    protected void generateLargeTextFile() throws FileNotFoundException {
+    protected void generateLargeTextFile(String fileName) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
         g.buildGraph("./input_data/random/0.txt");
         RandomSubgraphGenerator rsg = new RandomSubgraphGenerator(g);
         rsg.generateRandomGraph(3);
-        g.saveToFile(String.format("./test/large_rnd.txt"));
+        g.saveToFile(fileName);
     }
 
     @Test
@@ -164,8 +164,9 @@ public class test_RDivision_NlogR extends test_RDivision_NlogN {
 
     @Test
     public void test_contract_expand() throws FileNotFoundException {
-        generateLargeTextFile();
-        SelfDualGraph g = readGraph("./test/large_rnd.txt");
+        String fileName = "./test/large_rnd.txt";
+        generateLargeTextFile(fileName);
+        SelfDualGraph g = readGraph(fileName);
         FredDivider fd = new FredDivider(g);
         int rho = (int) Math.sqrt(g.getVertexNum());
         Map<Vertex, Set<Vertex>> vertexToCluster = fd.rhoClustering(rho);
@@ -204,7 +205,7 @@ public class test_RDivision_NlogR extends test_RDivision_NlogN {
             }
         }
 
-        File tmpFile = new File("./test/large_rnd.txt");
+        File tmpFile = new File(fileName);
         tmpFile.delete();
     }
 

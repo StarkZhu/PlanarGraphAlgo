@@ -19,6 +19,12 @@ public class RegionalSpeculativeDijkstra extends SSSP{
         dartRegionMap = new HashMap<>();
     }
 
+    public RegionalSpeculativeDijkstra(SelfDualGraph g, GraphDivider gd, int dist_measure) {
+        super(g, dist_measure);
+        graphDivider = gd;
+        dartRegionMap = new HashMap<>();
+    }
+
     private void globalUpdate(Region r, Region subr, double key) {
         double oldMinKey = r.minKey();
         r.updateKey(subr, key);
@@ -28,8 +34,8 @@ public class RegionalSpeculativeDijkstra extends SSSP{
     private void processRegion(Region r) {
         if (r.isAtomic()) {
             Dart d = r.getDart();
-            if (d.getHead().getDistance() > d.getTail().getDistance() + d.getWeight()) {
-                d.getHead().setDistance(d.getTail().getDistance() + d.getWeight());
+            if (d.getHead().getDistance() > d.getTail().getDistance() + getDartDist(d)) {
+                d.getHead().setDistance(d.getTail().getDistance() + getDartDist(d));
                 for (Dart dd : d.getHead().getIncidenceList()) {
                     Region[] atomicRs = dartRegionMap.get(dd);
                     globalUpdate(atomicRs[0], atomicRs[1], d.getHead().getDistance());
@@ -110,7 +116,7 @@ public class RegionalSpeculativeDijkstra extends SSSP{
         while (v != src) {
             path.addFirst(v);
             for (Dart d : v.getIncidenceList()) {
-                if (d.getHead().getDistance() == v.getDistance() - d.getWeight()) {
+                if (d.getHead().getDistance() == v.getDistance() - getDartDist(d)) {
                     v = d.getHead();
                     break;
                 }
