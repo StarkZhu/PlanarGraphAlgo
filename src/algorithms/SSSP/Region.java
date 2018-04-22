@@ -5,7 +5,7 @@ import selfdualgraph.*;
 import java.util.*;
 
 public class Region implements Comparable<Region> {
-    TreeMap<Double, Set<Region>> priorityQueue;
+    TreeMap<Double, Set<Region>> priorityQueue;     // mimic pq operation by delete and re-insert
     Region parent;
     Dart dart;
     double key;
@@ -41,6 +41,12 @@ public class Region implements Comparable<Region> {
         return priorityQueue.firstKey();
     }
 
+    /**
+     * delete r, update r's key, re-insert r
+     * O(logN) time
+     * @param r
+     * @param k
+     */
     public void updateKey(Region r, double k) {
         Set<Region> set = priorityQueue.get(r.key);
         set.remove(r);
@@ -51,10 +57,20 @@ public class Region implements Comparable<Region> {
         priorityQueue.put(k, set);
     }
 
+    /**
+     * only for atomic region
+     * @return
+     */
     public Dart getDart() {
         return dart;
     }
 
+    /**
+     * Inf for level 2 (root G)
+     * logN for level 1
+     * 1 for level 0 (atomic)
+     * @return
+     */
     public double getAlpha() {
         return alpha;
     }

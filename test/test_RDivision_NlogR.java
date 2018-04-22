@@ -1,6 +1,7 @@
-import algorithms.RDivision.FredDivider;
+import algorithms.RDivision.*;
 import org.junit.*;
 import selfdualgraph.*;
+import util.RandomSubgraphGenerator;
 
 import java.io.*;
 import java.util.*;
@@ -37,6 +38,14 @@ public class test_RDivision_NlogR extends test_RDivision_NlogN {
             d = d.getSuccessor();
         }
         Assert.assertEquals(orbit[i], d.getHead().getID());
+    }
+
+    protected void generateLargeTextFile() throws FileNotFoundException {
+        SelfDualGraph g = new SelfDualGraph();
+        g.buildGraph("./input_data/random/0.txt");
+        RandomSubgraphGenerator rsg = new RandomSubgraphGenerator(g);
+        rsg.generateRandomGraph(3);
+        g.saveToFile(String.format("./test/large_rnd.txt"));
     }
 
     @Test
@@ -154,8 +163,9 @@ public class test_RDivision_NlogR extends test_RDivision_NlogN {
     }
 
     @Test
-    public void test_contract_expand() {
-        SelfDualGraph g = readGraph("./input_data/test_large_rnd.txt");
+    public void test_contract_expand() throws FileNotFoundException {
+        generateLargeTextFile();
+        SelfDualGraph g = readGraph("./test/large_rnd.txt");
         FredDivider fd = new FredDivider(g);
         int rho = (int) Math.sqrt(g.getVertexNum());
         Map<Vertex, Set<Vertex>> vertexToCluster = fd.rhoClustering(rho);
@@ -193,6 +203,9 @@ public class test_RDivision_NlogR extends test_RDivision_NlogN {
                 Assert.assertEquals(d0.getNext().getID(), d1.getNext().getID());
             }
         }
+
+        File tmpFile = new File("./test/large_rnd.txt");
+        tmpFile.delete();
     }
 
     @Test

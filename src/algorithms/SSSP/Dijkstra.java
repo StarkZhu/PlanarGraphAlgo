@@ -9,21 +9,14 @@ import java.util.*;
  * graph is connected, otherwise some vertices have distance Double.MAX_VALUE
  * edges are symmetric, d.weight == d.reverse.weight
  */
-public class Dijkstra {
-    protected SelfDualGraph g;
-    protected Set<Vertex> vertices;
-    protected Vertex src;
+public class Dijkstra extends SSSP{
     protected Map<Vertex, Vertex> vPathPrev;
 
     public Dijkstra(SelfDualGraph graph) {
-        g = graph;
-        vertices = g.getVertices();
+        super(graph);
     }
 
-    /**
-     * find shortest path from src to all other vertices
-     * @param src
-     */
+    @Override
     public void findSSSP(Vertex src) {
         if (!vertices.contains(src)) {
             throw new RuntimeException("Source vertex not in graph");
@@ -65,26 +58,6 @@ public class Dijkstra {
         }
     }
 
-    /**
-     * find distance value from src to dest
-     * @param src
-     * @param dest
-     * @return
-     */
-    public double distFromTo(Vertex src, Vertex dest) {
-        if (src != this.src) findSSSP(src);
-        if (!vertices.contains(dest)) {
-            throw new RuntimeException("Destination vertex not in graph");
-        }
-        return dest.getDistance();
-    }
-
-    /**
-     * build shortest path from src to dest
-     * @param src
-     * @param dest
-     * @return
-     */
     public List<Vertex> getPath(Vertex src, Vertex dest) {
         if (src != this.src) findSSSP(src);
         LinkedList<Vertex> path = new LinkedList<>();

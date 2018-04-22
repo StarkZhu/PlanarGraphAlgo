@@ -5,13 +5,16 @@ import selfdualgraph.*;
 
 import java.util.*;
 
-public class RegionalSpeculativeDijkstra {
-    protected SelfDualGraph g;
+/**
+ * reference: Faster Shortest-Path Algorithms for Planar Graphs
+ * https://ac.els-cdn.com/S0022000097914938/1-s2.0-S0022000097914938-main.pdf?_tid=8a8eba64-c235-4275-9ba9-11ce0d25b255&acdnat=1524076731_07efe8c169cddcc414b7cf56b4d22f6d
+ */
+public class RegionalSpeculativeDijkstra extends SSSP{
     protected Map<Dart, Region[]> dartRegionMap;
     protected GraphDivider graphDivider;
 
     public RegionalSpeculativeDijkstra(SelfDualGraph g, GraphDivider gd) {
-        this.g = g;
+        super(g);
         graphDivider = gd;
         dartRegionMap = new HashMap<>();
     }
@@ -43,6 +46,12 @@ public class RegionalSpeculativeDijkstra {
         }
     }
 
+    /**
+     * use r-division, build a regrion from each piece after division
+     * @param g
+     * @param divisions
+     * @return
+     */
     public Region buildRegionTree(SelfDualGraph g, Set<Set<Vertex>> divisions) {
         Region rG = new Region(Double.POSITIVE_INFINITY, null);
         double alpha1 = Math.log(g.getVertexNum()) / Math.log(2);
@@ -63,7 +72,18 @@ public class RegionalSpeculativeDijkstra {
         return rG;
     }
 
+    @Override
+    public void findSSSP(Vertex src) {
+        int r = Math.max(10, (int) (Math.pow(Math.log(g.getVertexNum()) / Math.log(2), 2)));
+        findSSSP(src, r);
+    }
+
     public void findSSSP(Vertex src, int r) {
+        if (!vertices.contains(src)) {
+            throw new RuntimeException("Source vertex not in graph");
+        }
+        this.src = src;
+
         for (Vertex v : g.getVertices()) v.setDistance(Double.POSITIVE_INFINITY);
         graphDivider.setGraph(g.buildSubgraph(g.getVertices()));
         Set<Set<Vertex>> divisions = graphDivider.rDivision(r);
@@ -78,5 +98,25 @@ public class RegionalSpeculativeDijkstra {
             globalUpdate(atomicRs[0], atomicRs[1], 0);
         }
         processRegion(rG);
+    }
+
+    @Override
+    public List<Vertex> getPath(Vertex src, Vertex dest) {
+        if (src != this.src) findSSSP(src);
+        LinkedList<Vertex> path = new LinkedList<>();
+
+        // build path from dest to src
+        Vertex v = dest;
+        while (v != src) {
+            path.addFirst(v);
+            for (Dart d : v.getIncidenceList()) {
+                if (d.getHead().getDistance() == v.getDistance() - d.getWeight()) {
+                    v = d.getHead();
+                    break;
+                }
+            }
+        }
+        path.addFirst(v);
+        return path;
     }
 }
