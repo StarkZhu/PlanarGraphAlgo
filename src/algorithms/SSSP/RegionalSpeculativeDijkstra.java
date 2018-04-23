@@ -34,6 +34,9 @@ public class RegionalSpeculativeDijkstra extends SSSP{
     private void processRegion(Region r) {
         if (r.isAtomic()) {
             Dart d = r.getDart();
+            if (d == null) {
+                System.out.println(" ");
+            }
             if (d.getHead().getDistance() > d.getTail().getDistance() + getDartDist(d)) {
                 d.getHead().setDistance(d.getTail().getDistance() + getDartDist(d));
                 for (Dart dd : d.getHead().getIncidenceList()) {
@@ -53,12 +56,12 @@ public class RegionalSpeculativeDijkstra extends SSSP{
     }
 
     /**
-     * use r-division, build a regrion from each piece after division
+     * use r-division, build a region from each piece after division
      * @param g
      * @param divisions
      * @return
      */
-    public Region buildRegionTree(SelfDualGraph g, Set<Set<Vertex>> divisions) {
+    public Region buildRegionTree(SelfDualGraph g, List<Set<Vertex>> divisions) {
         Region rG = new Region(Double.POSITIVE_INFINITY, null);
         double alpha1 = Math.log(g.getVertexNum()) / Math.log(2);
         for (Set<Vertex> division : divisions) {
@@ -66,6 +69,7 @@ public class RegionalSpeculativeDijkstra extends SSSP{
             for (Vertex v : division) {
                 for (Dart d : v.getIncidenceList()) {
                     if (!division.contains(d.getHead())) continue;
+                    if (dartRegionMap.containsKey(d)) continue;
                     Region atomic0 = new Region(1, d);
                     Region atomic1 = new Region(1, d);
                     dartRegionMap.put(d, new Region[]{atomic0, atomic1});
@@ -89,11 +93,12 @@ public class RegionalSpeculativeDijkstra extends SSSP{
             throw new RuntimeException("Source vertex not in graph");
         }
         this.src = src;
+        dartRegionMap = new HashMap<>();
 
         for (Vertex v : g.getVertices()) v.setDistance(Double.POSITIVE_INFINITY);
         graphDivider.setGraph(g.buildSubgraph(g.getVertices()));
         Set<Set<Vertex>> divisions = graphDivider.rDivision(r);
-        Set<Set<Vertex>> originalVertices = new HashSet<>();
+        List<Set<Vertex>> originalVertices = new ArrayList<>();
         for (Set<Vertex> division : divisions) {
             originalVertices.add(g.getVerticesFromID(graphDivider.verticesToID(division)));
         }

@@ -147,7 +147,6 @@ public class test_RDivision_NlogN {
         RecursiveDivider rd = new RecursiveDivider(g);
         rd.phaseI(g, 14);
 
-        // phase II, r=14
         rd.phaseII(6);
         List<Set<Vertex>> regions = new ArrayList<>(rd.getRegions());
         Assert.assertEquals(5, regions.size());

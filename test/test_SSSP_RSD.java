@@ -12,7 +12,7 @@ public class test_SSSP_RSD extends test_SSSP_Dijkstra {
         Set<Integer> darts = new HashSet<>();
         for (int i : ids) darts.add(i);
         Assert.assertEquals(darts.size(), regions.size());
-        for (Region r: regions) {
+        for (Region r : regions) {
             Dart d = r.getDart();
             Assert.assertTrue(darts.contains(d.getID()));
         }
@@ -24,9 +24,11 @@ public class test_SSSP_RSD extends test_SSSP_Dijkstra {
         GraphDivider gd = new RecursiveDivider(g.buildSubgraph(g.getVertices()));
         RegionalSpeculativeDijkstra rsd = new RegionalSpeculativeDijkstra(g, gd);
         Set<Set<Vertex>> divisions = gd.rDivision(13);
-        Set<Set<Vertex>> originalVertices = new HashSet<>();
+        LinkedList<Set<Vertex>> originalVertices = new LinkedList<>();
         for (Set<Vertex> division : divisions) {
-            originalVertices.add(g.getVerticesFromID(gd.verticesToID(division)));
+            Set<Integer> vID = gd.verticesToID(division);
+            if (vID.contains(0)) originalVertices.addFirst(g.getVerticesFromID(vID));
+            else  originalVertices.add(g.getVerticesFromID(vID));
         }
         Region rG = rsd.buildRegionTree(g, originalVertices);
 
@@ -40,8 +42,8 @@ public class test_SSSP_RSD extends test_SSSP_Dijkstra {
         });
 
         int[][] dartIDs = new int[][]{
-                {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 15, 20, 21, 26, 27, 34, 35, 40, 41, 42, 43, 44, 45, 46, 47},
-                {2, 3, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 36, 37, 38, 39, 40, 41, 44, 45, 46, 47}
+                {10, 11, 16, 17, 18, 19, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 36, 37, 38, 39},
+                {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 15, 20, 21, 26, 27, 34, 35, 40, 41, 42, 43, 44, 45, 46, 47}
         };
         for (int i = 0; i < 2; i++) {
             Set<Region> sub = level1.get(i).getAllSubregion();
@@ -77,7 +79,7 @@ public class test_SSSP_RSD extends test_SSSP_Dijkstra {
         }
         List<Vertex> path = rsd.getPath(src, findVertexByID(g.getVertices(), 15));
         int[] pathID = new int[]{0, 4, 5, 6, 10, 14, 15};
-        for (int i=0; i<path.size(); i++) {
+        for (int i = 0; i < path.size(); i++) {
             Assert.assertEquals(pathID[i], path.get(i).getID());
         }
     }
