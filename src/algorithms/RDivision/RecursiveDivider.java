@@ -52,7 +52,7 @@ public class RecursiveDivider extends GraphDivider {
             SelfDualGraph subgraph = subgraphs.poll();
             // if boundary size less than 4*sqrt(r)
             if (subgraph.getBoundarySize() <= Math.max(4 * Math.sqrt(r), 6)) {
-                regions.add(g.getVerticesFromID(verticesToID(subgraph.getVertices())));
+                regions.add(originG.getVerticesFromID(verticesToID(subgraph.getVertices())));
             } else {
                 subgraph.triangulate();
                 subgraph.assignWeightToBoundary_useDart();

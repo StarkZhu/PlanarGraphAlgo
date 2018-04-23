@@ -7,9 +7,11 @@ import java.util.*;
 public abstract class GraphDivider {
     protected SelfDualGraph g;
     protected Set<Set<Vertex>> regions;
+    protected SelfDualGraph originG;
 
     public GraphDivider(SelfDualGraph g) {
-        this.g = g;
+        originG = g;
+        this.g = g.buildSubgraph(g.getVertices());
         this.g.flatten();
         this.g.triangulate();
         regions = new HashSet<>();

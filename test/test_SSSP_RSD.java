@@ -113,7 +113,6 @@ public class test_SSSP_RSD extends test_SSSP_Dijkstra {
         Map<Integer, Double> vDist = new HashMap<>();
         for (Vertex v : g.getVertices()) vDist.put(v.getID(), v.getDistance());
 
-        g = readGraph(fileName);
         int r = 100;
         GraphDivider gd = new RecursiveDivider(g);
         RegionalSpeculativeDijkstra rsd = new RegionalSpeculativeDijkstra(g, gd);
@@ -125,22 +124,22 @@ public class test_SSSP_RSD extends test_SSSP_Dijkstra {
         tmpFile.delete();
     }
 
-    /*
+
     @Test
     public void test_path_compareDijk() {
         SelfDualGraph g = readGraph("./test/grid_9x7.txt");
-        SSSP sssp = new Dijkstra(g);
+        SSSP sssp = new Dijkstra(g, SSSP.CAPACITY_AS_DISTANCE);
         Vertex v0 = findVertexByID(g.getVertices(), 0);
         Vertex v62 = findVertexByID(g.getVertices(), 62);
         sssp.findSSSP(v0);
         List<Vertex> path_dijk = sssp.getPath(v0, v62);
 
-        sssp = new RegionalSpeculativeDijkstra(g, new RecursiveDivider(g));
+        sssp = new RegionalSpeculativeDijkstra(g, new RecursiveDivider(g), SSSP.CAPACITY_AS_DISTANCE);
         List<Vertex> path_rsd = sssp.getPath(v0, v62);
 
         for (int i = 0; i < path_dijk.size(); i++) {
             Assert.assertEquals(path_dijk.get(i).getID(), path_rsd.get(i).getID());
         }
     }
-    */
+
 }

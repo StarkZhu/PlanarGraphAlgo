@@ -43,7 +43,7 @@ public class FredDivider extends GraphDivider {
         Map<Vertex, Set<Vertex>> vertexToCluster = new HashMap<>();
         SpanningTreeSolver sts = new DFSsolver();
         RootFinder rf = new MinDegreeRootFinder();
-        Tree[] trees = sts.buildTreeCoTree(g, rf.selectRootVertex(g), null);
+        Tree[] trees = sts.buildTreeCoTree(originG, rf.selectRootVertex(originG), null);
 
         Stack<Tree.TreeNode> stack = new Stack<>();
         stack.push(trees[0].getRoot());
@@ -84,7 +84,7 @@ public class FredDivider extends GraphDivider {
      * @return
      */
     public SelfDualGraph contractedGraph(Set<Set<Vertex>> clusters) {
-        Set<Vertex> subgraphV = g.getVertices();
+        Set<Vertex> subgraphV = originG.getVertices();
         // map old vertices to new graph
         Map<Vertex, Vertex> vMap = new HashMap<>();
         for (Vertex v : subgraphV) {
@@ -93,7 +93,7 @@ public class FredDivider extends GraphDivider {
         }
 
         contractedVertexToVSet = new HashMap<>();
-        SelfDualGraph contractedG = g.cloneSubgraph(vMap, g.getBoundary());
+        SelfDualGraph contractedG = originG.cloneSubgraph(vMap, originG.getBoundary());
         for (Set<Vertex> cluster : clusters) {
             List<Vertex> clonedCluster = new LinkedList<>();
             // processing order is ensured if pass-in vertex set is TreeSet
@@ -123,7 +123,7 @@ public class FredDivider extends GraphDivider {
         Set<Set<Vertex>> connectedComponents = identifyConnectedComponent(expanded);
         Set<SelfDualGraph> subgraphs = new HashSet<>();
         for (Set<Vertex> component : connectedComponents) {
-            subgraphs.add(g.buildSubgraph(component));
+            subgraphs.add(originG.buildSubgraph(component));
         }
         return subgraphs;
     }
@@ -207,7 +207,6 @@ public class FredDivider extends GraphDivider {
         contractedRegions = filterBoundaryVertices(contractedRegions);
 
         // expend each piece
-        int i = 0;
         for (Set<Vertex> region : contractedRegions) {
             Set<SelfDualGraph> expandedSubgraphs = expandRegion(region);
             // O(log(r)) levels of recursive division on each piece
@@ -216,7 +215,7 @@ public class FredDivider extends GraphDivider {
                 Set<Set<Vertex>> subgraphRegions = rd.rDivision(r);
                 subgraphRegions = filterBoundaryVertices(subgraphRegions);
                 for (Set<Vertex> subRegion : subgraphRegions) {
-                    regions.add(g.getVerticesFromID(verticesToID(subRegion)));
+                    regions.add(originG.getVerticesFromID(verticesToID(subRegion)));
                 }
             }
         }

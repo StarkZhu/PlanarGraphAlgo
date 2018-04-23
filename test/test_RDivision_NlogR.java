@@ -53,10 +53,10 @@ public class test_RDivision_NlogR extends test_RDivision_NlogN {
         SelfDualGraph g = readGraph("./test/benchmark_img_4x4.txt");
         FredDivider rd = new FredDivider(g);
         Map<Vertex, Set<Vertex>> vertexToCluster = rd.rhoClustering(8);
-        int[] expectedCluster = new int[]{0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1};
+        int[] expectedCluster = new int[]{0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0};
         int[] actualCluster = new int[16];
         for (Set<Vertex> set : vertexToCluster.values()) {
-            if (set.contains(findVertexByID(g.getVertices(), 2))) {
+            if (set.contains(findVertexByID(g.getVertices(), 5))) {
                 for (Vertex v : set) actualCluster[v.getID()] = 1;
             }
         }
@@ -70,12 +70,12 @@ public class test_RDivision_NlogR extends test_RDivision_NlogN {
         SelfDualGraph g = readGraph("./test/benchmark_img_4x4.txt");
         FredDivider rd = new FredDivider(g);
         Map<Vertex, Set<Vertex>> vertexToCluster = rd.rhoClustering(6);
-        int[] expectedCluster = new int[]{0, 1, 2, 2, 0, 1, 2, 2, 0, 1, 1, 2, 0, 1, 1, 2};
+        int[] expectedCluster = new int[]{0, 0, 0, 1, 0, 2, 2, 1, 0, 2, 2, 1, 0, 2, 2, 1};
         int[] actualCluster = new int[16];
         for (Set<Vertex> set : vertexToCluster.values()) {
-            if (set.contains(findVertexByID(g.getVertices(), 1))) {
+            if (set.contains(findVertexByID(g.getVertices(), 3))) {
                 for (Vertex v : set) actualCluster[v.getID()] = 1;
-            } else if (set.contains(findVertexByID(g.getVertices(), 2))) {
+            } else if (set.contains(findVertexByID(g.getVertices(), 5))) {
                 for (Vertex v : set) actualCluster[v.getID()] = 2;
             }
         }
@@ -122,7 +122,7 @@ public class test_RDivision_NlogR extends test_RDivision_NlogN {
                 return o1.getID() - o2.getID();
             }
         });
-        int[][] vOrbit = new int[][]{{6, 10, 8, 10}, {0, 10}, {0, 10}, {0, 8, 0, 6}};
+        int[][] vOrbit = new int[][]{{6, 10, 9, 10}, {5, 10}, {5, 10}, {5, 9, 5, 6}};
         for (int i = 0; i < vertices.size(); i++) {
             verifyVertexIncidenceList(vOrbit[i], vertices.get(i));
         }
@@ -152,8 +152,8 @@ public class test_RDivision_NlogR extends test_RDivision_NlogN {
             region.add(vertices.get(i));
             SelfDualGraph subgraph = (rd.expandRegion(region)).iterator().next();
             Assert.assertEquals(4, subgraph.getVertexNum());
-            Assert.assertEquals(3, subgraph.getFaceNum());
-            Assert.assertEquals(4, subgraph.getBoundarySize());
+            Assert.assertEquals(2, subgraph.getFaceNum());
+            Assert.assertEquals(3, subgraph.getBoundarySize());
             Set<Integer> vIDs = new HashSet<>();
             for (int j : clusterID[i]) vIDs.add(j);
             for (Vertex v : subgraph.getVertices()) {
@@ -181,7 +181,7 @@ public class test_RDivision_NlogR extends test_RDivision_NlogN {
         List<Vertex> v1 = new ArrayList<>(expandedG.getVertices());
         Collections.sort(v0);
         Collections.sort(v1);
-        for (int i=0; i<v0.size(); i++) {
+        for (int i = 0; i < v0.size(); i++) {
             Vertex vv0 = v0.get(i);
             Vertex vv1 = v1.get(i);
             Assert.assertEquals(vv0.getID(), vv1.getID());
