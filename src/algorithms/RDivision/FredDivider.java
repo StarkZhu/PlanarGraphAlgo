@@ -108,6 +108,11 @@ public class FredDivider extends GraphDivider {
 
     /**
      * expand a region of contracted vertices back to original vertices
+     * Algorithm:
+     * each face F is assigned to exactly 1 region R which it belongs to:
+     *      iff F is free && all F's vertices are in R
+     * each region contains all incidental vertices of faces in R
+     *      a vertex may belong to more than 1 region
      *
      * @param contractedRegion
      * @return
