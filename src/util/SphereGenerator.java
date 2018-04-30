@@ -34,15 +34,15 @@ public class SphereGenerator {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        for (int i = 1; i < 12; i++) {
+        for (int i = 11; i < 13; i++) {
             SelfDualGraph g = new SelfDualGraph();
-            g.buildGraph("./input_data/sphere/t_0.txt");
+            g.buildGraph("./input_data/sphere/c_0.txt");
             System.out.println(g.getFaceNum());
             System.out.println(g.getVertexNum());
 
             SphereGenerator rsg = new SphereGenerator(g);
             rsg.generateRandomSubgraph(i);
-            g.saveToFile(String.format("./input_data/sphere/t_%d.txt", i));
+            g.saveToFile(String.format("./input_data/sphere/c_%d.txt", i));
         }
     }
 }

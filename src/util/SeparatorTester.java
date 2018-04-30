@@ -7,13 +7,17 @@ import selfdualgraph.*;
 import java.io.*;
 import java.util.*;
 
-public class Runner {
+public class SeparatorTester {
     public static void runTest(String inputFileName, int trials, boolean rndMaxDegRoot, String outputFileName) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
         g.buildGraph(inputFileName);
+
+        runTest(g, inputFileName, trials, rndMaxDegRoot, outputFileName);
+    }
+
+    public static void runTest(SelfDualGraph g, String graphType, int trials, boolean rndMaxDegRoot, String outputFileName) throws FileNotFoundException {
         g.flatten();
         g.triangulate();    // g is always triangulated
-
         Set<Vertex> vertices = g.getVertices();
         if (rndMaxDegRoot) {
             // select all vertices with degree equal to maxDegree
@@ -33,7 +37,7 @@ public class Runner {
         List<Vertex> rootCandidates = new ArrayList<>(vertices);
 
         PrintWriter out = new PrintWriter(outputFileName);
-        out.printf("Graph Info:\t%s\tNumber of Vertices\t%d\n", inputFileName, g.getVertexNum());
+        out.printf("Graph Info:\t%s\tNumber of Vertices\t%d\n", graphType, g.getVertexNum());
         out.printf("Current run parameter:\tuse_max_degree_root = %b\n", rndMaxDegRoot);
         out.printf("\t\tLevel Separator\t\t\tFundamental Cycle Separator\t\t\tModifiedFCS\t\t\tLipton-Tarjan Separator\t\t\tSimple Cycle Separator\n");
         out.printf("\tSeparator Size\tBalance Ratio\tRuntime (ms)\tSeparator Size\tBalance Ratio\tRuntime (ms)\tSeparator Size\tBalance Ratio\tRuntime (ms)\tSeparator Size\tBalance Ratio\tRuntime (s)\tSeparator Size\tBalance Ratio\tRuntime (s)\n");
@@ -99,15 +103,22 @@ public class Runner {
     }
 
     public static void testSphere() throws FileNotFoundException {
-        for (int i = 1; i <= 10; i++) {
-            String input = String.format("./input_data/sphere/c_%d.txt", i);
+        for (int i = 12; i <= 12; i++) {
+            System.out.println(i);
+            SelfDualGraph g = new SelfDualGraph();
+
+            g.buildGraph("./input_data/sphere/c_0.txt");
+            SphereGenerator rsg = new SphereGenerator(g);
+            rsg.generateRandomSubgraph(i);
             String output = String.format("./output/sphere/c_%d.txt", i);
-            runTest(input, 32, false, output);
-        }
-        for (int i = 1; i <= 11; i++) {
-            String input = String.format("./input_data/sphere/t_%d.txt", i);
-            String output = String.format("./output/sphere/t_%d.txt", i);
-            runTest(input, 32, false, output);
+            runTest(g, "sphere_Cube", 32, false, output);
+
+            g = new SelfDualGraph();
+            g.buildGraph("./input_data/sphere/t_0.txt");
+            rsg = new SphereGenerator(g);
+            rsg.generateRandomSubgraph(i);
+            output = String.format("./output/sphere/t_%d.txt", i);
+            runTest(g, "sphere_Tetrahedron", 32, false, output);
         }
     }
 
@@ -121,9 +132,9 @@ public class Runner {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        testGrids();
+        //testGrids();
         //testCylinder();
-        //testSphere();
+        testSphere();
         //testRandom();
     }
 }
