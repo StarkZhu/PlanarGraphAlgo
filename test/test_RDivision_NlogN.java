@@ -181,7 +181,6 @@ public class test_RDivision_NlogN {
     @Test
     public void test_9x7_r20() {
         SelfDualGraph g = readGraph("./test/grid_9x7.txt");
-        //SelfDualGraph g = readGraph("./input_data/random/5.txt");
         RecursiveDivider rd = new RecursiveDivider(g);
 
         int r = 20;

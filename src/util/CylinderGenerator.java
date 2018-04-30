@@ -51,9 +51,8 @@ public class CylinderGenerator {
      *
      * @param magnitude
      */
-    public void generateRandomylinders(int magnitude) {
+    public void generateRandomCylinders(int magnitude) {
         int limit = 3 * (int) Math.pow(10, magnitude);
-        //int limit = 2;
         Vertex newFace = g.getFaces().iterator().next();
         for (int i = 0; i < limit; i++) {
             Vertex newV = g.addVertex(newFace);
@@ -199,33 +198,19 @@ public class CylinderGenerator {
         }
         */
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 6; i++) {
             CylinderGenerator cg = new CylinderGenerator(null);
             cg.generateUnsymmetricCylinder(i + 1, String.format("./input_data/cylinder/unsymm/%d.txt", i + 1));
-        }
 
+            cg = new CylinderGenerator(null);
+            cg.generateySymmetricCylinder(i + 1, String.format("./input_data/cylinder/symm/%d.txt", i + 1));
 
-        /*
-        for (int i = 0; i < 5; i++) {
             SelfDualGraph g = new SelfDualGraph();
             g.buildGraph("./input_data/cylinder/0.txt");
-            System.out.println(g.getFaceNum());
-            System.out.println(g.getVertexNum());
-
-            CylinderGenerator cg = new CylinderGenerator(g);
-            cg.generateWeirdCylinders(i + 1);
-            g.saveToFile(String.format("./input_data/cylinder/%d.txt", i + 1));
+            cg = new CylinderGenerator(g);
+            cg.generateRandomCylinders(i + 1);
+            g.saveToFile(String.format("./input_data/cylinder/rnd/%d.txt", i + 1));
         }
-         */
-
-
-//        SelfDualGraph g = new SelfDualGraph();
-//        g.buildGraph("./input_data/cylinder/0.txt");
-//        System.out.println(g.getFaceNum());
-//        System.out.println(g.getVertexNum());
-//
-//        CylinderGenerator cg = new CylinderGenerator(g);
-//        cg.generateUnsymmetricCylinder(1, "./input_data/cylinder/test/1.txt");
 
     }
 }

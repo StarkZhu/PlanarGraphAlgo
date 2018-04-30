@@ -94,7 +94,7 @@ public class SeparatorTester {
     public static void testCylinder() throws FileNotFoundException {
         String[] types = new String[]{"rnd", "symm", "unsymm"};
         for (String type : types) {
-            for (int i = 1; i <= 5; i++) {
+            for (int i = 1; i <= 6; i++) {
                 String input = String.format("./input_data/cylinder/%s/%d.txt", type, i);
                 String output = String.format("./output/cylinder/%s/%d.txt", type, i);
                 runTest(input, 32, false, output);
@@ -124,17 +124,20 @@ public class SeparatorTester {
 
     public static void testRandom() throws FileNotFoundException {
         for (int i = 1; i <= 5; i++) {
-            String input = String.format("./input_data/random/%d.txt", i);
+            SelfDualGraph g = new SelfDualGraph();
+            g.buildGraph("./input_data/random/0.txt");
+            RandomSubgraphGenerator rsg = new RandomSubgraphGenerator(g);
+            rsg.generateRandomGraph(i);
             String output = String.format("./output/random/%d.txt", i);
-            System.out.println(input);
-            runTest(input, 32, false, output);
+            runTest(g, String.format("random %d", i), 32, false, output);
         }
     }
 
     public static void main(String[] args) throws FileNotFoundException {
         //testGrids();
         //testCylinder();
-        testSphere();
+
+        //testSphere();
         //testRandom();
     }
 }

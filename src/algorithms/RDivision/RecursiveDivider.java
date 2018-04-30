@@ -68,6 +68,7 @@ public class RecursiveDivider extends GraphDivider {
     }
 
 
+    /*
     public static void main(String[] args) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
         g.buildGraph("./input_data/random/5.txt");
@@ -81,5 +82,5 @@ public class RecursiveDivider extends GraphDivider {
         System.out.println(regions.size());
         System.out.printf("Time: [%dms]\n", time1 - time0);
     }
-
+    */
 }

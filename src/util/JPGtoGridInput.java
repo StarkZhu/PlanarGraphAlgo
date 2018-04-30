@@ -3,7 +3,6 @@ package util;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -194,11 +193,11 @@ public class JPGtoGridInput {
         }
     }
 
-    public void generate7Grids() throws FileNotFoundException {
-        int[][] dims = new int[][]{{9, 7}, {28, 21}, {89, 67}, {282, 211}};
+    public void generateGrids() throws FileNotFoundException {
+        int[][] dims = new int[][]{{9, 7}, {28, 21}, {89, 67}, {282, 211}, {892, 668}, {2820, 2113}};
 
         generateGridInput(String.format("./input_data/grids/%d.txt", 7));
-        for (int i = 0; i < dims.length; i++) {
+        for (int i = 5; i < dims.length; i++) {
             generateGridInput(String.format("./input_data/grids/%d.txt", i+1), dims[i][1], dims[i][0]);
         }
     }
@@ -210,10 +209,9 @@ public class JPGtoGridInput {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-        // "./input_data/test_img_82x77.jpeg"
         JPGtoGridInput testImg = new JPGtoGridInput("./input_data/grids/heic1509a.jpg");
         System.out.println(testImg.jpgImage.getWidth());
         System.out.println(testImg.jpgImage.getHeight());
-        testImg.generate7Grids();
+        testImg.generateGrids();
     }
 }
