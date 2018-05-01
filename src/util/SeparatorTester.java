@@ -84,11 +84,11 @@ public class SeparatorTester {
     }
 
     public static void testGrids() throws FileNotFoundException {
-        for (int i = 6; i <= 6; i++) {
+        for (int i = 1; i <= 5; i++) {
             System.out.println(i);
             String input = String.format("./input_data/grids/%d.txt", i);
-            String output = String.format("./output/grids/%d.txt", i);
-            runTest(input, i == 6 ? 1 : 32, false, output);
+            String output = String.format("./output/separator/grids/%d.txt", i);
+            runTest(input, 32, false, output);
         }
     }
 
@@ -97,7 +97,7 @@ public class SeparatorTester {
         for (String type : types) {
             for (int i = 1; i <= 6; i++) {
                 String input = String.format("./input_data/cylinder/%s/%d.txt", type, i);
-                String output = String.format("./output/cylinder/%s/%d.txt", type, i);
+                String output = String.format("./output/separator/cylinder/%s/%d.txt", type, i);
                 runTest(input, 32, false, output);
             }
         }
@@ -111,14 +111,14 @@ public class SeparatorTester {
             g.buildGraph("./input_data/sphere/c_0.txt");
             SphereGenerator rsg = new SphereGenerator(g);
             rsg.generateRandomSubgraph(i);
-            String output = String.format("./output/sphere/c_%d.txt", i);
+            String output = String.format("./output/separator/sphere/c_%d.txt", i);
             runTest(g, "sphere_Cube", 32, false, output);
 
             g = new SelfDualGraph();
             g.buildGraph("./input_data/sphere/t_0.txt");
             rsg = new SphereGenerator(g);
             rsg.generateRandomSubgraph(i);
-            output = String.format("./output/sphere/t_%d.txt", i);
+            output = String.format("./output/separator/sphere/t_%d.txt", i);
             runTest(g, "sphere_Tetrahedron", 32, false, output);
         }
     }
@@ -129,16 +129,17 @@ public class SeparatorTester {
             g.buildGraph("./input_data/random/0.txt");
             RandomSubgraphGenerator rsg = new RandomSubgraphGenerator(g);
             rsg.generateRandomGraph(i);
-            String output = String.format("./output/random/%d.txt", i);
+            System.out.println("Graph generated");
+            String output = String.format("./output/separator/random/%d.txt", i);
             runTest(g, String.format("random %d", i), 32, false, output);
         }
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        testGrids();
+        //testGrids();
         //testCylinder();
 
         //testSphere();
-        //testRandom();
+        testRandom();
     }
 }

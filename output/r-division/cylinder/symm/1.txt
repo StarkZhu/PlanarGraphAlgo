@@ -1,0 +1,19 @@
+Graph Info:	./input_data/cylinder/symm/3.txt	Number of Vertices	303, Regsion Size	100
+		Recursive Divider			Frederickson Divider
+	Region Number	Runtime (ms)	Region Number	Runtime (ms)
+0	5	6.78	5	18.12
+1	5	4.69	5	8.49
+2	5	5.89	5	13.19
+3	5	4.74	5	8.22
+4	5	4.95	5	13.51
+5	5	4.73	5	8.25
+6	5	5.93	5	8.08
+7	5	4.56	5	8.18
+8	5	4.63	5	8.03
+9	5	4.57	5	8.26
+10	5	4.54	5	8.25
+11	5	4.57	5	8.23
+12	5	12.07	5	15.08
+13	5	6.33	5	27.44
+14	5	12.42	5	11.49
+15	5	6.98	5	12.92

@@ -2,6 +2,7 @@ package algorithms.RDivision;
 
 import algorithms.Separator.*;
 import selfdualgraph.*;
+import util.*;
 
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -67,14 +68,18 @@ public class RecursiveDivider extends GraphDivider {
         }
     }
 
-
-    /*
     public static void main(String[] args) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
-        g.buildGraph("./input_data/random/5.txt");
+        /*
+        g.buildGraph("./input_data/random/0.txt");
+        RandomSubgraphGenerator rsg = new RandomSubgraphGenerator(g);
+        rsg.generateRandomGraph(4);
+        */
+        g.buildGraph("./input_data/grids/3.txt");
 
         RecursiveDivider rd = new RecursiveDivider(g);
-        int r = Math.max(10, (int) (Math.pow(Math.log(g.getVertexNum()) / Math.log(2), 3)));
+        //int r = Math.max(10, (int) (Math.pow(Math.log(g.getVertexNum()) / Math.log(2), 3)));
+        int r = 25;
         System.out.printf("r = %d\n", r);
         long time0 = System.currentTimeMillis();
         Set<Set<Vertex>> regions = rd.rDivision(r);
@@ -82,5 +87,5 @@ public class RecursiveDivider extends GraphDivider {
         System.out.println(regions.size());
         System.out.printf("Time: [%dms]\n", time1 - time0);
     }
-    */
+
 }

@@ -1,0 +1,19 @@
+Graph Info:	Sphere_Cube_12	Number of Vertices	488, Regsion Size	200
+		Recursive Divider			Frederickson Divider
+	Region Number	Runtime (ms)	Region Number	Runtime (ms)
+0	4	6.42	4	12.89
+1	4	6.57	4	12.31
+2	4	6.49	4	12.38
+3	4	6.82	4	26.77
+4	4	12.55	4	33.69
+5	4	9.02	4	16.28
+6	4	7.41	4	12.77
+7	4	6.99	4	12.46
+8	4	6.75	4	12.59
+9	4	6.63	4	27.17
+10	4	9.46	4	24.49
+11	4	15.32	4	24.46
+12	4	6.64	4	12.52
+13	4	6.43	4	12.42
+14	4	6.52	4	12.63
+15	4	6.55	4	12.88
