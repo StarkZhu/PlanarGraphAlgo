@@ -11,7 +11,7 @@ public class SeparatorTester {
     public static void runTest(String inputFileName, int trials, boolean rndMaxDegRoot, String outputFileName) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
         g.buildGraph(inputFileName);
-
+        System.out.println("Graph loaded");
         runTest(g, inputFileName, trials, rndMaxDegRoot, outputFileName);
     }
 
@@ -84,11 +84,11 @@ public class SeparatorTester {
     }
 
     public static void testGrids() throws FileNotFoundException {
-        for (int i = 1; i <= 6; i++) {
+        for (int i = 6; i <= 6; i++) {
             System.out.println(i);
             String input = String.format("./input_data/grids/%d.txt", i);
-            String output = String.format("./output/grids/test/%d.txt", i);
-            runTest(input, 32, false, output);
+            String output = String.format("./output/grids/%d.txt", i);
+            runTest(input, i == 6 ? 1 : 32, false, output);
         }
     }
 
@@ -135,8 +135,8 @@ public class SeparatorTester {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        //testGrids();
-        testCylinder();
+        testGrids();
+        //testCylinder();
 
         //testSphere();
         //testRandom();
