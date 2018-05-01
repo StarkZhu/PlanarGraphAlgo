@@ -196,8 +196,8 @@ public class JPGtoGridInput {
     public void generateGrids() throws FileNotFoundException {
         int[][] dims = new int[][]{{9, 7}, {28, 21}, {89, 67}, {282, 211}, {892, 668}, {2820, 2113}};
 
-        generateGridInput(String.format("./input_data/grids/%d.txt", 7));
-        for (int i = 5; i < dims.length; i++) {
+        //generateGridInput(String.format("./input_data/grids/%d.txt", 7));
+        for (int i = 0; i < dims.length; i++) {
             generateGridInput(String.format("./input_data/grids/%d.txt", i+1), dims[i][1], dims[i][0]);
         }
     }
