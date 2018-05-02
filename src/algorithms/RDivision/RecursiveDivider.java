@@ -75,11 +75,12 @@ public class RecursiveDivider extends GraphDivider {
         RandomSubgraphGenerator rsg = new RandomSubgraphGenerator(g);
         rsg.generateRandomGraph(4);
         */
-        g.buildGraph("./input_data/grids/3.txt");
+        g.buildGraph("./input_data/grids/5.txt");
+        System.out.println("Graph loaded");
 
         RecursiveDivider rd = new RecursiveDivider(g);
         //int r = Math.max(10, (int) (Math.pow(Math.log(g.getVertexNum()) / Math.log(2), 3)));
-        int r = 25;
+        int r = 50;
         System.out.printf("r = %d\n", r);
         long time0 = System.currentTimeMillis();
         Set<Set<Vertex>> regions = rd.rDivision(r);

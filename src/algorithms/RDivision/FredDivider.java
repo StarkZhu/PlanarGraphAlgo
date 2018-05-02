@@ -253,14 +253,14 @@ public class FredDivider extends GraphDivider {
         return regions;
     }
 
-    /*
+
     public static void main(String[] args) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
-        g.buildGraph("./input_data/random/5.txt");
-
+        //g.buildGraph("./input_data/random/5.txt");
+        g.buildGraph("./input_data/grids/5.txt");
 
         FredDivider fd = new FredDivider(g);
-        int[] rs = new int[]{4000, 160000, 40000, 8000, 2000, 400, 20};
+        int[] rs = new int[]{50};
         for (int r : rs) {
             System.out.printf("r = %d\n", r);
             long time0 = System.currentTimeMillis(), time1, time2, time3;
@@ -283,5 +283,5 @@ public class FredDivider extends GraphDivider {
             System.out.println("------");
         }
     }
-    */
+
 }
