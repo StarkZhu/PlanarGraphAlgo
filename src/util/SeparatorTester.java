@@ -93,9 +93,10 @@ public class SeparatorTester {
     }
 
     public static void testCylinder() throws FileNotFoundException {
-        String[] types = new String[]{"rnd", "symm", "unsymm"};
+        //String[] types = new String[]{"rnd", "symm", "unsymm"};
+        String[] types = new String[]{"symm"};
         for (String type : types) {
-            for (int i = 1; i <= 6; i++) {
+            for (int i = 1; i <= 5; i++) {
                 String input = String.format("./input_data/cylinder/%s/%d.txt", type, i);
                 String output = String.format("./output/separator/cylinder/%s/%d.txt", type, i);
                 runTest(input, 32, false, output);
@@ -137,9 +138,9 @@ public class SeparatorTester {
 
     public static void main(String[] args) throws FileNotFoundException {
         //testGrids();
-        //testCylinder();
+        testCylinder();
 
         //testSphere();
-        testRandom();
+        //testRandom();
     }
 }
