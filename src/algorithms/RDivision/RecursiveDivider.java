@@ -22,6 +22,8 @@ public class RecursiveDivider extends GraphDivider {
 
     @Override
     public Set<Set<Vertex>> rDivision(int r) {
+        regions = new HashSet<>();
+        subgraphs = new LinkedList<>();
         g.flatten();
         phaseI(g, r);
         phaseII(r);

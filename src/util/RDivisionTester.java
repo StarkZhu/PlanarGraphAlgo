@@ -89,10 +89,10 @@ public class RDivisionTester {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        int[] Rs = new int[]{25, 50, 100, 200, 400, 600, 800, 1000, 1200, 1600, 2000, 4000, 10000, 20000, 40000, 100000};
+        int[] Rs = new int[]{50, 100, 200, 400, 600, 800, 1000, 1200, 1600, 2000, 4000, 10000, 20000, 40000, 100000};
         int[] fileSize = new int[]{5, 5, 5, 5};
-        //testGridsCylinder(Rs);
-        testRandom(Rs, 5);
-        //testSphere(Rs, 11);
+        //testGridsCylinder(Rs, fileSize);
+        //testRandom(Rs, 5);
+        testSphere(Rs, 11);
     }
 }
