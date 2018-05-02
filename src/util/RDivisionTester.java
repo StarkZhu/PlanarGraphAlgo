@@ -49,9 +49,7 @@ public class RDivisionTester {
         System.out.println(str);
     }
 
-    public static void testGridsCylinder(int[] Rs, int[] fileSize) throws FileNotFoundException {
-        String[] paths = new String[]{"grids", "cylinder/rnd", "cylinder/symm", "cylinder/unsymm"};
-        //String[] paths = new String[]{"grids"};
+    public static void testGridsCylinder(int[] Rs, int[] fileSize, String[] paths) throws FileNotFoundException {
         for (int j = 0; j < paths.length; j++) {
             String path = paths[j];
             int size = fileSize[j];
@@ -90,8 +88,10 @@ public class RDivisionTester {
 
     public static void main(String[] args) throws FileNotFoundException {
         int[] Rs = new int[]{100, 200, 400, 600, 800, 1000, 1200, 1600, 2000, 4000, 10000, 20000, 40000, 100000};
-        int[] fileSize = new int[]{5, 5, 5, 5};
-        testGridsCylinder(Rs, fileSize);
+        //String[] paths = new String[]{"grids", "cylinder/rnd", "cylinder/symm", "cylinder/unsymm"};
+        String[] paths = new String[]{"cylinder/symm", "cylinder/unsymm"};
+        int[] fileSize = new int[]{5, 5};
+        testGridsCylinder(Rs, fileSize, paths);
         //testRandom(Rs, 5);
         testSphere(Rs, 11);
     }

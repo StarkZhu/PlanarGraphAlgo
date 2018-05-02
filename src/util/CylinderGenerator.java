@@ -198,6 +198,7 @@ public class CylinderGenerator {
         }
         */
 
+        /*
         for (int i = 0; i < 6; i++) {
             CylinderGenerator cg = new CylinderGenerator(null);
             cg.generateUnsymmetricCylinder(i + 1, String.format("./input_data/cylinder/unsymm/%d.txt", i + 1));
@@ -211,6 +212,10 @@ public class CylinderGenerator {
             cg.generateRandomCylinders(i + 1);
             g.saveToFile(String.format("./input_data/cylinder/rnd/%d.txt", i + 1));
         }
-
+        */
+        for (int i = 0; i < 5; i++) {
+            CylinderGenerator cg = new CylinderGenerator(null);
+            cg.generateySymmetricCylinder(i + 1, String.format("./input_data/cylinder/symm/%d.txt", i + 1));
+        }
     }
 }
