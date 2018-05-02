@@ -20,6 +20,12 @@ public class Dijkstra extends SSSP{
         super(graph, dist_measure);
     }
 
+
+    @Override
+    public void findSSSP(Vertex src, int r) {
+        findSSSP(src);
+    }
+
     @Override
     public void findSSSP(Vertex src) {
         if (!vertices.contains(src)) {

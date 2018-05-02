@@ -243,7 +243,6 @@ public class FredDivider extends GraphDivider {
             Set<SelfDualGraph> expandedSubgraphs = expandRegion(region);
             // O(log(r)) levels of recursive division on each piece
             // TODO: this step is very time consuming, why?
-            /*
             for (SelfDualGraph expandedSubgraph : expandedSubgraphs) {
                 rd = new RecursiveDivider(expandedSubgraph);
                 Set<Set<Vertex>> subgraphRegions = rd.rDivision(r);
@@ -252,7 +251,6 @@ public class FredDivider extends GraphDivider {
                     regions.add(originG.getVerticesFromID(verticesToID(subRegion)));
                 }
             }
-            */
         }
         return regions;
     }
@@ -261,11 +259,11 @@ public class FredDivider extends GraphDivider {
     public static void main(String[] args) throws FileNotFoundException {
         SelfDualGraph g = new SelfDualGraph();
 
-        g.buildGraph("./input_data/grids/5.txt");
+        g.buildGraph("./input_data/cylinder/symm/5.txt");
         System.out.println("Graph loaded");
 
         FredDivider fd = new FredDivider(g);
-        int r = 50;
+        int r = 2000;
         System.out.printf("r = %d\n", r);
         long time0 = System.currentTimeMillis();
         Set<Set<Vertex>> regions = fd.rDivision(r);

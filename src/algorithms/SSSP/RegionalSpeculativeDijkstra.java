@@ -88,6 +88,7 @@ public class RegionalSpeculativeDijkstra extends SSSP{
         findSSSP(src, r);
     }
 
+    @Override
     public void findSSSP(Vertex src, int r) {
         if (!vertices.contains(src)) {
             throw new RuntimeException("Source vertex not in graph");
