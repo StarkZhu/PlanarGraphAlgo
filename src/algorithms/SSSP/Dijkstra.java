@@ -22,8 +22,9 @@ public class Dijkstra extends SSSP{
 
 
     @Override
-    public void findSSSP(Vertex src, int r) {
+    public double findSSSP(Vertex src, int r) {
         findSSSP(src);
+        return 0;
     }
 
     @Override

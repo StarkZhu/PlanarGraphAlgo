@@ -35,7 +35,7 @@ public abstract class SSSP {
      * find shortest path from src to all other vertices
      * @param src
      */
-    public abstract void findSSSP(Vertex src, int r);
+    public abstract double findSSSP(Vertex src, int r);
 
     /**
      * build shortest path from src to dest

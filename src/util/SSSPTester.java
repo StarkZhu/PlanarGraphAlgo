@@ -12,11 +12,11 @@ public class SSSPTester {
     public static void runTest(SelfDualGraph g, String graphType, int trials, int[] Rs, String outputFileName) throws FileNotFoundException {
         PrintWriter out = new PrintWriter(outputFileName);
         out.printf("Graph Info:\t%s\tNumber of Vertices\t%d\n", graphType, g.getVertexNum());
-        out.printf("\tRSD SSSP\t\t\t\t\t\tDijkstra SSSP\n");
-        out.printf("\tRuntime (ms)\tRuntime (ms)\tRuntime (ms)\tRuntime (ms)\tRuntime (ms)\tRuntime (ms)\tRuntime (ms)\tRuntime (ms)\n");
-        GraphDivider gd = new RecursiveDivider(g);
-        gd.rDivision(Rs[0]);
-        System.out.println("Worm-up run finished");
+        out.printf("\tRSD SSSP\t\t\t\t\t\t\t\t\t\tDijkstra SSSP\n");
+        out.printf("\tRuntime (ms)\tRSD %%\tRuntime (ms)\tRSD %%\tRuntime (ms)\tRSD %%\tRuntime (ms)\tRSD %%\tRuntime (ms)\tRuntime (ms)\tRuntime (ms)\tRuntime (ms)\n");
+//        GraphDivider gd = new RecursiveDivider(g);
+//        gd.rDivision(Rs[0]);
+//        System.out.println("Worm-up run finished");
 
         for (int i = 0; i < Rs.length; i++) {
             Vertex[] sources = new Vertex[trials];
@@ -29,13 +29,17 @@ public class SSSPTester {
             StringBuilder sb = new StringBuilder(String.format("%d", r));
 
             SSSP sssp = new RegionalSpeculativeDijkstra(g, new FredDivider(g),SSSP.CAPACITY_AS_DISTANCE);
+            System.out.println("RegionalSpeculativeDijkstra start");
             for (int j = 0; j < trials; j++) {
+                System.out.printf("trail %d\n", j);
                 testSSSP(sssp, sources[j], r, sb);
             }
             System.out.println("RegionalSpeculativeDijkstra done");
 
             sssp = new Dijkstra(g, SSSP.CAPACITY_AS_DISTANCE);
+            System.out.println("Dijkstra start");
             for (int j = 0; j < trials; j++) {
+                System.out.printf("trail %d\n", j);
                 testSSSP(sssp, sources[j], r, sb);
             }
             System.out.println("Dijkstra done");
@@ -48,9 +52,13 @@ public class SSSPTester {
 
     public static void testSSSP(SSSP sssp, Vertex src, int r, StringBuilder sb) {
         long startTime = System.nanoTime();
-        sssp.findSSSP(src, r);
+        double rsdPercent = sssp.findSSSP(src, r);
         long endTime = System.nanoTime();
-        String str = String.format("\t%.2f", (endTime - startTime) / 1000000.0);
+        StringBuilder str = new StringBuilder();
+        str.append(String.format("\t%.2f", (endTime - startTime) / 1000000.0));
+        if (sssp instanceof RegionalSpeculativeDijkstra) {
+            str.append(String.format("\t%.2f", rsdPercent));
+        }
         sb.append(str);
         System.out.println(str);
     }
@@ -63,7 +71,7 @@ public class SSSPTester {
             SelfDualGraph g = new SelfDualGraph();
             g.buildGraph(inputFileName);
             System.out.println("Graph loaded");
-            String outputFileName = String.format("./output/r-division/%s_%d.txt", path, size);
+            String outputFileName = String.format("./output/sssp/%s_%d.txt", path, size);
             runTest(g, String.format("%s_%d", path, size), 4, Rs, outputFileName);
 
         }
@@ -75,7 +83,7 @@ public class SSSPTester {
         RandomSubgraphGenerator rsg1 = new RandomSubgraphGenerator(g);
         rsg1.generateRandomGraph(size);
         System.out.println("Graph loaded");
-        String output = String.format("./output/r-division/random_%d.txt", size);
+        String output = String.format("./output/sssp/random_%d.txt", size);
         runTest(g, String.format("random_%d", size), 4, Rs, output);
     }
 
@@ -87,7 +95,7 @@ public class SSSPTester {
             SphereGenerator rsg2 = new SphereGenerator(g);
             rsg2.generateRandomSubgraph(size);
             System.out.println("Graph loaded");
-            String output = String.format("./output/r-division/sphere_%s.txt", name);
+            String output = String.format("./output/sssp/sphere_%s.txt", name);
             runTest(g, String.format("Sphere_%s_12", name), 4, Rs, output);
         }
     }
@@ -95,9 +103,13 @@ public class SSSPTester {
     public static void main(String[] args) throws FileNotFoundException {
         int[] Rs = new int[]{400, 600, 800, 900, 1000, 1100, 1200, 1400, 1600, 1800, 2000};
         String[] paths = new String[]{"grids", "cylinder/rnd", "cylinder/symm", "cylinder/unsymm"};
-        //String[] paths = new String[]{"cylinder/symm", "cylinder/unsymm"};
         int[] fileSize = new int[]{5, 5, 5, 5};
+        //int[] Rs = new int[]{400};
+        //String[] paths = new String[]{"grids"};
+        //int[] fileSize = new int[]{4};
+
         testGridsCylinder(Rs, fileSize, paths);
+
         testRandom(Rs, 5);
         testSphere(Rs, 11);
     }
