@@ -104,13 +104,13 @@ public class CompareLCA {
         g = new SelfDualGraph();
         g.buildGraph("./input_data/sphere/c_0.txt");
         SphereGenerator sg = new SphereGenerator(g);
-        rsg.generateRandomSubgraph(5);
+        sg.generateRandomSubgraph(11);
         runTest(g, 32, false, "./output/lcaHeuristic/5/sphere_c.txt");
 
         g = new SelfDualGraph();
         g.buildGraph("./input_data/sphere/t_0.txt");
         sg = new SphereGenerator(g);
-        rsg.generateRandomSubgraph(5);
+        sg.generateRandomSubgraph(11);
         runTest(g, 32, false, "./output/lcaHeuristic/5/sphere_t.txt");
     }
 
